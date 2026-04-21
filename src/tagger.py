@@ -144,7 +144,10 @@ def _truncate(text: str) -> tuple[str, bool]:
 
 
 def collect_taxonomy() -> dict[str, int]:
-    """Scan vault, return {tag: count} sorted by descending count."""
+    """Scan vault, return {tag: count} sorted by descending count.
+
+    Applies aliases and filters blocklisted tags (same rules as aggregate_results).
+    """
     counts: Counter[str] = Counter()
     for p in _iter_notes():
         try:
@@ -155,8 +158,8 @@ def collect_taxonomy() -> dict[str, int]:
         if isinstance(raw, str):
             raw = [raw]
         for t in raw:
-            nt = _norm_tag(t)
-            if nt:
+            nt = _apply_aliases(_norm_tag(t))
+            if nt and nt not in TAG_BLOCKLIST:
                 counts[nt] += 1
     return dict(counts.most_common())
 
