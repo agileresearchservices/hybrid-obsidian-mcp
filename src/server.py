@@ -359,6 +359,16 @@ def bulk_tag_list() -> str:
 
 
 @mcp.tool()
+def bulk_tag_create_batches(paths: list[str], batch_size: int = 20) -> str:
+    """Split a list of note paths into batch files for parallel agent processing.
+
+    Creates batch_00.json, batch_01.json, etc. in logs/tag-run/batches/, clears
+    stale files, and returns metadata. Use this as part of Step 2 in the workflow.
+    """
+    return json.dumps(tagger.create_batches(paths, batch_size), indent=2)
+
+
+@mcp.tool()
 def bulk_tag_apply(changes: list[dict], dry_run: bool = False) -> str:
     """Apply a batch of tag merges to notes. Each change entry is
     {path: str, add_tags: list[str], remove_tags: list[str]}.

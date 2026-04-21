@@ -462,11 +462,9 @@ BULK TAG UPDATE WORKFLOW — the user wants to review every note in the Obsidian
 
 Call `mcp__obsidian-search__bulk_tag_taxonomy()` AND `mcp__obsidian-search__bulk_tag_list()` **in a single parallel message** — both tool calls in one response block, not sequentially.
 
-## Step 2 — Plan batches
+## Step 2 — Create batches (automatic)
 
-**First, wipe stale state** — delete any existing `logs/tag-run/batches/*.json` and `logs/tag-run/results/*.json`. Stale result files from prior runs can silently mask failed agent writes.
-
-Split the note list into batches of **~20 notes each**. For N notes, that's roughly `ceil(N / 20)` batches. Write each batch as a JSON array of paths to `logs/tag-run/batches/batch_{{NN}}.json` (for the audit trail and verify step).
+Call `mcp__obsidian-search__bulk_tag_create_batches(paths=<note list from step 1>)` to automatically split notes into batches of ~20 each, create batch files, and clean up stale state. Returns batch file paths and metadata.
 
 ## Step 3 — Dispatch subagents IN PARALLEL (all Haiku)
 
@@ -510,6 +508,43 @@ Call `mcp__obsidian-search__bulk_tag_taxonomy()` again to get the post-run taxon
 - All subagent LLM work runs on Haiku for cost efficiency. The orchestration is lightweight and stays on whatever model the user is using.
 - The vault watcher (launchd `com.obsidian.search-watcher`) auto-reindexes changed files within ~10s, so no manual reindex is needed after step 5.
 """
+
+
+def create_batches(paths: list[str], batch_size: int = 20, output_dir: str = "logs/tag-run/batches") -> dict:
+    """Create batch files from a list of note paths.
+
+    Splits paths into batches of ~batch_size each, writes each batch as a JSON
+    array to output_dir/batch_NN.json, and clears any stale batch/result files.
+
+    Returns {batch_files: [paths], total_notes: int, num_batches: int}.
+    """
+    import math
+    output_path = Path(output_dir).resolve()
+    output_path.mkdir(parents=True, exist_ok=True)
+
+    # Clean stale batch and result files
+    for f in output_path.glob("batch_*.json"):
+        f.unlink()
+    for f in Path(output_dir.replace("batches", "results")).glob("batch_*.json"):
+        f.unlink()
+
+    num_batches = math.ceil(len(paths) / batch_size)
+    batch_files = []
+
+    for i in range(num_batches):
+        start = i * batch_size
+        end = min(start + batch_size, len(paths))
+        batch = paths[start:end]
+        batch_file = output_path / f"batch_{i:02d}.json"
+        batch_file.write_text(json.dumps(batch, indent=2))
+        batch_files.append(str(batch_file))
+
+    return {
+        "batch_files": batch_files,
+        "total_notes": len(paths),
+        "num_batches": num_batches,
+        "batch_size": batch_size,
+    }
 
 
 def workflow_prompt() -> str:

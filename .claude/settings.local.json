@@ -55,7 +55,13 @@
       "Bash(/Users/kevin/github/personal/hybrid-obsidian-mcp/.venv/bin/obsidian-cli tag-apply *)",
       "Bash(rm -rf logs/tag-run/batches/*.json logs/tag-run/results/*.json)",
       "Bash(mkdir -p logs/tag-run/batches logs/tag-run/results)",
-      "Bash(curl *)"
+      "Bash(curl *)",
+      "Bash(python *)",
+      "Bash(grep -E \"\\\\.py$\")",
+      "mcp__obsidian-search__bulk_tag_prepare",
+      "mcp__obsidian-search__bulk_tag_apply",
+      "Bash(docker compose *)",
+      "Bash(pkill -f obsidian-mcp)"
     ]
   },
   "guard": {
