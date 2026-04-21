@@ -105,10 +105,6 @@ def hybrid_search(
                 "queries": [knn_query, bm25_query]
             }
         },
-        "sort": [
-            {"_score": {"order": "desc"}},
-            {"file_mtime": {"order": "desc", "missing": "_last"}},
-        ],
     }
 
     try:
@@ -200,7 +196,8 @@ def _rrf_fallback(
         hit = vector_ranks.get(doc_id, text_ranks.get(doc_id))[1]
         scored.append((rrf_score, hit))
 
-    scored.sort(key=lambda x: x[0], reverse=True)
+    # Sort by RRF score (primary), then by file_mtime (recency tie-breaker)
+    scored.sort(key=lambda x: (x[0], x[1]["_source"].get("file_mtime", 0)), reverse=True)
     top = scored[: fetch_k if rerank else k]
 
     chunks = [{"_score": score, **hit["_source"]} for score, hit in top]
