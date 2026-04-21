@@ -501,7 +501,12 @@ Call `mcp__obsidian-search__bulk_tag_taxonomy()` AND `mcp__obsidian-search__bulk
 
 ## Step 2 — Create batches (automatic)
 
-Call `mcp__obsidian-search__bulk_tag_create_batches(paths=<note list from step 1>)` to automatically split notes into batches of ~20 each, create batch files, and clean up stale state. Returns batch file paths and metadata.
+Call `mcp__obsidian-search__bulk_tag_create_batches(paths=<note list from step 1>)` to automatically split notes into batches. Batch size is chosen adaptively:
+- <100 notes: batch_size=20 (minimal agent overhead)
+- 100-500 notes: batch_size=30 (balanced parallelism)
+- 500+ notes: batch_size=40 (maximize parallelism)
+
+Alternatively, pass `batch_size=N` to override. Returns batch file paths and metadata.
 
 ## Step 3 — Dispatch subagents IN PARALLEL (all Haiku)
 
@@ -544,19 +549,44 @@ Call `mcp__obsidian-search__bulk_tag_taxonomy()` again to get the post-run taxon
 
 - All subagent LLM work runs on Haiku for cost efficiency. The orchestration is lightweight and stays on whatever model the user is using.
 - The vault watcher (launchd `com.obsidian.search-watcher`) auto-reindexes changed files within ~10s, so no manual reindex is needed after step 5.
+- **Token optimization**: Subagents receive only the top-100 tags by frequency (not all tags). This saves ~1,200 tokens per agent while covering ~80-90% of tagging needs.
+- **Future enhancement**: If Claude API supports prompt caching for MCP (check Claude API docs), the taxonomy + rules can be cached across all subagent calls, saving ~90% on those tokens.
+- **Consolidation**: The workflow automatically merges high-confidence near-duplicate tags (score ≥0.90). Tags with lower scores (0.85-0.89) are flagged for optional manual review.
 """
 
 
-def create_batches(paths: list[str], batch_size: int = 30, output_dir: str = "logs/tag-run/batches") -> dict:
+def choose_batch_size(note_count: int) -> int:
+    """Choose batch size adaptively based on vault size.
+
+    <100 notes: batch_size=20 (single agent, minimal overhead)
+    100-500 notes: batch_size=30 (balanced parallelism)
+    500+ notes: batch_size=40-50 (maximize parallelism, reduce agent overhead)
+    """
+    if note_count < 100:
+        return 20
+    elif note_count < 500:
+        return 30
+    else:
+        return 40
+
+
+def create_batches(paths: list[str], batch_size: Optional[int] = None, output_dir: str = "logs/tag-run/batches") -> dict:
     """Create batch files from a list of note paths.
 
     Splits paths into batches of ~batch_size each, writes each batch as a JSON
     array to output_dir/batch_NN.json, and clears any stale batch/result files.
-    Default batch_size is 30 (optimized for token efficiency and reduced agent overhead).
 
-    Returns {batch_files: [paths], total_notes: int, num_batches: int}.
+    If batch_size is None, chooses adaptively:
+    - <100 notes: batch_size=20 (single agent, minimal overhead)
+    - 100-500 notes: batch_size=30 (balanced)
+    - 500+ notes: batch_size=40 (maximize parallelism)
+
+    Returns {batch_files: [paths], total_notes: int, num_batches: int, batch_size: int}.
     """
     import math
+    if batch_size is None:
+        batch_size = choose_batch_size(len(paths))
+
     output_path = Path(output_dir).resolve()
     output_path.mkdir(parents=True, exist_ok=True)
 

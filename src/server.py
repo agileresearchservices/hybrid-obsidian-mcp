@@ -370,12 +370,13 @@ def bulk_tag_list() -> str:
 
 
 @mcp.tool()
-def bulk_tag_create_batches(paths: list[str], batch_size: int = 30) -> str:
+def bulk_tag_create_batches(paths: list[str], batch_size: Optional[int] = None) -> str:
     """Split a list of note paths into batch files for parallel agent processing.
 
     Creates batch_00.json, batch_01.json, etc. in logs/tag-run/batches/, clears
-    stale files, and returns metadata. Default batch_size is 30 (optimized for
-    token efficiency). Use this as part of Step 2 in the workflow.
+    stale files, and returns metadata. If batch_size is omitted, chooses adaptively
+    based on vault size: <100 notes→20, 100-500→30, 500+→40. Use this as part of
+    Step 2 in the workflow.
     """
     return json.dumps(tagger.create_batches(paths, batch_size), indent=2)
 
