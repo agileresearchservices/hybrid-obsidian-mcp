@@ -1,0 +1,22 @@
+[
+  {"path": "KMW/Customers/ThermoFisher/Working Sessions/Working session thermo 05282025.md", "add_tags": ["thermofisher", "working-session"], "remove_tags": []},
+  {"path": "KMW/Customers/ThermoFisher/Working Sessions/Working session thermo 06172025.md", "add_tags": ["thermofisher", "working-session"], "remove_tags": []},
+  {"path": "KMW/Lucille/Git Main->680->721 Approach.md", "add_tags": ["lucille", "git"], "remove_tags": []},
+  {"path": "KMW/Lucille/LC-680 Discussion and notes.md", "add_tags": ["lucille"], "remove_tags": []},
+  {"path": "KMW/Lucille/LC-811/lc-811-api-reference.md", "add_tags": ["lucille", "api"], "remove_tags": []},
+  {"path": "KMW/Lucille/LC-811/lc-811-design-system.md", "add_tags": ["lucille", "admin-ui"], "remove_tags": []},
+  {"path": "KMW/Lucille/LC-811/lc-811-development-log.md", "add_tags": ["lucille", "development-log"], "remove_tags": []},
+  {"path": "KMW/Lucille/LC-811/lc-811-lucille-admin-ui-react-vite.md", "add_tags": ["lucille", "admin-ui"], "remove_tags": []},
+  {"path": "KMW/Lucille/LC-811/lc-811-requirements.md", "add_tags": ["lucille"], "remove_tags": []},
+  {"path": "KMW/Lucille/Lucille Admin UI app.md", "add_tags": ["lucille", "admin-ui"], "remove_tags": []},
+  {"path": "KMW/Lucille/Lucille Deployment Modes.md", "add_tags": ["lucille", "deployment"], "remove_tags": []},
+  {"path": "KMW/Lucille/Lucille Release Strategy-Guide-AI Generated and Confluence.md", "add_tags": ["lucille"], "remove_tags": []},
+  {"path": "KMW/Lucille/Planning Notes Lucille 08122025.md", "add_tags": ["lucille"], "remove_tags": []},
+  {"path": "KMW/Lucille/Planning Notes Lucille 08262025.md", "add_tags": ["lucille"], "remove_tags": []},
+  {"path": "KMW/Lucille/README_API.md", "add_tags": ["lucille", "api"], "remove_tags": []},
+  {"path": "KMW/Lucille/README_Admin_UI.md", "add_tags": ["lucille", "admin-ui"], "remove_tags": []},
+  {"path": "KMW/Lucille/handwritten_notes.md", "add_tags": ["lucille"], "remove_tags": []},
+  {"path": "KMW/Lucille/lucille-admin-ui-discussion-prep.md", "add_tags": ["lucille", "admin-ui"], "remove_tags": []},
+  {"path": "KMW/Lucille/lucille-admin-ui-service-startup-guide.md", "add_tags": ["lucille", "admin-ui"], "remove_tags": []},
+  {"path": "KMW/Lucille/lucille-admin-ui-structure.md", "add_tags": ["lucille", "admin-ui"], "remove_tags": []}
+]

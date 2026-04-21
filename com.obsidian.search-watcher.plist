@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+  "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.obsidian.search-watcher</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>/Library/Frameworks/Python.framework/Versions/3.11/bin/python3.11</string>
+        <string>-m</string>
+        <string>src.watcher</string>
+    </array>
+    <key>WorkingDirectory</key>
+    <string>/Users/kevin/github/personal/hybrid-obsidian-mcp</string>
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>PATH</key>
+        <string>/Library/Frameworks/Python.framework/Versions/3.11/bin:/usr/local/bin:/usr/bin:/bin:/opt/homebrew/bin</string>
+        <key>HOME</key>
+        <string>/Users/kevin</string>
+    </dict>
+    <key>StandardOutPath</key>
+    <string>/Users/kevin/github/personal/hybrid-obsidian-mcp/logs/watcher.log</string>
+    <key>StandardErrorPath</key>
+    <string>/Users/kevin/github/personal/hybrid-obsidian-mcp/logs/watcher-error.log</string>
+    <key>RunAtLoad</key>
+    <true/>
+    <key>KeepAlive</key>
+    <true/>
+</dict>
+</plist>

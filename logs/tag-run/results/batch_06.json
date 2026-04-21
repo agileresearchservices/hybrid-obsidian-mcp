@@ -1,0 +1,22 @@
+[
+  {"path": "KMW/Customers/Nasuni/hyrule-opensearch-s3-backups-hyr-93-hyr-69.md", "add_tags": ["nasuni", "hyrule", "opensearch", "s3-backups"], "remove_tags": []},
+  {"path": "KMW/Customers/Pinecone/Pinecone Reboot.md", "add_tags": ["pinecone", "research"], "remove_tags": []},
+  {"path": "KMW/Customers/ThermoFisher/Code references and definitions/Description of v_us_eu_1000_null_999999999.md", "add_tags": ["thermofisher", "code-ref"], "remove_tags": []},
+  {"path": "KMW/Customers/ThermoFisher/Code references and definitions/Geotrans.conf changes 07092025.md", "add_tags": ["thermofisher", "geotrans", "config"], "remove_tags": []},
+  {"path": "KMW/Customers/ThermoFisher/Code references and definitions/LLM Error Example.md", "add_tags": ["thermofisher", "debugging"], "remove_tags": []},
+  {"path": "KMW/Customers/ThermoFisher/Code references and definitions/Multi-pass AND Single-shot web search approach.md", "add_tags": ["thermofisher", "web-search", "search-features"], "remove_tags": []},
+  {"path": "KMW/Customers/ThermoFisher/Code references and definitions/Plan for test runs.md", "add_tags": ["thermofisher", "testing"], "remove_tags": []},
+  {"path": "KMW/Customers/ThermoFisher/Code references and definitions/Proposed Production Process.md", "add_tags": ["thermofisher", "operational"], "remove_tags": []},
+  {"path": "KMW/Customers/ThermoFisher/Configs and Keys/Azure OpenAI API Keys for TF.md", "add_tags": ["thermofisher", "secrets", "openai"], "remove_tags": []},
+  {"path": "KMW/Customers/ThermoFisher/Configs and Keys/EHP Hardware Specs.md", "add_tags": ["thermofisher", "ehp", "config"], "remove_tags": []},
+  {"path": "KMW/Customers/ThermoFisher/Configs and Keys/Enterprise OpenAI Key.md", "add_tags": ["thermofisher", "secrets", "openai"], "remove_tags": []},
+  {"path": "KMW/Customers/ThermoFisher/Configs and Keys/Git Troubleshooting.md", "add_tags": ["thermofisher", "git", "troubleshooting"], "remove_tags": []},
+  {"path": "KMW/Customers/ThermoFisher/Configs and Keys/Google API Keys.md", "add_tags": ["thermofisher", "secrets", "google-places"], "remove_tags": []},
+  {"path": "KMW/Customers/ThermoFisher/Configs and Keys/Google Quotas (KMW).md", "add_tags": ["thermofisher", "google-places", "config"], "remove_tags": []},
+  {"path": "KMW/Customers/ThermoFisher/Configs and Keys/Oracle and Solr settings.md", "add_tags": ["thermofisher", "oracle", "solr", "config"], "remove_tags": []},
+  {"path": "KMW/Customers/ThermoFisher/Configs and Keys/Run geotrans.conf locally.md", "add_tags": ["thermofisher", "geotrans", "setup"], "remove_tags": []},
+  {"path": "KMW/Customers/ThermoFisher/Configs and Keys/Set up Solr with TF configs.md", "add_tags": ["thermofisher", "solr", "setup"], "remove_tags": []},
+  {"path": "KMW/Customers/ThermoFisher/Confluence Links/Links and descriptions.md", "add_tags": ["thermofisher", "reference"], "remove_tags": []},
+  {"path": "KMW/Customers/ThermoFisher/Governance/Governance Thermo 06062025.md", "add_tags": ["thermofisher", "governance"], "remove_tags": []},
+  {"path": "KMW/Customers/ThermoFisher/Governance/Governance Thermo 06202025.md", "add_tags": ["thermofisher", "governance"], "remove_tags": []}
+]

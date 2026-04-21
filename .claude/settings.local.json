@@ -1,0 +1,83 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__claude_ai_Gmail__gmail_search_messages",
+      "Bash(~/.claude/skills/email/scripts/email digest:*)",
+      "Bash(~/.claude/skills/obsidian/scripts/obsidian list-todos:*)",
+      "Bash(find:*)",
+      "Bash(launchctl list:*)",
+      "Bash(~/.claude/skills/slack/scripts/slack validate-config:*)",
+      "Bash(~/.claude/skills/slack/scripts/slack gateway-status:*)",
+      "mcp__claude_ai_Slack__slack_send_message",
+      "WebSearch",
+      "Bash(~/.claude/skills/obsidian/scripts/obsidian daily-log:*)",
+      "Bash(~/.claude/skills/synology/scripts/synology status:*)",
+      "Bash(~/.claude/skills/pihole/scripts/pihole status:*)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "mcp__obsidian-search__list_todos",
+      "Bash(~/.claude/skills/obsidian/scripts/obsidian add-todo *)",
+      "mcp__claude_ai_Google_Calendar__list_calendars",
+      "mcp__claude_ai_Slack__slack_search_users",
+      "Bash(/Users/kevin/.claude/skills/pihole/scripts/pihole status *)",
+      "Bash(/Users/kevin/.claude/skills/pihole/scripts/pihole gravity *)",
+      "Bash(chmod +x *)",
+      "Bash(/Users/kevin/.claude/skills/guard/scripts/guard status *)",
+      "Bash(/Users/kevin/.claude/skills/guard/scripts/guard on *)",
+      "Bash(jq -c 'input + . ' /Users/kevin/github/personal/hybrid-obsidian-mcp/.claude/settings.local.json /Users/kevin/.claude/skills/guard/hooks.json)",
+      "Bash(/Users/kevin/.claude/skills/guard/scripts/guard off *)",
+      "Bash(bash /Users/kevin/.claude/skills/guard/scripts/pre-classify.sh)",
+      "Bash(echo \"exit: $?\")",
+      "Bash(jq 'del\\(.guard\\)' .claude/settings.local.json)",
+      "Bash(mv /tmp/settings-tmp.json .claude/settings.local.json)",
+      "mcp__obsidian-search__list_notes",
+      "mcp__obsidian-search__vault_stats",
+      "mcp__obsidian-search__read_note",
+      "Bash(bash /Users/kevin/.claude/skills/guard/scripts/guard on)",
+      "Bash(bash /Users/kevin/.claude/skills/guard/scripts/guard status)",
+      "Bash(uv run *)",
+      "Bash(python3 -c \"import json; d=json.load\\(open\\('logs/tag-run/notes.json'\\)\\); print\\(f'Total notes: {len\\(d\\)}'\\); from collections import Counter; c=Counter\\(n['folder'] for n in d\\); [print\\(f'  {k or \\\\\"<root>\\\\\"}: {v}'\\) for k,v in c.most_common\\(\\)]\")",
+      "Bash(python3 -c ' *)",
+      "Bash(tee logs/tag-run/pilot.txt)",
+      "Bash(python3)",
+      "Bash(python3 -c \"import json; d=json.load\\(open\\('logs/tag-run/taxonomy_v1.json'\\)\\); print\\(f'Taxonomy: {len\\(d\\)} tags'\\); [print\\(f'  {t}: {c}'\\) for t,c in list\\(d.items\\(\\)\\)[:15]]\")",
+      "Bash(uv sync *)",
+      "Bash(/Users/kevin/github/personal/hybrid-obsidian-mcp/.venv/bin/obsidian-cli config *)",
+      "Bash(/Users/kevin/github/personal/hybrid-obsidian-mcp/.venv/bin/obsidian-cli list-todos *)",
+      "Bash(/Users/kevin/github/personal/hybrid-obsidian-mcp/.venv/bin/obsidian-cli daily-log *)",
+      "mcp__obsidian-search__bulk_tag_workflow",
+      "mcp__obsidian-search__bulk_tag_taxonomy",
+      "mcp__obsidian-search__bulk_tag_list",
+      "Bash(python3 *)",
+      "Bash(/Users/kevin/github/personal/hybrid-obsidian-mcp/.venv/bin/obsidian-cli list-notes *)",
+      "Bash(/Users/kevin/github/personal/hybrid-obsidian-mcp/.venv/bin/obsidian-cli --help)",
+      "Bash(awk '{print $6, $7, $8, $9}')",
+      "Bash(/Users/kevin/github/personal/hybrid-obsidian-mcp/.venv/bin/obsidian-cli tag-apply *)",
+      "Bash(rm -rf logs/tag-run/batches/*.json logs/tag-run/results/*.json)",
+      "Bash(mkdir -p logs/tag-run/batches logs/tag-run/results)",
+      "Bash(curl *)"
+    ]
+  },
+  "guard": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"/Users/kevin/.claude/skills/guard/scripts/pre-classify.sh\" 2>&1"
+          }
+        ]
+      },
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"/Users/kevin/.claude/skills/guard/scripts/pre-classify.sh\" 2>&1"
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -11,7 +11,20 @@ dependencies = [
     "sentence-transformers>=3.0.0",
     "python-dotenv>=1.0.0",
     "pydantic>=2.0.0",
+    "watchdog>=4.0.0",
 ]
 
 [project.scripts]
 obsidian-mcp = "src.server:main"
+obsidian-watcher = "src.watcher:main"
+obsidian-cli = "src.cli:main"
+
+[tool.uv]
+package = true
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src"]

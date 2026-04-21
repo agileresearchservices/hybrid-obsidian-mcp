@@ -51,7 +51,7 @@ def hybrid_search(
     # Build filter clauses
     filters = []
     if tags:
-        filters.append({"terms": {"tags": tags}})
+        filters.append({"terms": {"tags.keyword": tags}})
     if date_from or date_to:
         date_range = {}
         if date_from:
@@ -76,14 +76,22 @@ def hybrid_search(
 
     # Build BM25 query with optional filter
     bm25_query: dict = {
-        "match": {
-            "chunk_text": {"query": query}
+        "multi_match": {
+            "query": query,
+            "fields": ["chunk_text", "tags^2"],
+            "type": "best_fields",
         }
     }
     if filters:
         bm25_query = {
             "bool": {
-                "must": [{"match": {"chunk_text": {"query": query}}}],
+                "must": [{
+                    "multi_match": {
+                        "query": query,
+                        "fields": ["chunk_text", "tags^2"],
+                        "type": "best_fields",
+                    }
+                }],
                 "filter": filters,
             }
         }
@@ -155,7 +163,13 @@ def _rrf_fallback(
     )
 
     # Text search
-    text_must: dict = {"match": {"chunk_text": {"query": query}}}
+    text_must: dict = {
+        "multi_match": {
+            "query": query,
+            "fields": ["chunk_text", "tags^2"],
+            "type": "best_fields",
+        }
+    }
     text_query: dict = {"bool": {"must": [text_must]}}
     if filters:
         text_query["bool"]["filter"] = filters
@@ -213,7 +227,7 @@ def keyword_search(
 
     filters = []
     if tags:
-        filters.append({"terms": {"tags": tags}})
+        filters.append({"terms": {"tags.keyword": tags}})
     if date_from or date_to:
         date_range = {}
         if date_from:
@@ -224,7 +238,13 @@ def keyword_search(
     if folder:
         filters.append({"prefix": {"folder": folder}})
 
-    must = [{"match": {"chunk_text": {"query": query}}}]
+    must = [{
+        "multi_match": {
+            "query": query,
+            "fields": ["chunk_text", "tags^2"],
+            "type": "best_fields",
+        }
+    }]
     body_query: dict = {"bool": {"must": must}}
     if filters:
         body_query["bool"]["filter"] = filters

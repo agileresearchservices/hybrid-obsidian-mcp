@@ -1,0 +1,22 @@
+[
+  {"path": "KMW/Customers/Nasuni/Hyrule Project/Documentation/AWS Architecture Diagram EKS first deploy.md", "add_tags": ["nasuni", "hyrule", "architecture", "aws", "eks"], "remove_tags": []},
+  {"path": "KMW/Customers/Nasuni/Hyrule Project/Documentation/Architecture Diagram Proposed 08212025.md", "add_tags": ["nasuni", "hyrule", "architecture"], "remove_tags": []},
+  {"path": "KMW/Customers/Nasuni/Hyrule Project/Documentation/Cloud Services - Product and Architecture Overview.md", "add_tags": ["nasuni", "hyrule", "architecture"], "remove_tags": []},
+  {"path": "KMW/Customers/Nasuni/Hyrule Project/Documentation/FDA Data Flow.md", "add_tags": ["nasuni", "hyrule", "data-quality"], "remove_tags": []},
+  {"path": "KMW/Customers/Nasuni/Hyrule Project/Documentation/Git Repo SSH issue (search_rag).md", "add_tags": ["nasuni", "hyrule", "git", "troubleshooting"], "remove_tags": []},
+  {"path": "KMW/Customers/Nasuni/Hyrule Project/Documentation/Lucille EKS Architecture & Design Principles.md", "add_tags": ["nasuni", "hyrule", "lucille", "architecture", "eks"], "remove_tags": []},
+  {"path": "KMW/Customers/Nasuni/Hyrule Project/Documentation/Operational Delta Design.md", "add_tags": ["nasuni", "hyrule", "operational"], "remove_tags": []},
+  {"path": "KMW/Customers/Nasuni/Hyrule Project/Documentation/Overview.md", "add_tags": ["nasuni", "hyrule", "architecture"], "remove_tags": []},
+  {"path": "KMW/Customers/Nasuni/Hyrule Project/Documentation/Phase II Scope.md", "add_tags": ["nasuni", "hyrule", "project-scope"], "remove_tags": []},
+  {"path": "KMW/Customers/Nasuni/Hyrule Project/Documentation/Requirements.md", "add_tags": ["nasuni", "hyrule"], "remove_tags": []},
+  {"path": "KMW/Customers/Nasuni/Hyrule Project/Documentation/SEARCH_API_DEMO_QUERIES.md", "add_tags": ["nasuni", "hyrule", "search", "api"], "remove_tags": []},
+  {"path": "KMW/Customers/Nasuni/Hyrule Project/Documentation/Search Platform Requirements & Design (Nasuni Confluence page) 08222025.md", "add_tags": ["nasuni", "hyrule", "search", "architecture"], "remove_tags": []},
+  {"path": "KMW/Customers/Nasuni/Hyrule Project/Documentation/Tickets.md", "add_tags": ["nasuni", "hyrule", "reference"], "remove_tags": []},
+  {"path": "KMW/Customers/Nasuni/Hyrule Project/Governance/Governance Nasuni 02112026.md", "add_tags": ["nasuni", "hyrule", "governance"], "remove_tags": []},
+  {"path": "KMW/Customers/Nasuni/Hyrule Project/Governance/Governance Nasuni 08262025.md", "add_tags": ["nasuni", "hyrule", "governance"], "remove_tags": []},
+  {"path": "KMW/Customers/Nasuni/Hyrule Project/Governance/Governance Nasuni 09022025.md", "add_tags": ["nasuni", "hyrule", "governance"], "remove_tags": []},
+  {"path": "KMW/Customers/Nasuni/Hyrule Project/Governance/OnSite Nasuni 09032025.md", "add_tags": ["nasuni", "hyrule", "working-session"], "remove_tags": []},
+  {"path": "KMW/Customers/Nasuni/Hyrule Project/Research/EKS Preparation.md", "add_tags": ["nasuni", "hyrule", "eks", "research"], "remove_tags": []},
+  {"path": "KMW/Customers/Nasuni/Hyrule Project/Research/How to really do autocomplete by Max Irwin.md", "add_tags": ["nasuni", "hyrule", "search-features"], "remove_tags": []},
+  {"path": "KMW/Customers/Nasuni/Hyrule Project/Research/Nestjs vs. Nextjs.md", "add_tags": ["nasuni", "hyrule", "research"], "remove_tags": []}
+]

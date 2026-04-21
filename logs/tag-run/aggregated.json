@@ -1,0 +1,1968 @@
+[
+  {
+    "path": "Agentic coding only becomes \u201cdaily-usable\u201d.md",
+    "add_tags": [
+      "agentic-coding",
+      "automation",
+      "development",
+      "guard",
+      "security"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "Daily Log/2026-02-13.md",
+    "add_tags": [
+      "hyrule",
+      "kafka",
+      "lucille",
+      "nasuni",
+      "thermofisher"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "Daily Log/2026-02-14.md",
+    "add_tags": [
+      "architecture",
+      "aws",
+      "hyrule",
+      "kafka",
+      "nasuni"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "Daily Log/2026-02-15.md",
+    "add_tags": [
+      "hyrule",
+      "lucille",
+      "nasuni"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "Daily Log/2026-02-16.md",
+    "add_tags": [
+      "hyrule",
+      "lucille",
+      "nasuni"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "Daily Log/2026-02-17.md",
+    "add_tags": [
+      "hyrule",
+      "ihg",
+      "kafka",
+      "nasuni",
+      "opensearch"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "Daily Log/2026-02-18.md",
+    "add_tags": [
+      "haystack-2026",
+      "hyrule",
+      "kafka",
+      "nasuni",
+      "opensearch",
+      "relevancy"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "Daily Log/2026-02-19.md",
+    "add_tags": [
+      "agentic-hybrid-search",
+      "eks",
+      "hyrule",
+      "ihg",
+      "nasuni",
+      "opensearch"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "Daily Log/2026-02-20.md",
+    "add_tags": [
+      "hyrule",
+      "ihg",
+      "nasuni",
+      "opensearch",
+      "secrets"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "Daily Log/2026-02-23.md",
+    "add_tags": [
+      "hyrule",
+      "kafka",
+      "nasuni",
+      "opensearch",
+      "s3-backups"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "Daily Log/2026-02-24.md",
+    "add_tags": [
+      "eks",
+      "hyrule",
+      "kafka",
+      "nasuni",
+      "opensearch",
+      "secrets"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "Daily Log/2026-02-25.md",
+    "add_tags": [
+      "eks",
+      "hyrule",
+      "lucille",
+      "nasuni",
+      "opensearch",
+      "secrets"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "Daily Log/2026-02-26.md",
+    "add_tags": [
+      "eks",
+      "hyrule",
+      "ihg",
+      "kafka",
+      "keda",
+      "nasuni",
+      "opensearch"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "Daily Log/2026-02-27.md",
+    "add_tags": [
+      "eks",
+      "hyrule",
+      "ihg",
+      "kafka",
+      "keda",
+      "nasuni"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "Daily Log/2026-03-02.md",
+    "add_tags": [
+      "eks",
+      "hyrule",
+      "ihg",
+      "nasuni",
+      "opensearch",
+      "secrets"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "Daily Log/2026-03-03.md",
+    "add_tags": [
+      "eks",
+      "hyrule",
+      "kafka",
+      "nasuni",
+      "opensearch"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "Daily Log/2026-03-04.md",
+    "add_tags": [
+      "eks",
+      "hyrule",
+      "kafka",
+      "nasuni",
+      "opensearch"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "Daily Log/2026-03-05.md",
+    "add_tags": [
+      "eks",
+      "hyrule",
+      "kafka",
+      "nasuni",
+      "opensearch"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "Daily Log/2026-03-06.md",
+    "add_tags": [
+      "eks",
+      "hyrule",
+      "nasuni",
+      "opensearch",
+      "s3-backups",
+      "scaling"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "Daily Log/2026-03-09.md",
+    "add_tags": [
+      "eks",
+      "hyrule",
+      "ihg",
+      "nasuni"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "Daily Log/2026-03-10.md",
+    "add_tags": [
+      "hyrule",
+      "ihg",
+      "lucille",
+      "nasuni"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "Daily Log/2026-03-11.md",
+    "add_tags": [
+      "hyrule",
+      "ihg",
+      "kubernetes",
+      "lucille",
+      "nasuni"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "Daily Log/2026-03-12.md",
+    "add_tags": [
+      "hyrule",
+      "ihg",
+      "lucille",
+      "nasuni"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "Daily Log/2026-03-13.md",
+    "add_tags": [
+      "hyrule",
+      "ihg",
+      "lucille",
+      "nasuni"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "Daily Log/2026-03-16.md",
+    "add_tags": [
+      "nasuni",
+      "standup"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "Daily Log/2026-03-17.md",
+    "add_tags": [
+      "hyrule",
+      "nasuni",
+      "standup"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "Daily Log/2026-03-18.md",
+    "add_tags": [
+      "lucille",
+      "nasuni",
+      "standup"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "Daily Log/2026-03-19.md",
+    "add_tags": [
+      "hyrule",
+      "nasuni",
+      "standup"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "Daily Log/2026-03-20.md",
+    "add_tags": [
+      "nasuni",
+      "standup"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "Daily Log/2026-03-23.md",
+    "add_tags": [
+      "nasuni",
+      "standup",
+      "thermofisher"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "Daily Log/2026-03-24.md",
+    "add_tags": [
+      "hyrule",
+      "nasuni",
+      "standup",
+      "thermofisher"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "Daily Log/2026-03-25.md",
+    "add_tags": [
+      "hyrule",
+      "lucille",
+      "nasuni",
+      "standup"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "Daily Log/2026-03-26.md",
+    "add_tags": [
+      "nasuni",
+      "standup",
+      "thermofisher"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "Daily Log/2026-03-27.md",
+    "add_tags": [
+      "nasuni",
+      "standup"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "Daily Log/2026-03-30.md",
+    "add_tags": [
+      "conference",
+      "nasuni",
+      "standup"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "Daily Log/2026-03-31.md",
+    "add_tags": [
+      "conference",
+      "nasuni"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "Daily Log/2026-04-01.md",
+    "add_tags": [
+      "conference",
+      "haystack-2026",
+      "lucille",
+      "nasuni"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "Daily Log/2026-04-02.md",
+    "add_tags": [
+      "lucille",
+      "nasuni",
+      "standup"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "Daily Log/2026-04-03.md",
+    "add_tags": [
+      "nasuni",
+      "standup"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "Daily Log/2026-04-06.md",
+    "add_tags": [
+      "hyrule",
+      "nasuni",
+      "standup"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "Daily Log/2026-04-07.md",
+    "add_tags": [
+      "daily-log",
+      "hyrule",
+      "ihg",
+      "lucille",
+      "nasuni",
+      "slack"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "Daily Log/2026-04-08.md",
+    "add_tags": [
+      "calendar",
+      "daily-log",
+      "email",
+      "hyrule",
+      "ihg",
+      "lucille",
+      "nasuni",
+      "opensearch",
+      "slack"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "Daily Log/2026-04-09.md",
+    "add_tags": [
+      "calendar",
+      "daily-log",
+      "email",
+      "hyrule",
+      "nasuni",
+      "slack"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "Daily Log/2026-04-10.md",
+    "add_tags": [
+      "agentic-hybrid-search",
+      "calendar",
+      "daily-log",
+      "email",
+      "hyrule",
+      "nasuni",
+      "slack"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "Daily Log/2026-04-13.md",
+    "add_tags": [
+      "calendar",
+      "daily-log",
+      "email",
+      "hyrule",
+      "nasuni",
+      "opensearch",
+      "sharding",
+      "slack"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "Daily Log/2026-04-14.md",
+    "add_tags": [
+      "calendar",
+      "daily-log",
+      "email",
+      "hyrule",
+      "nasuni",
+      "opensearch",
+      "security",
+      "slack"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "Daily Log/2026-04-15.md",
+    "add_tags": [
+      "calendar",
+      "daily-log",
+      "email",
+      "hyrule",
+      "nasuni",
+      "opensearch",
+      "relevancy",
+      "slack"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "Daily Log/2026-04-16.md",
+    "add_tags": [
+      "agentic-hybrid-search",
+      "calendar",
+      "daily-log",
+      "email",
+      "hyrule",
+      "lucille",
+      "nasuni",
+      "slack"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "Daily Log/2026-04-21.md",
+    "add_tags": [
+      "calendar",
+      "daily-log",
+      "email",
+      "hyrule",
+      "ihg",
+      "nasuni",
+      "sharding",
+      "slack"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Archive/AskGartner_Full_Pipeline_Template_Hybrid_Rerank.md",
+    "add_tags": [
+      "architecture",
+      "aws",
+      "gartner",
+      "hybrid-search",
+      "opensearch",
+      "relevancy",
+      "search-features",
+      "technical"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Archive/Crownpeak/Crownpeak.md",
+    "add_tags": [
+      "crownpeak",
+      "search",
+      "technical"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Archive/Gartner_Research_FULL_LTR.md",
+    "add_tags": [
+      "aws",
+      "gartner",
+      "hybrid-search",
+      "ltr",
+      "opensearch",
+      "relevancy",
+      "research",
+      "search-features",
+      "security",
+      "technical"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Archive/Gartner_Research_Full_Pipeline_Template_Hybrid_Rerank.md",
+    "add_tags": [
+      "architecture",
+      "aws",
+      "gartner",
+      "hybrid-search",
+      "opensearch",
+      "relevancy",
+      "research",
+      "search-features",
+      "technical"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Archive/OAI2025/OptimizedAI-Conference 2025.md",
+    "add_tags": [
+      "conference",
+      "kmw-offsite",
+      "oai-2025"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Archive/Octopus/Octopus.md",
+    "add_tags": [
+      "octopus",
+      "research"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Archive/Verizon/Verizon.md",
+    "add_tags": [
+      "agentic-hybrid-search",
+      "hybrid-search",
+      "kubernetes",
+      "research",
+      "verizon"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Archive/While you were out.md",
+    "add_tags": [
+      "development-log",
+      "hybrid-search",
+      "java",
+      "lucille",
+      "security",
+      "technical",
+      "thermofisher"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Archive/gartner-research-comprehensive-search-template.md",
+    "add_tags": [
+      "architecture",
+      "gartner",
+      "hybrid-search",
+      "opensearch",
+      "query-rewrite",
+      "relevancy",
+      "search",
+      "search-features",
+      "security",
+      "technical"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Archive/gartner-search-template-faq-spellcheck-and-query-rewrite.md",
+    "add_tags": [
+      "architecture",
+      "aws",
+      "docs",
+      "faq",
+      "gartner",
+      "hybrid-search",
+      "ltr",
+      "opensearch",
+      "python",
+      "query-rewrite",
+      "relevancy",
+      "search",
+      "search-features",
+      "security",
+      "technical"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Blog/Blog.md",
+    "add_tags": [
+      "blog",
+      "docs",
+      "opensearch"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Blog/article_next_level_hybrid_search.md",
+    "add_tags": [
+      "reranking"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Conferences/Haystack-2026/Brainstorm.md",
+    "add_tags": [
+      "agentic-hybrid-search",
+      "haystack-2026",
+      "hybrid-search",
+      "langchain"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Conferences/Haystack-2026/Proposal Draft.md",
+    "add_tags": [
+      "agentic-hybrid-search",
+      "haystack-2026",
+      "hybrid-search",
+      "langchain",
+      "relevancy"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Conferences/Haystack-2026/Resources.md",
+    "add_tags": [
+      "agentic-hybrid-search",
+      "haystack-2026",
+      "research"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Conferences/Haystack-2026/Talk Outline.md",
+    "add_tags": [
+      "conference",
+      "haystack-2026"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Conferences/Haystack-2026/Task List.md",
+    "add_tags": [
+      "conference",
+      "haystack-2026"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/Gartner/Configs and Keys/Onboarding/Gartner Credentials.md",
+    "add_tags": [],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/Gartner/Configs and Keys/Onboarding/Training.md",
+    "add_tags": [
+      "gartner"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/Gartner/Configs and Keys/Onboarding/Workday Account.md",
+    "add_tags": [
+      "gartner"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/Gartner/Documentation/Architecture Diagram.md",
+    "add_tags": [],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/Gartner/Documentation/Project Scope.md",
+    "add_tags": [],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/Gartner/Standups/Gartner Standup 10312025.md",
+    "add_tags": [],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/Gartner/Technical/gartner-opensearch-technical-reference.md",
+    "add_tags": [],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/Nasuni/Hyrule Project/Configs and Keys/1Password Creds.md",
+    "add_tags": [],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/Nasuni/Hyrule Project/Configs and Keys/EKS and ECR Credentials.md",
+    "add_tags": [],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/Nasuni/Hyrule Project/Configs and Keys/Okta Password.md",
+    "add_tags": [],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/Nasuni/Hyrule Project/Configs and Keys/Okta Preview Password.md",
+    "add_tags": [],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/Nasuni/Hyrule Project/Configs and Keys/Phase I Configs and Keys.md",
+    "add_tags": [
+      "lucille"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/Nasuni/Hyrule Project/Configs and Keys/hyrule-dev-01 - Frank.md",
+    "add_tags": [],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/Nasuni/Hyrule Project/Configs and Keys/hyrule-eks-aws-profile-setup.md",
+    "add_tags": [],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/Nasuni/Hyrule Project/Documentation/AWS Architecture Diagram EKS first deploy.md",
+    "add_tags": [
+      "hyrule-eks"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/Nasuni/Hyrule Project/Documentation/Architecture Diagram Proposed 08212025.md",
+    "add_tags": [],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/Nasuni/Hyrule Project/Documentation/Cloud Services - Product and Architecture Overview.md",
+    "add_tags": [],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/Nasuni/Hyrule Project/Documentation/FDA Data Flow.md",
+    "add_tags": [],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/Nasuni/Hyrule Project/Documentation/Git Repo SSH issue (search_rag).md",
+    "add_tags": [
+      "troubleshooting"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/Nasuni/Hyrule Project/Documentation/Lucille EKS Architecture & Design Principles.md",
+    "add_tags": [
+      "hyrule-eks"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/Nasuni/Hyrule Project/Documentation/Operational Delta Design.md",
+    "add_tags": [],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/Nasuni/Hyrule Project/Documentation/Overview.md",
+    "add_tags": [
+      "cve"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/Nasuni/Hyrule Project/Documentation/Phase II Scope.md",
+    "add_tags": [
+      "project-scope"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/Nasuni/Hyrule Project/Documentation/Requirements.md",
+    "add_tags": [],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/Nasuni/Hyrule Project/Documentation/SEARCH_API_DEMO_QUERIES.md",
+    "add_tags": [],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/Nasuni/Hyrule Project/Documentation/Search Platform Requirements & Design (Nasuni Confluence page) 08222025.md",
+    "add_tags": [],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/Nasuni/Hyrule Project/Documentation/Tickets.md",
+    "add_tags": [],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/Nasuni/Hyrule Project/Governance/Governance Nasuni 02112026.md",
+    "add_tags": [
+      "scaling"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/Nasuni/Hyrule Project/Governance/Governance Nasuni 08262025.md",
+    "add_tags": [
+      "in-progress"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/Nasuni/Hyrule Project/Governance/Governance Nasuni 09022025.md",
+    "add_tags": [
+      "working-session"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/Nasuni/Hyrule Project/Governance/OnSite Nasuni 09032025.md",
+    "add_tags": [],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/Nasuni/Hyrule Project/Research/EKS Preparation.md",
+    "add_tags": [
+      "infrastructure"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/Nasuni/Hyrule Project/Research/How to really do autocomplete by Max Irwin.md",
+    "add_tags": [
+      "search-features"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/Nasuni/Hyrule Project/Research/Nestjs vs. Nextjs.md",
+    "add_tags": [
+      "development"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/Nasuni/Hyrule Project/Research/kmw-admin.md",
+    "add_tags": [
+      "setup"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/Nasuni/Hyrule Project/Standups/Standup Nasuni 08202025.md",
+    "add_tags": [
+      "lucille"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/Nasuni/Hyrule Project/Standups/Standup Nasuni 08252025.md",
+    "add_tags": [
+      "lucille"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/Nasuni/Hyrule Project/Standups/Standup Nasuni 0902205.md",
+    "add_tags": [
+      "monitoring"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/Nasuni/Hyrule Project/Standups/Standup Nasuni 09032025.md",
+    "add_tags": [
+      "kafka"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/Nasuni/Hyrule Project/Working Sessions/Nasuni Vulnerability (CVE-2025-23266) 07312025.md",
+    "add_tags": [
+      "patch-management"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/Nasuni/Hyrule Project/Working Sessions/Working Session AWS 08282025.md",
+    "add_tags": [
+      "ai-hub",
+      "bedrock"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/Nasuni/Hyrule Project/Working Sessions/Working Session Nasuni 08192025.md",
+    "add_tags": [
+      "lucille",
+      "nds"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/Nasuni/Hyrule Project/Working Sessions/Working Session Nasuni 08222025.md",
+    "add_tags": [
+      "lucille",
+      "nds"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/Nasuni/Hyrule Project/Working Sessions/Working Session Nasuni 08262025.md",
+    "add_tags": [
+      "nds",
+      "volumes"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/Nasuni/Hyrule Project/Working Sessions/Working Session Nasuni 08272025.md",
+    "add_tags": [
+      "lucille",
+      "nds"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/Nasuni/Hyrule Project/Working Sessions/Working Session Nasuni 08282025.md",
+    "add_tags": [
+      "lucille",
+      "nds"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/Nasuni/Hyrule Project/Working Sessions/ism-policy-json-storage-driven-rollover-for-multi-tenant-opensearch.md",
+    "add_tags": [
+      "ism"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/Nasuni/Hyrule Project/Working Sessions/opensearch-sharding-strategy-rollover-vs-shard-splitting-vs-in-place-increase.md",
+    "add_tags": [
+      "operational"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/Nasuni/Hyrule Project/magical-brewing-wombat.md",
+    "add_tags": [
+      "cost-optimization"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/Nasuni/Kubernetes Terminology.md",
+    "add_tags": [
+      "docs",
+      "reference"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/Nasuni/RCA_staging1_clean_install.md",
+    "add_tags": [
+      "rca",
+      "troubleshooting"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/Nasuni/Weekly Insights Project/Generative_AI_Sales_Insights_Meeting_Notes.md",
+    "add_tags": [
+      "ai-hub",
+      "thermofisher"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/Nasuni/eks-clusters-current-state.md",
+    "add_tags": [
+      "reference"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/Nasuni/hyrule-eks-cluster-branch-deployment-and-teardown.md",
+    "add_tags": [
+      "deployment"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/Nasuni/hyrule-opensearch-s3-backups-hyr-93-hyr-69.md",
+    "add_tags": [
+      "deployment",
+      "hyrule-eks"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/Pinecone/Pinecone Reboot.md",
+    "add_tags": [
+      "market-opportunity"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Code references and definitions/Description of v_us_eu_1000_null_999999999.md",
+    "add_tags": [],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Code references and definitions/Geotrans.conf changes 07092025.md",
+    "add_tags": [],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Code references and definitions/LLM Error Example.md",
+    "add_tags": [
+      "debugging"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Code references and definitions/Multi-pass AND Single-shot web search approach.md",
+    "add_tags": [
+      "web-search"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Code references and definitions/Plan for test runs.md",
+    "add_tags": [],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Code references and definitions/Proposed Production Process.md",
+    "add_tags": [],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Configs and Keys/Azure OpenAI API Keys for TF.md",
+    "add_tags": [],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Configs and Keys/EHP Hardware Specs.md",
+    "add_tags": [
+      "aws",
+      "infrastructure"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Configs and Keys/Enterprise OpenAI Key.md",
+    "add_tags": [],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Configs and Keys/Git Troubleshooting.md",
+    "add_tags": [],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Configs and Keys/Google API Keys.md",
+    "add_tags": [],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Configs and Keys/Google Quotas (KMW).md",
+    "add_tags": [],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Configs and Keys/Oracle and Solr settings.md",
+    "add_tags": [
+      "aws",
+      "docker"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Configs and Keys/Run geotrans.conf locally.md",
+    "add_tags": [
+      "lucille"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Configs and Keys/Set up Solr with TF configs.md",
+    "add_tags": [],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Confluence Links/Links and descriptions.md",
+    "add_tags": [],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Governance/Governance Thermo 06062025.md",
+    "add_tags": [
+      "lucille",
+      "python"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Governance/Governance Thermo 06202025.md",
+    "add_tags": [],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Governance/Governance Thermo 06272025.md",
+    "add_tags": [
+      "ehp",
+      "lucille",
+      "relevancy"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Governance/Governance Thermo 07072025.md",
+    "add_tags": [
+      "jenkins"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Governance/Governance Thermo 07182025.md",
+    "add_tags": [
+      "openai",
+      "testing"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Governance/Governance Thermo 072525.md",
+    "add_tags": [
+      "deployment",
+      "openai"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Governance/Governance Thermo 08082025.md",
+    "add_tags": [
+      "deployment",
+      "heap-memory",
+      "testing"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Governance/Governance Thermo 08222025.md",
+    "add_tags": [
+      "deployment",
+      "rate-limiting"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Governance/Governance Thermo Next phase 01292026.md",
+    "add_tags": [
+      "agentic-hybrid-search",
+      "automation"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Governance/Thermo Training Due 09052025.md",
+    "add_tags": [],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Onboarding and Account History/Thermo Fisher.md",
+    "add_tags": [
+      "solr"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Onboarding and Account History/ThermoFisher D&B Video Presentation Summary.md",
+    "add_tags": [
+      "matching"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Repos and APIs/Address Validator Project Documentation.md",
+    "add_tags": [
+      "postgres",
+      "secrets"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Repos and APIs/Brave Search API Research.md",
+    "add_tags": [],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Research/Fedex Address Validation Testing.md",
+    "add_tags": [
+      "api"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Research/Thermo Fisher \u2013 Weekly Sales Insights Email Project.md",
+    "add_tags": [
+      "email",
+      "salesforce"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Standups/Standup Thermo 05272025.md",
+    "add_tags": [
+      "setup"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Standups/Standup Thermo 06162025.md",
+    "add_tags": [
+      "testing"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Standups/Standup Thermo 06162025_2.md",
+    "add_tags": [
+      "setup"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Standups/Standup Thermo 06172025.md",
+    "add_tags": [
+      "logging"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Standups/Standup Thermo 06172025_2.md",
+    "add_tags": [
+      "architecture"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Standups/Standup Thermo 06182025.md",
+    "add_tags": [
+      "testing"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Standups/Standup Thermo 06192025.md",
+    "add_tags": [
+      "api",
+      "java",
+      "python",
+      "standup",
+      "thermofisher",
+      "web-search"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Standups/Standup Thermo 06202025.md",
+    "add_tags": [
+      "address-normalization",
+      "duns",
+      "llm",
+      "standup",
+      "thermofisher"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Standups/Standup Thermo 06272025.md",
+    "add_tags": [
+      "address-normalization",
+      "duns",
+      "llm",
+      "standup",
+      "thermofisher"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Standups/Standup Thermo 07022025.md",
+    "add_tags": [
+      "address-normalization",
+      "geotrans",
+      "llm",
+      "standup",
+      "thermofisher"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Standups/Standup Thermo 07032025.md",
+    "add_tags": [
+      "config",
+      "geotrans",
+      "java",
+      "standup",
+      "thermofisher"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Standups/Standup Thermo 07102025.md",
+    "add_tags": [
+      "architecture",
+      "geotrans",
+      "java",
+      "llm",
+      "standup",
+      "thermofisher"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Standups/Standup Thermo 07112025.md",
+    "add_tags": [
+      "deployment",
+      "geotrans",
+      "jenkins",
+      "standup",
+      "thermofisher"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Standups/Standup Thermo 07142025.md",
+    "add_tags": [
+      "deployment",
+      "geotrans",
+      "jenkins",
+      "standup",
+      "thermofisher"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Standups/Standup Thermo 07162025.md",
+    "add_tags": [
+      "data-quality",
+      "geotrans",
+      "java",
+      "llm",
+      "standup",
+      "thermofisher"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Standups/Standup Thermo 07182025.md",
+    "add_tags": [
+      "geotrans",
+      "llm",
+      "performance",
+      "standup",
+      "thermofisher"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Standups/Standup Thermo 07232025.md",
+    "add_tags": [
+      "geotrans",
+      "google-places",
+      "standup",
+      "thermofisher",
+      "web-search"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Standups/Standup Thermo 07242025.md",
+    "add_tags": [
+      "deployment",
+      "geotrans",
+      "standup",
+      "thermofisher"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Standups/Standup Thermo 07252025.md",
+    "add_tags": [
+      "data-analysis",
+      "geotrans",
+      "standup",
+      "thermofisher"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Standups/Standup Thermo 07282025.md",
+    "add_tags": [
+      "data-analysis",
+      "deployment",
+      "geotrans",
+      "llm",
+      "standup",
+      "thermofisher"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Standups/Standup Thermo 07292025.md",
+    "add_tags": [
+      "data-analysis",
+      "geotrans",
+      "standup",
+      "thermofisher",
+      "working-session"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Standups/Standup Thermo 07302025.md",
+    "add_tags": [
+      "standup",
+      "thermofisher"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Standups/Standup Thermo 07312025.md",
+    "add_tags": [
+      "geotrans",
+      "hybrid-search",
+      "llm",
+      "rag",
+      "standup",
+      "thermofisher"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Standups/Standup Thermo 08012025.md",
+    "add_tags": [
+      "architecture",
+      "geotrans",
+      "mcp",
+      "standup",
+      "thermofisher"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Standups/Standup Thermo 08042025.md",
+    "add_tags": [
+      "geotrans",
+      "reranking",
+      "standup",
+      "thermofisher"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Standups/Standup Thermo 08062025.md",
+    "add_tags": [
+      "deployment",
+      "geotrans",
+      "standup",
+      "thermofisher"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Standups/Standup Thermo 08082025.md",
+    "add_tags": [
+      "thermofisher"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Standups/Standup Thermo 08192025.md",
+    "add_tags": [
+      "thermofisher"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Standups/Standup Thermo 08222025.md",
+    "add_tags": [
+      "rate-limiting",
+      "thermofisher"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Standups/Standup Thermo 08262025.md",
+    "add_tags": [
+      "thermofisher"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Standups/Standup Thermo 08282025.md",
+    "add_tags": [
+      "thermofisher"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Working Sessions/Working Session Internal Thermo 08132025.md",
+    "add_tags": [
+      "thermofisher"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Working Sessions/Working Session Thermo 07232025.md",
+    "add_tags": [
+      "thermofisher"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Working Sessions/Working Session Thermo 07292025.md",
+    "add_tags": [
+      "thermofisher"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Working Sessions/Working Session Thermo 07302025.md",
+    "add_tags": [
+      "thermofisher"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Working Sessions/Working Session Thermo 08012025.md",
+    "add_tags": [
+      "thermofisher"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Working Sessions/Working Session Thermo 08132025.md",
+    "add_tags": [
+      "thermofisher"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Working Sessions/Working Session Thermo 08202025.md",
+    "add_tags": [
+      "thermofisher"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Working Sessions/Working Session Thermo 08252025 (Kevin and Tyler).md",
+    "add_tags": [
+      "thermofisher"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Working Sessions/Working Session Thermo Internal Dictionaries 08182025.md",
+    "add_tags": [
+      "thermofisher"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Working Sessions/Working session Thermo 06042025.md",
+    "add_tags": [
+      "thermofisher"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Working Sessions/Working session Thermo 06182025.md",
+    "add_tags": [
+      "thermofisher"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Working Sessions/Working session Thermo 06182025_2.md",
+    "add_tags": [
+      "thermofisher"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Working Sessions/Working session Thermo 07022025.md",
+    "add_tags": [
+      "thermofisher"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Working Sessions/Working session Thermo 07162025.md",
+    "add_tags": [
+      "thermofisher"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Working Sessions/Working session Thermo 07162025_2.md",
+    "add_tags": [
+      "thermofisher"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Working Sessions/Working session thermo 05282025.md",
+    "add_tags": [
+      "data-quality"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Working Sessions/Working session thermo 06172025.md",
+    "add_tags": [
+      "data-quality"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Lucille/Git Main->680->721 Approach.md",
+    "add_tags": [
+      "development"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Lucille/LC-680 Discussion and notes.md",
+    "add_tags": [
+      "api",
+      "development-log"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Lucille/LC-811/lc-811-api-reference.md",
+    "add_tags": [],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Lucille/LC-811/lc-811-design-system.md",
+    "add_tags": [],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Lucille/LC-811/lc-811-development-log.md",
+    "add_tags": [],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Lucille/LC-811/lc-811-lucille-admin-ui-react-vite.md",
+    "add_tags": [],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Lucille/LC-811/lc-811-requirements.md",
+    "add_tags": [],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Lucille/Lucille Admin UI app.md",
+    "add_tags": [],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Lucille/Lucille Deployment Modes.md",
+    "add_tags": [],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Lucille/Lucille Release Strategy-Guide-AI Generated and Confluence.md",
+    "add_tags": [
+      "deployment"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Lucille/Planning Notes Lucille 08122025.md",
+    "add_tags": [],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Lucille/Planning Notes Lucille 08262025.md",
+    "add_tags": [
+      "debugging"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Lucille/README_API.md",
+    "add_tags": [],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Lucille/README_Admin_UI.md",
+    "add_tags": [],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Lucille/handwritten_notes.md",
+    "add_tags": [
+      "notes"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Lucille/lucille-admin-ui-discussion-prep.md",
+    "add_tags": [
+      "code-review",
+      "security"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Lucille/lucille-admin-ui-service-startup-guide.md",
+    "add_tags": [
+      "setup"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Lucille/lucille-admin-ui-structure.md",
+    "add_tags": [],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Lucille/lucille-framework-dx-analysis.md",
+    "add_tags": [
+      "development"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Lucille/lucille-platform-brief.md",
+    "add_tags": [
+      "development"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Lucille/lucille-platform-decision.md",
+    "add_tags": [
+      "development"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Lucille/lucille-quick-reference.md",
+    "add_tags": [
+      "development"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Lucille/merge_status_report.md",
+    "add_tags": [
+      "code-ref",
+      "development",
+      "docs"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Slack AI Bot token.md",
+    "add_tags": [
+      "secrets",
+      "slack"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "Personal/Guidepoint/Pinecone Exploring a Sale of This Vector Database.md",
+    "add_tags": [
+      "rag",
+      "vector-search"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "Personal/Recipes/Hibachi Chicken, Shrimp & Fried Rice (For 2).md",
+    "add_tags": [
+      "recipes"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "Personal/Whiskers & Homes/BUSINESS_PLAN.md",
+    "add_tags": [
+      "digitalocean",
+      "docs",
+      "market-opportunity",
+      "whiskersandhomes"
+    ],
+    "remove_tags": [
+      "java"
+    ]
+  },
+  {
+    "path": "Personal/Whiskers & Homes/Creds.md",
+    "add_tags": [
+      "secrets",
+      "whiskersandhomes"
+    ],
+    "remove_tags": [
+      "aws"
+    ]
+  },
+  {
+    "path": "Personal/Whiskers & Homes/ENVIRONMENT.md",
+    "add_tags": [
+      "config",
+      "secrets",
+      "whiskersandhomes"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "Personal/Whiskers & Homes/MOCK_STRIPE_INTEGRATION.md",
+    "add_tags": [
+      "api",
+      "docs",
+      "stripe",
+      "whiskersandhomes"
+    ],
+    "remove_tags": [
+      "java"
+    ]
+  },
+  {
+    "path": "Personal/Whiskers & Homes/STRIPE_INTEGRATION_PLAN.md",
+    "add_tags": [
+      "api",
+      "docs",
+      "stripe",
+      "whiskersandhomes"
+    ],
+    "remove_tags": [
+      "java"
+    ]
+  },
+  {
+    "path": "Personal/Whiskers & Homes/petfinder-crisis-research-january-2026.md",
+    "add_tags": [
+      "market-opportunity",
+      "whiskersandhomes"
+    ],
+    "remove_tags": [
+      "kubernetes"
+    ]
+  },
+  {
+    "path": "Personal/zshrc.md",
+    "add_tags": [
+      "config",
+      "secrets"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "TODO.md",
+    "add_tags": [
+      "agentic-hybrid-search",
+      "in-progress",
+      "nasuni"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "Task Archive.md",
+    "add_tags": [
+      "gartner",
+      "nasuni",
+      "thermofisher"
+    ],
+    "remove_tags": []
+  }
+]

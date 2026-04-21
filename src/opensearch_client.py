@@ -55,7 +55,11 @@ INDEX_MAPPING = {
                 "type": "date",
                 "format": "yyyy-MM-dd||yyyy-MM-dd'T'HH:mm:ss.SSSZ||epoch_millis",
             },
-            "tags": {"type": "keyword"},
+            "tags": {
+                "type": "text",
+                "analyzer": "english_analyzer",
+                "fields": {"keyword": {"type": "keyword"}},
+            },
             "folder": {"type": "keyword"},
             "file_path": {"type": "keyword"},
             "document_id": {"type": "keyword"},
