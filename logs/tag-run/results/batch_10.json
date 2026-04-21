@@ -1,0 +1,102 @@
+[
+  {
+    "path": "KMW/Customers/ThermoFisher/Working Sessions/Working session thermo 05282025.md",
+    "add_tags": [],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Working Sessions/Working session thermo 06172025.md",
+    "add_tags": ["translation", "google-places"],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Lucille/Git Main->680->721 Approach.md",
+    "add_tags": ["workflow"],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Lucille/LC-680 Discussion and notes.md",
+    "add_tags": ["standup"],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Lucille/LC-811/lc-811-api-reference.md",
+    "add_tags": ["reference"],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Lucille/LC-811/lc-811-design-system.md",
+    "add_tags": ["design"],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Lucille/LC-811/lc-811-development-log.md",
+    "add_tags": ["react"],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Lucille/LC-811/lc-811-lucille-admin-ui-react-vite.md",
+    "add_tags": ["react", "project-overview"],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Lucille/LC-811/lc-811-requirements.md",
+    "add_tags": ["react"],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Lucille/Lucille Admin UI app.md",
+    "add_tags": ["next-js"],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Lucille/Lucille Deployment Modes.md",
+    "add_tags": [],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Lucille/Lucille Release Strategy-Guide-AI Generated and Confluence.md",
+    "add_tags": ["release", "maven"],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Lucille/Planning Notes Lucille 08122025.md",
+    "add_tags": [],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Lucille/Planning Notes Lucille 08262025.md",
+    "add_tags": ["race-condition"],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Lucille/README_API.md",
+    "add_tags": ["setup"],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Lucille/README_Admin_UI.md",
+    "add_tags": ["next-js", "setup"],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Lucille/handwritten_notes.md",
+    "add_tags": [],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Lucille/lucille-admin-ui-discussion-prep.md",
+    "add_tags": ["code-review", "next-js"],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Lucille/lucille-admin-ui-service-startup-guide.md",
+    "add_tags": ["startup"],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Lucille/lucille-admin-ui-structure.md",
+    "add_tags": ["next-js"],
+    "remove_tags": []
+  }
+]

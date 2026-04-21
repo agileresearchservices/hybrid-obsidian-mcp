@@ -191,6 +191,12 @@ def cmd_taxonomy(_args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_taxonomy_topk(args: argparse.Namespace) -> int:
+    tags = tagger.collect_taxonomy_top_k(args.k)
+    print("\n".join(tags))
+    return 0
+
+
 def cmd_tag_list(_args: argparse.Namespace) -> int:
     print(json.dumps(tagger.list_notes(), indent=2))
     return 0
@@ -202,7 +208,7 @@ def cmd_tag_apply(args: argparse.Namespace) -> int:
         print('{"error": "expected JSON list of {path, add_tags, remove_tags}"}',
               file=sys.stderr)
         return 2
-    print(json.dumps(tagger.bulk_apply(data, dry_run=args.dry_run), indent=2))
+    print(json.dumps(tagger.bulk_apply(data), indent=2))
     return 0
 
 
@@ -214,6 +220,26 @@ def cmd_tag_verify(args: argparse.Namespace) -> int:
 
 def cmd_tag_aggregate(args: argparse.Namespace) -> int:
     print(json.dumps(tagger.aggregate_results(args.results_dir), indent=2))
+    return 0
+
+
+def cmd_tag_consolidate(args: argparse.Namespace) -> int:
+    changes = json.load(sys.stdin)
+    if not isinstance(changes, list):
+        print('{"error": "expected JSON list of {path, add_tags, remove_tags} on stdin"}',
+              file=sys.stderr)
+        return 2
+    consolidation_candidates = json.loads(args.candidates_json)
+    if not isinstance(consolidation_candidates, list):
+        print('{"error": "candidates must be a JSON list"}', file=sys.stderr)
+        return 2
+    updated, flagged = tagger.apply_consolidation(
+        changes, consolidation_candidates, args.threshold
+    )
+    print(json.dumps({
+        "changes": updated,
+        "flagged_for_review": flagged,
+    }, indent=2))
     return 0
 
 
@@ -332,10 +358,12 @@ def build_parser() -> argparse.ArgumentParser:
     # Bulk tags
     p = sp.add_parser("taxonomy", help="Print tag→count JSON")
     p.set_defaults(func=cmd_taxonomy)
+    p = sp.add_parser("taxonomy-topk", help="Print top-K tags (one per line)")
+    p.add_argument("--k", type=int, default=100, help="Number of top tags (default 100)")
+    p.set_defaults(func=cmd_taxonomy_topk)
     p = sp.add_parser("tag-list", help="Print all notes as JSON (for bulk tag batching)")
     p.set_defaults(func=cmd_tag_list)
     p = sp.add_parser("tag-apply", help="Read [{path, add_tags, remove_tags}] JSON from stdin and apply")
-    p.add_argument("--dry-run", action="store_true", help="Preview changes without writing")
     p.set_defaults(func=cmd_tag_apply)
     p = sp.add_parser("tag-verify", help="Verify a result file covers its batch input (exit 1 if not ok)")
     p.add_argument("batch_file")
@@ -344,6 +372,10 @@ def build_parser() -> argparse.ArgumentParser:
     p = sp.add_parser("tag-aggregate", help="Flatten batch_*.json in a dir; drop blocklisted/singleton tags")
     p.add_argument("results_dir")
     p.set_defaults(func=cmd_tag_aggregate)
+    p = sp.add_parser("tag-consolidate", help="Auto-merge high-confidence near-duplicate tags (read changes from stdin)")
+    p.add_argument("candidates_json", help="Consolidation candidates as JSON string")
+    p.add_argument("--threshold", type=float, default=0.90, help="Confidence threshold for auto-merge (0-1, default 0.90)")
+    p.set_defaults(func=cmd_tag_consolidate)
     p = sp.add_parser("tag-prepare", help="Read JSON list of paths from stdin; return {existing_tags, content_excerpt}")
     p.set_defaults(func=cmd_tag_prepare)
     p = sp.add_parser("workflow", help="Print the bulk-tag orchestration prompt")

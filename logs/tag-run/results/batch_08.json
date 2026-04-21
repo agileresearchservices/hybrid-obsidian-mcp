@@ -1,0 +1,102 @@
+[
+  {
+    "path": "KMW/Customers/ThermoFisher/Standups/Standup Thermo 06192025.md",
+    "add_tags": ["integration", "architecture"],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Standups/Standup Thermo 06202025.md",
+    "add_tags": ["api-key", "workflow"],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Standups/Standup Thermo 06272025.md",
+    "add_tags": ["integration"],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Standups/Standup Thermo 07022025.md",
+    "add_tags": ["integration", "debugging"],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Standups/Standup Thermo 07032025.md",
+    "add_tags": ["configuration", "api-key"],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Standups/Standup Thermo 07102025.md",
+    "add_tags": ["integration", "api-key"],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Standups/Standup Thermo 07112025.md",
+    "add_tags": ["api-key", "credentials"],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Standups/Standup Thermo 07142025.md",
+    "add_tags": ["ci-cd"],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Standups/Standup Thermo 07162025.md",
+    "add_tags": ["workflow", "integration"],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Standups/Standup Thermo 07182025.md",
+    "add_tags": ["optimization", "workflow"],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Standups/Standup Thermo 07232025.md",
+    "add_tags": ["api-key", "estimation"],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Standups/Standup Thermo 07242025.md",
+    "add_tags": ["deployment", "workflow"],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Standups/Standup Thermo 07252025.md",
+    "add_tags": ["data-analysis", "workflow"],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Standups/Standup Thermo 07282025.md",
+    "add_tags": ["credentials", "workflow"],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Standups/Standup Thermo 07292025.md",
+    "add_tags": ["api-key", "data-analysis"],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Standups/Standup Thermo 07302025.md",
+    "add_tags": [],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Standups/Standup Thermo 07312025.md",
+    "add_tags": ["phased-release", "entity-extraction"],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Standups/Standup Thermo 08012025.md",
+    "add_tags": ["agentic-coding", "workflow"],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Standups/Standup Thermo 08042025.md",
+    "add_tags": ["phased-release", "integration"],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Standups/Standup Thermo 08062025.md",
+    "add_tags": ["ci-cd", "infrastructure"],
+    "remove_tags": []
+  }
+]

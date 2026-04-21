@@ -161,6 +161,12 @@ def collect_taxonomy() -> dict[str, int]:
     return dict(counts.most_common())
 
 
+def collect_taxonomy_top_k(k: int = 100) -> list[str]:
+    """Return the top K tags by frequency as a simple list (for subagent prompts)."""
+    taxonomy = collect_taxonomy()
+    return list(taxonomy.keys())[:k]
+
+
 def list_notes() -> list[dict]:
     """Enumerate all .md notes with path, size, folder."""
     out = []
@@ -210,13 +216,11 @@ def merge_tags(
     rel_path: str,
     add_tags: list[str],
     remove_tags: Optional[list[str]] = None,
-    dry_run: bool = False,
 ) -> dict:
     """Merge tags into a note's frontmatter. Returns a status dict.
 
     Applies TAG_ALIASES, filters TAG_BLOCKLIST, caps new additions at
-    MAX_NEW_TAGS_PER_NOTE. When dry_run=True, computes the merge but does
-    not write; status becomes "would-update" or "would-noop".
+    MAX_NEW_TAGS_PER_NOTE. Merges and writes to the file.
     """
     resolved = _resolve_path(rel_path)
     if resolved is None:
@@ -279,7 +283,7 @@ def merge_tags(
         had_change = True
 
     if not had_change:
-        status = "would-noop" if dry_run else "noop"
+        status = "noop"
         result = {"path": rel_path, "status": status, "tags": kept}
         if filtered:
             result["filtered"] = filtered
@@ -287,14 +291,13 @@ def merge_tags(
             result["capped"] = capped
         return result
 
-    if not dry_run:
-        post["tags"] = kept
-        text = frontmatter.dumps(post)
-        if not text.endswith("\n"):
-            text += "\n"
-        resolved.write_text(text, encoding="utf-8")
+    post["tags"] = kept
+    text = frontmatter.dumps(post)
+    if not text.endswith("\n"):
+        text += "\n"
+    resolved.write_text(text, encoding="utf-8")
 
-    status = "would-update" if dry_run else "updated"
+    status = "updated"
     result = {
         "path": rel_path,
         "status": status,
@@ -309,7 +312,7 @@ def merge_tags(
     return result
 
 
-def bulk_apply(changes: list[dict], dry_run: bool = False) -> list[dict]:
+def bulk_apply(changes: list[dict]) -> list[dict]:
     """Apply a list of {path, add_tags, remove_tags} entries. Returns per-entry results."""
     results = []
     for entry in changes:
@@ -322,7 +325,6 @@ def bulk_apply(changes: list[dict], dry_run: bool = False) -> list[dict]:
                 rel_path=rel,
                 add_tags=entry.get("add_tags") or [],
                 remove_tags=entry.get("remove_tags") or [],
-                dry_run=dry_run,
             ))
         except Exception as e:
             results.append({"path": rel, "status": "error", "reason": str(e)})
@@ -396,6 +398,41 @@ def consolidation_candidates(
                 "count": count,
             })
     return out
+
+
+def apply_consolidation(
+    changes: list[dict],
+    consolidation_candidates: list[dict],
+    confidence_threshold: float = 0.90,
+) -> tuple[list[dict], list[dict]]:
+    """Auto-merge near-duplicate tags in changes based on consolidation_candidates.
+
+    For candidates with score >= confidence_threshold, automatically replace the
+    new tag with the existing variant. Returns (updated_changes, flagged_for_review).
+
+    Flagged entries have score < confidence_threshold but >= 0.85.
+    """
+    high_conf = {c["proposed"]: c["nearest"] for c in consolidation_candidates if c["score"] >= confidence_threshold}
+    low_conf = [c for c in consolidation_candidates if 0.85 <= c["score"] < confidence_threshold]
+
+    updated = []
+    for entry in changes:
+        add_tags = entry.get("add_tags") or []
+        new_adds = []
+        merged = []
+        for tag in add_tags:
+            if tag in high_conf:
+                merged.append({"from": tag, "to": high_conf[tag]})
+                new_adds.append(high_conf[tag])
+            else:
+                new_adds.append(tag)
+        entry = dict(entry)
+        entry["add_tags"] = list(set(new_adds))
+        if merged:
+            entry["_consolidation_applied"] = merged
+        updated.append(entry)
+
+    return updated, low_conf
 
 
 def aggregate_results(results_dir: str) -> dict:
@@ -472,7 +509,7 @@ For every batch, spawn one `general-purpose` subagent with **`model: "haiku"`**.
 
 Each subagent's prompt must include:
 - The note paths as a **JSON array inlined directly in the prompt** (do NOT ask the agent to read the batch file — copy the array here so the agent can call `bulk_tag_prepare` immediately)
-- The current taxonomy (comma-separated tag names)
+- The top-100 tags by frequency (call `mcp__obsidian-search__bulk_tag_taxonomy_topk()` or use this shorthand: `comma-separated top-100 tag names`). Send **only tag names**, not counts. This reduces token waste while covering ~80-90% of tagging needs.
 - Output file path (e.g. `logs/tag-run/results/batch_00.json`)
 - Rules:
   1. Call `mcp__obsidian-search__bulk_tag_prepare(paths=<batch paths from prompt>)` **once** per batch. The response includes `existing_tags` and `content_excerpt` for every note — do NOT call `read_note` per-file.
@@ -486,13 +523,13 @@ Each subagent's prompt must include:
 
 Call ALL `mcp__obsidian-search__bulk_tag_verify(batch_file, result_file)` calls **in a single parallel message** — one per batch, all at once. If any returns `ok=false`, abort immediately and report which batches failed — do NOT proceed to aggregate or apply with partial/stale results.
 
-Then call `mcp__obsidian-search__bulk_tag_aggregate(results_dir="logs/tag-run/results")`. Review the returned `consolidation_candidates` — if a new tag with count ≥ 2 is close (score ≥ 0.85) to an existing taxonomy tag, edit the proposals to use the existing variant.
+Then call `mcp__obsidian-search__bulk_tag_aggregate(results_dir="logs/tag-run/results")`.
+
+Finally, call `mcp__obsidian-search__bulk_tag_consolidate(changes=<aggregated changes>, consolidation_candidates=<from aggregate>, confidence_threshold=0.90)` to automatically merge high-confidence near-duplicates. This merges any new tag that matches an existing tag with score ≥ 0.90. Review the returned `flagged_for_review` (score 0.85-0.89) manually if desired, but they are optional.
 
 ## Step 5 — Apply (parallel batches)
 
-First, call `mcp__obsidian-search__bulk_tag_apply(changes=<all aggregated changes>, dry_run=True)` to confirm `would-update` vs `would-noop` counts.
-
-Then commit: split the changes list into N roughly equal chunks (target 3–4 chunks of ~60 notes). Call `mcp__obsidian-search__bulk_tag_apply(changes=<chunk>, dry_run=False)` for each chunk **in a single parallel message** — chunks cover different notes so there are no write conflicts. Collect all results and report any errors per chunk.
+Split the changes list into N roughly equal chunks (target 3–4 chunks of ~60 notes). Call `mcp__obsidian-search__bulk_tag_apply(changes=<chunk>)` for each chunk **in a single parallel message** — chunks cover different notes so there are no write conflicts. Collect all results and report any errors per chunk.
 
 ## Step 6 — Report
 
@@ -510,11 +547,12 @@ Call `mcp__obsidian-search__bulk_tag_taxonomy()` again to get the post-run taxon
 """
 
 
-def create_batches(paths: list[str], batch_size: int = 20, output_dir: str = "logs/tag-run/batches") -> dict:
+def create_batches(paths: list[str], batch_size: int = 30, output_dir: str = "logs/tag-run/batches") -> dict:
     """Create batch files from a list of note paths.
 
     Splits paths into batches of ~batch_size each, writes each batch as a JSON
     array to output_dir/batch_NN.json, and clears any stale batch/result files.
+    Default batch_size is 30 (optimized for token efficiency and reduced agent overhead).
 
     Returns {batch_files: [paths], total_notes: int, num_batches: int}.
     """

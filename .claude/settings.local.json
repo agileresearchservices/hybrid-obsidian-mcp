@@ -61,7 +61,9 @@
       "mcp__obsidian-search__bulk_tag_prepare",
       "mcp__obsidian-search__bulk_tag_apply",
       "Bash(docker compose *)",
-      "Bash(pkill -f obsidian-mcp)"
+      "Bash(pkill -f obsidian-mcp)",
+      "mcp__obsidian-search__bulk_tag_verify",
+      "mcp__obsidian-search__bulk_tag_aggregate"
     ]
   },
   "guard": {

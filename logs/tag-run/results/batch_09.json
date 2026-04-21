@@ -1,0 +1,102 @@
+[
+  {
+    "path": "KMW/Customers/ThermoFisher/Standups/Standup Thermo 08082025.md",
+    "add_tags": ["budget"],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Standups/Standup Thermo 08192025.md",
+    "add_tags": ["authentication", "access-control"],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Standups/Standup Thermo 08222025.md",
+    "add_tags": [],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Standups/Standup Thermo 08262025.md",
+    "add_tags": ["json-parsing"],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Standups/Standup Thermo 08282025.md",
+    "add_tags": ["noisy-neighbor"],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Working Sessions/Working Session Internal Thermo 08132025.md",
+    "add_tags": ["jvm-tuning"],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Working Sessions/Working Session Thermo 07232025.md",
+    "add_tags": ["parallel-processing", "azure-ai"],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Working Sessions/Working Session Thermo 07292025.md",
+    "add_tags": ["false-positives"],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Working Sessions/Working Session Thermo 07302025.md",
+    "add_tags": ["metrics"],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Working Sessions/Working Session Thermo 08012025.md",
+    "add_tags": [],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Working Sessions/Working Session Thermo 08132025.md",
+    "add_tags": ["regression-testing"],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Working Sessions/Working Session Thermo 08202025.md",
+    "add_tags": [],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Working Sessions/Working Session Thermo 08252025 (Kevin and Tyler).md",
+    "add_tags": ["translation"],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Working Sessions/Working Session Thermo Internal Dictionaries 08182025.md",
+    "add_tags": ["aho-corasick", "fst", "patricia-trie"],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Working Sessions/Working session Thermo 06042025.md",
+    "add_tags": ["onboarding-tasks", "access-management"],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Working Sessions/Working session Thermo 06182025.md",
+    "add_tags": ["zookeeper", "cloud-client"],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Working Sessions/Working session Thermo 06182025_2.md",
+    "add_tags": ["brave-search"],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Working Sessions/Working session Thermo 07022025.md",
+    "add_tags": [],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Working Sessions/Working session Thermo 07162025.md",
+    "add_tags": ["data-quality-analysis"],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Working Sessions/Working session Thermo 07162025_2.md",
+    "add_tags": ["github-access"],
+    "remove_tags": []
+  }
+]

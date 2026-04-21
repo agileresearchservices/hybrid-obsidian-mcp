@@ -1,0 +1,102 @@
+[
+  {
+    "path": "KMW/Customers/Nasuni/Hyrule Project/Research/kmw-admin.md",
+    "add_tags": ["admin-ui", "credentials"],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/Nasuni/Hyrule Project/Standups/Standup Nasuni 08202025.md",
+    "add_tags": ["development-log"],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/Nasuni/Hyrule Project/Standups/Standup Nasuni 08252025.md",
+    "add_tags": ["development-log"],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/Nasuni/Hyrule Project/Standups/Standup Nasuni 0902205.md",
+    "add_tags": ["development-log"],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/Nasuni/Hyrule Project/Standups/Standup Nasuni 09032025.md",
+    "add_tags": ["development-log", "in-progress"],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/Nasuni/Hyrule Project/Working Sessions/Nasuni Vulnerability (CVE-2025-23266) 07312025.md",
+    "add_tags": ["troubleshooting"],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/Nasuni/Hyrule Project/Working Sessions/Working Session AWS 08282025.md",
+    "add_tags": [],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/Nasuni/Hyrule Project/Working Sessions/Working Session Nasuni 08192025.md",
+    "add_tags": [],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/Nasuni/Hyrule Project/Working Sessions/Working Session Nasuni 08222025.md",
+    "add_tags": [],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/Nasuni/Hyrule Project/Working Sessions/Working Session Nasuni 08262025.md",
+    "add_tags": [],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/Nasuni/Hyrule Project/Working Sessions/Working Session Nasuni 08272025.md",
+    "add_tags": [],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/Nasuni/Hyrule Project/Working Sessions/Working Session Nasuni 08282025.md",
+    "add_tags": [],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/Nasuni/Hyrule Project/Working Sessions/ism-policy-json-storage-driven-rollover-for-multi-tenant-opensearch.md",
+    "add_tags": ["code-ref"],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/Nasuni/Hyrule Project/Working Sessions/opensearch-sharding-strategy-rollover-vs-shard-splitting-vs-in-place-increase.md",
+    "add_tags": [],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/Nasuni/Hyrule Project/magical-brewing-wombat.md",
+    "add_tags": ["in-progress", "automation"],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/Nasuni/Kubernetes Terminology.md",
+    "add_tags": [],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/Nasuni/RCA_staging1_clean_install.md",
+    "add_tags": [],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/Nasuni/Weekly Insights Project/Generative_AI_Sales_Insights_Meeting_Notes.md",
+    "add_tags": [],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/Nasuni/eks-clusters-current-state.md",
+    "add_tags": [],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/Nasuni/hyrule-eks-cluster-branch-deployment-and-teardown.md",
+    "add_tags": [],
+    "remove_tags": []
+  }
+]

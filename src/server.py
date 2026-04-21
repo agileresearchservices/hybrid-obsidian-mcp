@@ -351,6 +351,17 @@ def bulk_tag_taxonomy() -> str:
 
 
 @mcp.tool()
+def bulk_tag_taxonomy_topk(k: int = 100) -> str:
+    """Return the top K tags by frequency as a newline-separated list.
+
+    Optimized for subagent prompts (reduces token waste). Default k=100 covers
+    ~80-90% of typical tagging needs while minimizing prompt overhead.
+    """
+    tags = tagger.collect_taxonomy_top_k(k)
+    return "\n".join(tags)
+
+
+@mcp.tool()
 def bulk_tag_list() -> str:
     """List every .md note in the vault with path, size, and folder as JSON.
     Use this to enumerate notes for batched tag proposal workflows.
@@ -359,28 +370,27 @@ def bulk_tag_list() -> str:
 
 
 @mcp.tool()
-def bulk_tag_create_batches(paths: list[str], batch_size: int = 20) -> str:
+def bulk_tag_create_batches(paths: list[str], batch_size: int = 30) -> str:
     """Split a list of note paths into batch files for parallel agent processing.
 
     Creates batch_00.json, batch_01.json, etc. in logs/tag-run/batches/, clears
-    stale files, and returns metadata. Use this as part of Step 2 in the workflow.
+    stale files, and returns metadata. Default batch_size is 30 (optimized for
+    token efficiency). Use this as part of Step 2 in the workflow.
     """
     return json.dumps(tagger.create_batches(paths, batch_size), indent=2)
 
 
 @mcp.tool()
-def bulk_tag_apply(changes: list[dict], dry_run: bool = False) -> str:
+def bulk_tag_apply(changes: list[dict]) -> str:
     """Apply a batch of tag merges to notes. Each change entry is
     {path: str, add_tags: list[str], remove_tags: list[str]}.
 
     Tags are normalized to lowercase kebab-case, deduplicated, aliased, and
     merged into existing frontmatter. Blocklisted tags are dropped; new
-    proposals are capped at MAX_NEW_TAGS_PER_NOTE per note.
-
-    Set dry_run=True to preview changes without writing. Status values are
-    "updated"/"noop" for real runs and "would-update"/"would-noop" for dry runs.
+    proposals are capped at MAX_NEW_TAGS_PER_NOTE per note. Changes are
+    always written to the vault.
     """
-    return json.dumps(tagger.bulk_apply(changes, dry_run=dry_run), indent=2)
+    return json.dumps(tagger.bulk_apply(changes), indent=2)
 
 
 @mcp.tool()
@@ -406,6 +416,26 @@ def bulk_tag_aggregate(results_dir: str) -> str:
     tags and new-singletons. Returns {changes, rejected, consolidation_candidates}.
     """
     return json.dumps(tagger.aggregate_results(results_dir), indent=2)
+
+
+@mcp.tool()
+def bulk_tag_consolidate(
+    changes: list[dict],
+    consolidation_candidates: list[dict],
+    confidence_threshold: float = 0.90,
+) -> str:
+    """Auto-merge near-duplicate tags in changes.
+
+    For candidates with score >= confidence_threshold, automatically replace the
+    proposed new tag with the existing nearest tag. Returns (updated_changes,
+    flagged_for_review) where flagged_for_review are candidates with
+    0.85 <= score < threshold.
+    """
+    updated, flagged = tagger.apply_consolidation(changes, consolidation_candidates, confidence_threshold)
+    return json.dumps({
+        "changes": updated,
+        "flagged_for_review": flagged,
+    }, indent=2)
 
 
 @mcp.tool()
