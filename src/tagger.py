@@ -31,6 +31,44 @@ TAIL_CHARS = 500
 
 _FRONTMATTER_RE = re.compile(r"^---\n.*?\n---\n", re.DOTALL)
 
+# Characters LLMs commonly "normalize" when echoing a path back (curly→straight
+# quotes, en/em-dashes, ellipsis). When an LLM rewrites a filename from memory
+# instead of copying exact bytes, these substitutions drift the path away from
+# the real on-disk name. _canonicalize_path folds these back.
+_PATH_FOLDS = str.maketrans({
+    "“": '"', "”": '"',
+    "‘": "'", "’": "'",
+    "–": "-", "—": "-",
+})
+
+
+def _fold_path(p: str) -> str:
+    return unicodedata.normalize("NFC", p).translate(_PATH_FOLDS)
+
+
+def _canonicalize_path(path: str, canonical_paths: set[str]) -> str | None:
+    """Map a (possibly LLM-normalized) path to its on-disk form. Returns None
+    if no canonical match can be found even after Unicode/char folding."""
+    if path in canonical_paths:
+        return path
+    folded_target = _fold_path(path)
+    for cp in canonical_paths:
+        if _fold_path(cp) == folded_target:
+            return cp
+    return None
+
+
+def _load_result_entries(path: Path) -> list[dict]:
+    """Parse a result file. Accepts a raw list OR a dict with a `changes` key
+    (subagents occasionally wrap output in {\"changes\": [...]}).
+    """
+    data = json.loads(path.read_text())
+    if isinstance(data, dict) and isinstance(data.get("changes"), list):
+        return data["changes"]
+    if not isinstance(data, list):
+        raise ValueError(f"expected JSON list or dict-with-changes, got {type(data).__name__}")
+    return data
+
 
 def _norm_tag(t: str) -> str:
     return str(t).strip().lstrip("#").strip().lower()
@@ -347,8 +385,14 @@ def verify_batch(batch_file: str, result_file: str) -> dict:
         return {"ok": False, "reason": f"result file not found: {result_file}"}
     try:
         batch_paths = set(json.loads(bp.read_text()))
-        results = json.loads(rp.read_text())
-        result_paths = {e["path"] for e in results}
+        results = _load_result_entries(rp)
+        # Canonicalize any LLM-normalized paths (e.g. curly→straight quotes)
+        # back to their on-disk form before set comparison.
+        result_paths: set[str] = set()
+        for e in results:
+            p = e["path"]
+            canonical = _canonicalize_path(p, batch_paths)
+            result_paths.add(canonical or p)
     except Exception as e:
         return {"ok": False, "reason": f"parse error: {e}"}
     missing = sorted(batch_paths - result_paths)
@@ -445,12 +489,20 @@ def aggregate_results(results_dir: str) -> dict:
     rdir = Path(results_dir)
     if not rdir.exists():
         return {"error": f"results dir not found: {results_dir}"}
+    # Canonical on-disk paths, used to fold LLM-normalized result paths back
+    # to the real filename before downstream apply steps try to open them.
+    canonical_paths = {str(p.relative_to(VAULT)) for p in _iter_notes()}
     all_entries: list[dict] = []
     for f in sorted(rdir.glob("batch_*.json")):
         try:
-            all_entries.extend(json.loads(f.read_text()))
+            entries = _load_result_entries(f)
         except Exception as e:
             return {"error": f"parse {f.name}: {e}"}
+        for e in entries:
+            canonical = _canonicalize_path(e["path"], canonical_paths)
+            if canonical:
+                e["path"] = canonical
+            all_entries.append(e)
 
     taxonomy = collect_taxonomy()
     tax_set = set(taxonomy.keys())
