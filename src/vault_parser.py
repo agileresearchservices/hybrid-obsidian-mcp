@@ -26,6 +26,8 @@ class ParsedNote:
 
 def classify_doc_type(relative_path: str) -> str:
     """Classify a note's type based on its folder path."""
+    if relative_path == "TODO.md":
+        return "todo"
     parts = relative_path.split("/")
     if parts[0] == "Daily Log":
         return "daily_log"

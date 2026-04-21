@@ -1,6 +1,8 @@
 """Hybrid search over OpenSearch with optional reranking."""
 
 import logging
+import math
+import time
 from typing import Optional
 
 import httpx
@@ -78,7 +80,7 @@ def hybrid_search(
     bm25_query: dict = {
         "multi_match": {
             "query": query,
-            "fields": ["chunk_text", "tags^2"],
+            "fields": ["chunk_text", "tags^2", "title^3"],
             "type": "best_fields",
         }
     }
@@ -133,6 +135,32 @@ def hybrid_search(
     ]
 
 
+def _composite_score(rrf_score: float, source: dict) -> float:
+    """Compute composite score: RRF × recency decay × doc-type multiplier.
+
+    Favors recent notes (decay over ~90 days to 0.3x floor), surfaces TODOs (1.5×),
+    dampens daily logs (0.5×).
+    """
+    # Recency decay: recent notes kept high, older notes decay
+    mtime_ms = source.get("file_mtime", 0)
+    if mtime_ms:
+        age_days = (time.time() * 1000 - mtime_ms) / 86_400_000
+        decay = max(0.3, math.exp(-age_days / 90))
+    else:
+        decay = 0.5
+
+    # Doc-type multiplier
+    doc_type = source.get("doc_type", "")
+    if doc_type == "daily_log":
+        type_mult = 0.5
+    elif doc_type == "todo":
+        type_mult = 1.5
+    else:
+        type_mult = 1.0
+
+    return rrf_score * decay * type_mult
+
+
 def _rrf_fallback(
     query: str,
     query_embedding: list[float],
@@ -166,7 +194,7 @@ def _rrf_fallback(
     text_must: dict = {
         "multi_match": {
             "query": query,
-            "fields": ["chunk_text", "tags^2"],
+            "fields": ["chunk_text", "tags^2", "title^3"],
             "type": "best_fields",
         }
     }
@@ -196,8 +224,8 @@ def _rrf_fallback(
         hit = vector_ranks.get(doc_id, text_ranks.get(doc_id))[1]
         scored.append((rrf_score, hit))
 
-    # Sort by RRF score (primary), then by file_mtime (recency tie-breaker)
-    scored.sort(key=lambda x: (x[0], x[1]["_source"].get("file_mtime", 0)), reverse=True)
+    # Sort by composite score: RRF × recency decay × doc-type multiplier
+    scored.sort(key=lambda x: _composite_score(x[0], x[1]["_source"]), reverse=True)
     top = scored[: fetch_k if rerank else k]
 
     chunks = [{"_score": score, **hit["_source"]} for score, hit in top]
@@ -242,7 +270,7 @@ def keyword_search(
     must = [{
         "multi_match": {
             "query": query,
-            "fields": ["chunk_text", "tags^2"],
+            "fields": ["chunk_text", "tags^2", "title^3"],
             "type": "best_fields",
         }
     }]
@@ -285,7 +313,7 @@ def list_notes(
 
     filters = []
     if tags:
-        filters.append({"terms": {"tags": tags}})
+        filters.append({"terms": {"tags.keyword": tags}})
     if date_from or date_to:
         date_range = {}
         if date_from:
@@ -307,7 +335,7 @@ def list_notes(
             "_source": ["title", "date", "tags", "folder", "file_path", "doc_type"],
             "query": query,
             "collapse": {"field": "document_id"},
-            "sort": [{"date": {"order": "desc", "missing": "_last"}}],
+            "sort": [{"file_mtime": {"order": "desc", "missing": "_last"}}],
         },
     )
 
