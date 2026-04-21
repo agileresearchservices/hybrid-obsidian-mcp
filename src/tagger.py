@@ -458,45 +458,43 @@ def aggregate_results(results_dir: str) -> dict:
 WORKFLOW_PROMPT = f"""\
 BULK TAG UPDATE WORKFLOW — the user wants to review every note in the Obsidian vault and propose/update/remove frontmatter tags.
 
-## Step 1 — Seed
+## Step 1 — Seed (run in parallel)
 
-Call `mcp__obsidian-search__bulk_tag_taxonomy()` to get the current `{{tag: count}}` map. This is your starting vocabulary.
-
-Call `mcp__obsidian-search__bulk_tag_list()` to get all .md note paths.
+Call `mcp__obsidian-search__bulk_tag_taxonomy()` AND `mcp__obsidian-search__bulk_tag_list()` **in a single parallel message** — both tool calls in one response block, not sequentially.
 
 ## Step 2 — Plan batches
 
 **First, wipe stale state** — delete any existing `logs/tag-run/batches/*.json` and `logs/tag-run/results/*.json`. Stale result files from prior runs can silently mask failed agent writes.
 
-Split the note list into batches of **~20 notes each**. For N notes, that's roughly `ceil(N / 20)` batches. Write each batch as a JSON array of paths to `logs/tag-run/batches/batch_{{NN}}.json`.
+Split the note list into batches of **~20 notes each**. For N notes, that's roughly `ceil(N / 20)` batches. Write each batch as a JSON array of paths to `logs/tag-run/batches/batch_{{NN}}.json` (for the audit trail and verify step).
 
 ## Step 3 — Dispatch subagents IN PARALLEL (all Haiku)
 
 For every batch, spawn one `general-purpose` subagent with **`model: "haiku"`**. Send them all in a single message so they run concurrently.
 
 Each subagent's prompt must include:
-- The batch file path (e.g. `logs/tag-run/batches/batch_00.json`)
+- The note paths as a **JSON array inlined directly in the prompt** (do NOT ask the agent to read the batch file — copy the array here so the agent can call `bulk_tag_prepare` immediately)
 - The current taxonomy (comma-separated tag names)
 - Output file path (e.g. `logs/tag-run/results/batch_00.json`)
 - Rules:
-  1. Call `mcp__obsidian-search__bulk_tag_prepare(paths=<batch>)` **once** per batch. The response includes `existing_tags` and `content_excerpt` for every note — do NOT call `read_note` per-file.
+  1. Call `mcp__obsidian-search__bulk_tag_prepare(paths=<batch paths from prompt>)` **once** per batch. The response includes `existing_tags` and `content_excerpt` for every note — do NOT call `read_note` per-file.
   2. Propose **only additions** — do NOT re-propose any tag already in `existing_tags`. Empty `add_tags: []` is valid and preferred when coverage is already good.
   3. Target up to {MAX_NEW_TAGS_PER_NOTE} new tags per note. The apply layer enforces a hard cap of {MAX_NEW_TAGS_PER_NOTE}; proposals beyond that are dropped.
   4. Prefer taxonomy tags. Coin NEW tags only for load-bearing recurring themes, not incidentals. Lowercase kebab-case.
   5. `remove_tags` only for factually-wrong tags (high bar; e.g. `aws` on a pure-DigitalOcean file).
   6. Use the `Write` tool (NOT Bash) to write the JSON array to the output file: `[{{"path": "...", "add_tags": [...], "remove_tags": [...]}}, ...]`. No prose.
 
-## Step 4 — Verify + aggregate
+## Step 4 — Verify + aggregate (verify in parallel)
 
-For every batch, call `mcp__obsidian-search__bulk_tag_verify(batch_file, result_file)`. If any returns `ok=false`, abort and report — do NOT proceed to apply with partial/stale results.
+Call ALL `mcp__obsidian-search__bulk_tag_verify(batch_file, result_file)` calls **in a single parallel message** — one per batch, all at once. If any returns `ok=false`, abort immediately and report which batches failed — do NOT proceed to aggregate or apply with partial/stale results.
 
 Then call `mcp__obsidian-search__bulk_tag_aggregate(results_dir="logs/tag-run/results")`. Review the returned `consolidation_candidates` — if a new tag with count ≥ 2 is close (score ≥ 0.85) to an existing taxonomy tag, edit the proposals to use the existing variant.
 
-## Step 5 — Apply
+## Step 5 — Apply (parallel batches)
 
-Call `mcp__obsidian-search__bulk_tag_apply(changes=<aggregated.changes>, dry_run=True)` first. Review `would-update` vs `would-noop` counts.
+First, call `mcp__obsidian-search__bulk_tag_apply(changes=<all aggregated changes>, dry_run=True)` to confirm `would-update` vs `would-noop` counts.
 
-Then call again without `dry_run` to commit.
+Then commit: split the changes list into N roughly equal chunks (target 3–4 chunks of ~60 notes). Call `mcp__obsidian-search__bulk_tag_apply(changes=<chunk>, dry_run=False)` for each chunk **in a single parallel message** — chunks cover different notes so there are no write conflicts. Collect all results and report any errors per chunk.
 
 ## Step 6 — Report
 
