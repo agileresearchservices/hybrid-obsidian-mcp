@@ -9,6 +9,23 @@ import frontmatter
 
 from .config import CHUNK_SIZE, CHUNK_OVERLAP, OBSIDIAN_VAULT_PATH
 
+# Per-doc_type chunk sizes: balance between semantic coherence and reranker effectiveness
+# nomic-embed-text: 8192 token limit (~32K chars); cross-encoder: ~512 token sweet spot (~2K chars)
+_CHUNK_SIZES: dict[str, int] = {
+    "daily_log": 1500,  # section-aware primary; char fallback ceiling
+    "weekly_summary": 2000,
+    "customer": 2000,
+    "project": 2000,
+    "archive": 2000,
+    "blog": 2000,
+    "personal": 1500,
+    "conference": 1500,
+    "note": 1500,
+    "todo": 1000,
+    "work": 1000,
+}
+_DEFAULT_CHUNK_SIZE = 1500
+
 
 @dataclass
 class ParsedNote:
@@ -125,7 +142,12 @@ def parse_note(file_path: Path, vault_root: Path) -> Optional[ParsedNote]:
 
 
 def chunk_text(text: str, doc_type: str = "note") -> list[str]:
-    """Split text into chunks, preferring section boundaries for structured docs."""
+    """Split text into chunks, preferring section boundaries for structured docs.
+
+    Uses per-doc_type sizes to balance semantic coherence with model capacity.
+    """
+    size = _CHUNK_SIZES.get(doc_type, _DEFAULT_CHUNK_SIZE)
+
     # For daily logs and structured docs, try section-aware chunking first
     if doc_type in ("daily_log", "weekly_summary"):
         sections = section_chunk(text)
@@ -133,13 +155,13 @@ def chunk_text(text: str, doc_type: str = "note") -> list[str]:
             # Further chunk any sections that are too large
             result = []
             for section in sections:
-                if len(section) > CHUNK_SIZE * 1.5:
-                    result.extend(char_chunk(section))
+                if len(section) > size * 1.5:
+                    result.extend(char_chunk(section, size=size))
                 else:
                     result.append(section)
             return result
 
-    return char_chunk(text)
+    return char_chunk(text, size=size)
 
 
 def section_chunk(text: str) -> list[str]:
@@ -149,12 +171,12 @@ def section_chunk(text: str) -> list[str]:
     return chunks if len(chunks) > 1 else []
 
 
-def char_chunk(text: str) -> list[str]:
-    """Character-based chunking with overlap."""
+def char_chunk(text: str, size: int = CHUNK_SIZE) -> list[str]:
+    """Character-based chunking with overlap. Uses provided size or falls back to CHUNK_SIZE."""
     chunks = []
     start = 0
     while start < len(text):
-        end = min(start + CHUNK_SIZE, len(text))
+        end = min(start + size, len(text))
         chunk = text[start:end]
         if chunk.strip():
             chunks.append(chunk.strip())

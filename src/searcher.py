@@ -20,10 +20,10 @@ logger = logging.getLogger(__name__)
 
 
 def get_embedding(text: str) -> list[float]:
-    """Get embedding from Ollama."""
+    """Get embedding from Ollama with asymmetric task prefix for nomic-embed-text."""
     response = httpx.post(
         f"{OLLAMA_BASE_URL}/api/embed",
-        json={"model": OLLAMA_EMBED_MODEL, "input": text},
+        json={"model": OLLAMA_EMBED_MODEL, "input": f"search_query: {text}"},
         timeout=60.0,
     )
     response.raise_for_status()

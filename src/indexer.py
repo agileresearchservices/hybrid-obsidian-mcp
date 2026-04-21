@@ -44,7 +44,15 @@ def index_note(note: ParsedNote, client, batch_actions: list, vault_root: Option
 
     for chunk_idx, chunk_text in enumerate(note.chunks):
         try:
-            embedding = get_embedding(chunk_text)
+            # Enriched embedding input: task prefix + metadata context for nomic-embed-text
+            tags_str = ", ".join(note.tags[:8]) if note.tags else ""
+            embed_input = (
+                f"search_document: Title: {note.title}\n"
+                f"Type: {note.doc_type}\n"
+                f"Tags: {tags_str}\n\n"
+                f"{chunk_text}"
+            )
+            embedding = get_embedding(embed_input)
         except Exception as e:
             logger.warning("Embedding failed for %s chunk %d: %s", note.file_path, chunk_idx, e)
             continue
