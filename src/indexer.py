@@ -4,6 +4,7 @@ import logging
 import sys
 import time
 from hashlib import sha256
+from pathlib import Path
 from typing import Optional
 
 import httpx
@@ -36,7 +37,7 @@ def make_doc_id(file_path: str) -> str:
     return sha256(file_path.encode()).hexdigest()[:16]
 
 
-def index_note(note: ParsedNote, client, batch_actions: list) -> int:
+def index_note(note: ParsedNote, client, batch_actions: list, vault_root: Optional[Path] = None) -> int:
     """Add a note's chunks to the batch action list. Returns chunk count."""
     doc_id = make_doc_id(note.file_path)
     chunk_count = 0
@@ -62,6 +63,12 @@ def index_note(note: ParsedNote, client, batch_actions: list) -> int:
         # Only include date if it's a valid YYYY-MM-DD
         if note.date and len(note.date) == 10 and note.date[4] == "-" and note.date[7] == "-":
             doc["date"] = note.date
+
+        # Capture file modification time (mtime) as epoch milliseconds
+        if vault_root:
+            abs_path = vault_root / note.file_path
+            if abs_path.exists():
+                doc["file_mtime"] = int(abs_path.stat().st_mtime * 1000)
 
         batch_actions.append({
             "_index": OPENSEARCH_INDEX_NAME,
@@ -124,7 +131,7 @@ def index_files(file_paths: list[str], vault_path: Optional[str] = None, batch_s
             continue
 
         try:
-            chunks = index_note(note, client, batch_actions)
+            chunks = index_note(note, client, batch_actions, vault_root=vault_root)
             if chunks > 0:
                 total_docs += 1
                 total_chunks += chunks
@@ -177,9 +184,12 @@ def index_vault(vault_path: Optional[str] = None, batch_size: int = 50) -> dict:
     batch_actions: list = []
     start_time = time.time()
 
+    from .config import OBSIDIAN_VAULT_PATH
+    vault_root = Path(vault_path or OBSIDIAN_VAULT_PATH)
+
     for i, note in enumerate(notes, 1):
         try:
-            chunks = index_note(note, client, batch_actions)
+            chunks = index_note(note, client, batch_actions, vault_root=vault_root)
             if chunks > 0:
                 total_docs += 1
                 total_chunks += chunks
@@ -235,7 +245,7 @@ def get_index_stats() -> dict:
                 "doc_types": {"terms": {"field": "doc_type", "size": 20}},
                 "folders": {"terms": {"field": "folder", "size": 50}},
                 "unique_docs": {"cardinality": {"field": "document_id"}},
-                "tags": {"terms": {"field": "tags", "size": 50}},
+                "tags": {"terms": {"field": "tags.keyword", "size": 50}},
             },
         }
         response = client.search(index=OPENSEARCH_INDEX_NAME, body=agg_body)

@@ -105,6 +105,10 @@ def hybrid_search(
                 "queries": [knn_query, bm25_query]
             }
         },
+        "sort": [
+            {"_score": {"order": "desc"}},
+            {"file_mtime": {"order": "desc", "missing": "_last"}},
+        ],
     }
 
     try:
@@ -255,6 +259,10 @@ def keyword_search(
             "size": k,
             "_source": {"excludes": ["embedding"]},
             "query": body_query,
+            "sort": [
+                {"_score": {"order": "desc"}},
+                {"file_mtime": {"order": "desc", "missing": "_last"}},
+            ],
         },
     )
 

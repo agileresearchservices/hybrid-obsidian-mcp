@@ -55,6 +55,10 @@ INDEX_MAPPING = {
                 "type": "date",
                 "format": "yyyy-MM-dd||yyyy-MM-dd'T'HH:mm:ss.SSSZ||epoch_millis",
             },
+            "file_mtime": {
+                "type": "date",
+                "format": "epoch_millis",
+            },
             "tags": {
                 "type": "text",
                 "analyzer": "english_analyzer",

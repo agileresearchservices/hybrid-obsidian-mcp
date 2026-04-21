@@ -26673,3 +26673,46 @@ urllib3.exceptions.NewConnectionError: <urllib3.connection.HTTPConnection object
 2026-04-21 14:42:32 INFO POST http://localhost:9201/_bulk?refresh=false [status:200 request:0.014s]
 2026-04-21 14:42:33 INFO POST http://localhost:9201/obsidian_notes/_refresh [status:200 request:0.011s]
 2026-04-21 14:42:33 INFO Indexed 75 notes, 1718 chunks in 124.8s
+2026-04-21 14:55:17 INFO Indexing 1 changed file(s): ['Daily Log/2026-04-21.md']
+2026-04-21 14:55:17 INFO HEAD http://localhost:9201/obsidian_notes [status:200 request:0.007s]
+2026-04-21 14:55:17 INFO Index 'obsidian_notes' already exists
+2026-04-21 14:55:17 INFO PUT http://localhost:9201/_search/pipeline/obsidian_hybrid_pipeline [status:200 request:0.014s]
+2026-04-21 14:55:17 INFO Search pipeline 'obsidian_hybrid_pipeline' created/updated
+2026-04-21 14:55:17 INFO POST http://localhost:9201/obsidian_notes/_delete_by_query?refresh=true [status:200 request:0.015s]
+2026-04-21 14:55:17 INFO HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+2026-04-21 14:55:17 INFO HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+2026-04-21 14:55:17 INFO HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+2026-04-21 14:55:17 INFO HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+2026-04-21 14:55:17 INFO HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+2026-04-21 14:55:17 INFO HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+2026-04-21 14:55:17 INFO HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+2026-04-21 14:55:17 INFO HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+2026-04-21 14:55:17 INFO HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+2026-04-21 14:55:18 INFO HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+2026-04-21 14:55:18 INFO HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+2026-04-21 14:55:18 INFO HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+2026-04-21 14:55:18 INFO HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+2026-04-21 14:55:18 INFO HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+2026-04-21 14:55:18 INFO HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+2026-04-21 14:55:18 INFO HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+2026-04-21 14:55:18 INFO HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+2026-04-21 14:55:18 INFO HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+2026-04-21 14:55:18 INFO HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+2026-04-21 14:55:18 INFO HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+2026-04-21 14:55:18 INFO HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+2026-04-21 14:55:18 INFO HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+2026-04-21 14:55:19 INFO HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+2026-04-21 14:55:19 INFO HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+2026-04-21 14:55:19 INFO HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+2026-04-21 14:55:19 INFO HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+2026-04-21 14:55:19 INFO HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+2026-04-21 14:55:19 INFO HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+2026-04-21 14:55:19 INFO HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+2026-04-21 14:55:19 INFO HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+2026-04-21 14:55:19 INFO HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+2026-04-21 14:55:19 INFO HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+2026-04-21 14:55:19 INFO HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+2026-04-21 14:55:19 INFO HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+2026-04-21 14:55:19 INFO POST http://localhost:9201/_bulk?refresh=false [status:200 request:0.022s]
+2026-04-21 14:55:19 INFO POST http://localhost:9201/obsidian_notes/_refresh [status:200 request:0.071s]
+2026-04-21 14:55:19 INFO Indexed 1 notes, 34 chunks in 2.5s
