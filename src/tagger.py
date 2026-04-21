@@ -504,12 +504,9 @@ Call `mcp__obsidian-search__bulk_tag_taxonomy()` AND `mcp__obsidian-search__bulk
 
 ## Step 2 — Create batches (automatic)
 
-Call `mcp__obsidian-search__bulk_tag_create_batches(paths=<note list from step 1>)` to automatically split notes into batches. Batch size is chosen adaptively:
-- <100 notes: batch_size=20 (minimal agent overhead)
-- 100-500 notes: batch_size=30 (balanced parallelism)
-- 500+ notes: batch_size=40 (maximize parallelism)
+Call `mcp__obsidian-search__bulk_tag_create_batches(paths=<note list from step 1>)` to automatically split notes into batches. By default, batches are **size-aware**: each batch's estimated `bulk_tag_prepare` payload stays under ~80K chars (safely below Claude Code's 25K-token MCP tool-result cap). A batch of small standup notes may hold 30+; a batch of large daily logs may hold only 10–20. Batch length is clamped to [5, 40].
 
-Alternatively, pass `batch_size=N` to override. Returns batch file paths and metadata.
+Pass `batch_size=N` to force a uniform batch size (not recommended — can exceed the MCP cap on big notes). Returns batch file paths and per-batch sizes.
 
 ## Step 3 — Dispatch subagents IN PARALLEL (all Haiku)
 
@@ -558,37 +555,72 @@ Call `mcp__obsidian-search__bulk_tag_taxonomy()` again to get the post-run taxon
 """
 
 
-def choose_batch_size(note_count: int) -> int:
-    """Choose batch size adaptively based on vault size.
+# Claude Code's default MCP tool-result cap is 25K tokens (~100K chars).
+# Each prepare() note contributes min(body_size, HEAD_CHARS + TAIL_CHARS) + JSON
+# overhead (path, existing_tags, flags). Target 80K chars/batch for safety margin.
+BATCH_CHAR_BUDGET = 80_000
+NOTE_OVERHEAD_CHARS = 500
+MIN_BATCH = 5
+MAX_BATCH = 40
 
-    <100 notes: batch_size=20 (single agent, minimal overhead)
-    100-500 notes: batch_size=30 (balanced parallelism)
-    500+ notes: batch_size=40-50 (maximize parallelism, reduce agent overhead)
+
+def _estimate_note_payload(path: str) -> int:
+    """Estimate chars a single note contributes to a prepare() response.
+
+    After _truncate(), body is capped at HEAD_CHARS + TAIL_CHARS (+ divider).
+    Add fixed JSON overhead for keys, path, and existing_tags list.
     """
-    if note_count < 100:
-        return 20
-    elif note_count < 500:
-        return 30
-    else:
-        return 40
+    try:
+        size = (VAULT / path).stat().st_size
+    except OSError:
+        size = HEAD_CHARS + TAIL_CHARS
+    body = min(size, HEAD_CHARS + TAIL_CHARS + 200)
+    return body + NOTE_OVERHEAD_CHARS + len(path)
+
+
+def pack_batches_by_size(paths: list[str], char_budget: int = BATCH_CHAR_BUDGET) -> list[list[str]]:
+    """Greedy-pack paths into batches, keeping each batch's estimated prepare()
+    payload under char_budget. Clamps batch length to [MIN_BATCH, MAX_BATCH]."""
+    batches: list[list[str]] = []
+    current: list[str] = []
+    current_size = 0
+    for p in paths:
+        cost = _estimate_note_payload(p)
+        would_exceed = current_size + cost > char_budget
+        hit_cap = len(current) >= MAX_BATCH
+        if current and (would_exceed or hit_cap) and len(current) >= MIN_BATCH:
+            batches.append(current)
+            current, current_size = [], 0
+        elif current and hit_cap:
+            batches.append(current)
+            current, current_size = [], 0
+        current.append(p)
+        current_size += cost
+    if current:
+        batches.append(current)
+    return batches
 
 
 def create_batches(paths: list[str], batch_size: Optional[int] = None, output_dir: str = "logs/tag-run/batches") -> dict:
     """Create batch files from a list of note paths.
 
-    Splits paths into batches of ~batch_size each, writes each batch as a JSON
-    array to output_dir/batch_NN.json, and clears any stale batch/result files.
+    Splits paths into batches and writes each as a JSON array to
+    output_dir/batch_NN.json. Clears stale batch/result files first.
 
-    If batch_size is None, chooses adaptively:
-    - <100 notes: batch_size=20 (single agent, minimal overhead)
-    - 100-500 notes: batch_size=30 (balanced)
-    - 500+ notes: batch_size=40 (maximize parallelism)
+    If batch_size is None, uses size-aware packing: each batch's estimated
+    prepare() payload stays under BATCH_CHAR_BUDGET (80K chars, safely below
+    Claude Code's 25K-token MCP result cap). Batch length clamped to
+    [MIN_BATCH, MAX_BATCH]. A batch of tiny standup notes may hold 30+; a
+    batch of big daily logs may hold ~20.
 
-    Returns {batch_files: [paths], total_notes: int, num_batches: int, batch_size: int}.
+    If batch_size is an int, uses uniform fixed-size batching (override).
+
+    Returns {batch_files, total_notes, num_batches, batch_size | batch_sizes}.
     """
-    import math
     if batch_size is None:
-        batch_size = choose_batch_size(len(paths))
+        batches = pack_batches_by_size(paths)
+    else:
+        batches = [paths[i:i + batch_size] for i in range(0, len(paths), batch_size)]
 
     output_path = Path(output_dir).resolve()
     output_path.mkdir(parents=True, exist_ok=True)
@@ -599,23 +631,22 @@ def create_batches(paths: list[str], batch_size: Optional[int] = None, output_di
     for f in Path(output_dir.replace("batches", "results")).glob("batch_*.json"):
         f.unlink()
 
-    num_batches = math.ceil(len(paths) / batch_size)
     batch_files = []
-
-    for i in range(num_batches):
-        start = i * batch_size
-        end = min(start + batch_size, len(paths))
-        batch = paths[start:end]
+    for i, batch in enumerate(batches):
         batch_file = output_path / f"batch_{i:02d}.json"
         batch_file.write_text(json.dumps(batch, indent=2))
         batch_files.append(str(batch_file))
 
-    return {
+    result = {
         "batch_files": batch_files,
         "total_notes": len(paths),
-        "num_batches": num_batches,
-        "batch_size": batch_size,
+        "num_batches": len(batches),
     }
+    if batch_size is None:
+        result["batch_sizes"] = [len(b) for b in batches]
+    else:
+        result["batch_size"] = batch_size
+    return result
 
 
 def workflow_prompt() -> str:
