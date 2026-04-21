@@ -1,0 +1,92 @@
+[
+  {
+    "path": "KMW/Lucille/lucille-platform-decision.md",
+    "existing_tags": ["java", "lucille", "admin-ui", "architecture", "research", "development", "code-ref", "api", "ism"],
+    "add_tags": ["decision", "next-js", "technical"],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Lucille/lucille-quick-reference.md",
+    "existing_tags": ["architecture", "java", "kubernetes", "lucille", "security", "admin-ui", "working-session", "development", "code-ref", "decision", "deployment", "eks", "performance"],
+    "add_tags": ["next-js"],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Lucille/merge_status_report.md",
+    "existing_tags": ["architecture", "java", "lucille", "security", "code-ref", "docs", "development", "debugging", "deployment", "rag"],
+    "add_tags": ["testing"],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Slack AI Bot token.md",
+    "existing_tags": ["slack", "secrets"],
+    "add_tags": ["credentials"],
+    "remove_tags": []
+  },
+  {
+    "path": "Personal/Guidepoint/Pinecone Exploring a Sale of This Vector Database.md",
+    "existing_tags": ["hybrid-search", "opensearch", "relevancy", "security", "competitor-research", "research", "gartner", "rag", "vector-search", "langchain", "pinecone", "market-opportunity"],
+    "add_tags": ["evaluation"],
+    "remove_tags": []
+  },
+  {
+    "path": "Personal/Recipes/Hibachi Chicken, Shrimp & Fried Rice (For 2).md",
+    "existing_tags": ["recipes"],
+    "add_tags": [],
+    "remove_tags": []
+  },
+  {
+    "path": "Personal/Whiskers & Homes/BUSINESS_PLAN.md",
+    "existing_tags": ["whiskersandhomes", "digitalocean", "docs", "market-opportunity", "stripe", "cost-optimization", "git", "performance", "postgres", "rag", "implementation"],
+    "add_tags": ["product-overview", "planning"],
+    "remove_tags": []
+  },
+  {
+    "path": "Personal/Whiskers & Homes/Creds.md",
+    "existing_tags": ["whiskersandhomes", "secrets", "aws"],
+    "add_tags": ["credentials"],
+    "remove_tags": []
+  },
+  {
+    "path": "Personal/Whiskers & Homes/ENVIRONMENT.md",
+    "existing_tags": ["whiskersandhomes", "digitalocean", "config", "secrets", "api", "aws", "git", "postgres", "rag", "stripe"],
+    "add_tags": ["credentials"],
+    "remove_tags": []
+  },
+  {
+    "path": "Personal/Whiskers & Homes/MOCK_STRIPE_INTEGRATION.md",
+    "existing_tags": ["whiskersandhomes", "stripe", "api", "docs", "testing", "java", "integration"],
+    "add_tags": [],
+    "remove_tags": []
+  },
+  {
+    "path": "Personal/Whiskers & Homes/STRIPE_INTEGRATION_PLAN.md",
+    "existing_tags": ["whiskersandhomes", "stripe", "api", "docs", "development", "implementation", "deployment", "java", "query-rewrite"],
+    "add_tags": ["planning"],
+    "remove_tags": ["query-rewrite"]
+  },
+  {
+    "path": "Personal/Whiskers & Homes/petfinder-crisis-research-january-2026.md",
+    "existing_tags": ["competitor-research", "market-opportunity", "petfinder", "whiskersandhomes", "research", "api", "eks", "git"],
+    "add_tags": [],
+    "remove_tags": ["eks", "git"]
+  },
+  {
+    "path": "Personal/zshrc.md",
+    "existing_tags": ["aws", "docker", "java", "kubernetes", "lucille", "opensearch", "secrets", "config", "eks", "nasuni"],
+    "add_tags": ["credentials"],
+    "remove_tags": []
+  },
+  {
+    "path": "TODO.md",
+    "existing_tags": ["nasuni", "haystack-2026", "in-progress", "agentic-hybrid-search", "api", "architecture", "aws", "git", "opensearch"],
+    "add_tags": ["daily-log"],
+    "remove_tags": []
+  },
+  {
+    "path": "Task Archive.md",
+    "existing_tags": ["docker", "hybrid-search", "java", "lucille", "opensearch", "security", "nasumi", "thermofisher", "gartner", "aws", "eks", "s3-backups", "archive"],
+    "add_tags": [],
+    "remove_tags": []
+  }
+]

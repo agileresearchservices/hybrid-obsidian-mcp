@@ -63,7 +63,16 @@
       "Bash(docker compose *)",
       "Bash(pkill -f obsidian-mcp)",
       "mcp__obsidian-search__bulk_tag_verify",
-      "mcp__obsidian-search__bulk_tag_aggregate"
+      "mcp__obsidian-search__bulk_tag_aggregate",
+      "Bash(git push *)",
+      "Bash(pkill -f \"obsidian-mcp|python.*server\")",
+      "Read(//tmp/**)",
+      "Bash(pkill -9 -f \"python.*src.server|obsidian-mcp\")",
+      "mcp__obsidian-search__bulk_tag_create_batches",
+      "Bash(claude mcp *)",
+      "Bash(kill 44903 44901)",
+      "Bash(.venv/bin/obsidian-cli tag-list *)",
+      "Write(/Users/kevin/github/personal/hybrid-obsidian-mcp/logs/tag-run/results/**)"
     ]
   },
   "guard": {

@@ -1,0 +1,169 @@
+[
+  {
+    "path": "KMW/Customers/Nasuni/Hyrule Project/Configs and Keys/Okta Password.md",
+    "add_tags": [
+      "api-key",
+      "security"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/Nasuni/Hyrule Project/Configs and Keys/Okta Preview Password.md",
+    "add_tags": [
+      "api-key",
+      "security"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/Nasuni/Hyrule Project/Configs and Keys/Phase I Configs and Keys.md",
+    "add_tags": [],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/Nasuni/Hyrule Project/Configs and Keys/hyrule-dev-01 - Frank.md",
+    "add_tags": [],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/Nasuni/Hyrule Project/Configs and Keys/hyrule-eks-aws-profile-setup.md",
+    "add_tags": [
+      "infrastructure"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/Nasuni/Hyrule Project/Documentation/AWS Architecture Diagram EKS first deploy.md",
+    "add_tags": [
+      "technical"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/Nasuni/Hyrule Project/Documentation/Architecture Diagram Proposed 08212025.md",
+    "add_tags": [
+      "technical"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/Nasuni/Hyrule Project/Documentation/Cloud Services - Product and Architecture Overview.md",
+    "add_tags": [],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/Nasuni/Hyrule Project/Documentation/FDA Data Flow.md",
+    "add_tags": [],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/Nasuni/Hyrule Project/Documentation/Git Repo SSH issue (search_rag).md",
+    "add_tags": [
+      "ssh"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/Nasuni/Hyrule Project/Documentation/Lucille EKS Architecture & Design Principles.md",
+    "add_tags": [
+      "technical"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/Nasuni/Hyrule Project/Documentation/Operational Delta Design.md",
+    "add_tags": [
+      "technical"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/Nasuni/Hyrule Project/Documentation/Overview.md",
+    "add_tags": [
+      "documentation",
+      "product-overview"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/Nasuni/Hyrule Project/Documentation/Phase II Scope.md",
+    "add_tags": [],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/Nasuni/Hyrule Project/Documentation/Requirements.md",
+    "add_tags": [
+      "documentation",
+      "project-scope"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/Nasuni/Hyrule Project/Documentation/SEARCH_API_DEMO_QUERIES.md",
+    "add_tags": [
+      "technical"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/Nasuni/Hyrule Project/Documentation/Search Platform Requirements & Design (Nasuni Confluence page) 08222025.md",
+    "add_tags": [
+      "technical"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/Nasuni/Hyrule Project/Documentation/Tickets.md",
+    "add_tags": [
+      "documentation",
+      "planning"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/Nasuni/Hyrule Project/Governance/Governance Nasuni 02112026.md",
+    "add_tags": [
+      "planning"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/Nasuni/Hyrule Project/Governance/Governance Nasuni 08262025.md",
+    "add_tags": [],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/Nasuni/Hyrule Project/Governance/Governance Nasuni 09022025.md",
+    "add_tags": [],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/Nasuni/Hyrule Project/Governance/OnSite Nasuni 09032025.md",
+    "add_tags": [],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/Nasuni/Hyrule Project/Research/EKS Preparation.md",
+    "add_tags": [],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/Nasuni/Hyrule Project/Research/How to really do autocomplete by Max Irwin.md",
+    "add_tags": [
+      "search"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/Nasuni/Hyrule Project/Research/Nestjs vs. Nextjs.md",
+    "add_tags": [],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/Nasuni/Hyrule Project/Research/kmw-admin.md",
+    "add_tags": [
+      "development"
+    ],
+    "remove_tags": []
+  }
+]
