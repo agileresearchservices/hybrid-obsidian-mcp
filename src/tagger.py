@@ -514,7 +514,7 @@ For every batch, spawn one `general-purpose` subagent with **`model: "haiku"`**.
 
 Each subagent's prompt must include:
 - The note paths as a **JSON array inlined directly in the prompt** (do NOT ask the agent to read the batch file — copy the array here so the agent can call `bulk_tag_prepare` immediately)
-- The top-100 tags by frequency (call `mcp__obsidian-search__bulk_tag_taxonomy_topk()` or use this shorthand: `comma-separated top-100 tag names`). Send **only tag names**, not counts. This reduces token waste while covering ~80-90% of tagging needs.
+- The complete tag vocabulary as comma-separated tag names (call `mcp__obsidian-search__bulk_tag_taxonomy()` and extract tag names). Send **only tag names**, not counts. This ensures subagents see the full tag context, including rare/specialized tags that matter for domain-specific tagging.
 - Output file path (e.g. `logs/tag-run/results/batch_00.json`)
 - Rules:
   1. Call `mcp__obsidian-search__bulk_tag_prepare(paths=<batch paths from prompt>)` **once** per batch. The response includes `existing_tags` and `content_excerpt` for every note — do NOT call `read_note` per-file.
@@ -549,8 +549,8 @@ Call `mcp__obsidian-search__bulk_tag_taxonomy()` again to get the post-run taxon
 
 - All subagent LLM work runs on Haiku for cost efficiency. The orchestration is lightweight and stays on whatever model the user is using.
 - The vault watcher (launchd `com.obsidian.search-watcher`) auto-reindexes changed files within ~10s, so no manual reindex is needed after step 5.
-- **Token optimization**: Subagents receive only the top-100 tags by frequency (not all tags). This saves ~1,200 tokens per agent while covering ~80-90% of tagging needs.
-- **Future enhancement**: If Claude API supports prompt caching for MCP (check Claude API docs), the taxonomy + rules can be cached across all subagent calls, saving ~90% on those tokens.
+- **Complete taxonomy sent to subagents**: Subagents receive all tags (not compressed). This ensures rare/specialized tags are visible and can be proposed, avoiding duplication or missed tagging opportunities. Cost impact is minimal (~$0.003/run).
+- **Future enhancement**: If Claude API supports prompt caching for MCP (check Claude API docs), the full taxonomy + rules can be cached across all subagent calls, saving ~90% on those tokens.
 - **Consolidation**: The workflow automatically merges high-confidence near-duplicate tags (score ≥0.90). Tags with lower scores (0.85-0.89) are flagged for optional manual review.
 """
 
