@@ -30,7 +30,10 @@ def _safe_path(path: Path) -> bool:
 
 
 def _resolve(rel_path: str) -> Optional[Path]:
-    target = VAULT_PATH / rel_path if not rel_path.startswith("/") else Path(rel_path)
+    """Resolve a vault-relative path. Rejects absolute paths and traversal escapes."""
+    if not rel_path or rel_path.startswith("/") or rel_path.startswith("~"):
+        return None
+    target = VAULT_PATH / rel_path
     if not _safe_path(target):
         return None
     return target.resolve()
