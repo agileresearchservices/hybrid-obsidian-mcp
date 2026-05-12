@@ -361,6 +361,77 @@ def list_notes(
     return [hit["_source"] for hit in response["hits"]["hits"]]
 
 
+def graph_neighbors(target: str, hops: int = 1, limit: int = 20) -> list[dict]:
+    """Find notes 1–2 wikilink hops from `target` (the link-text of a note).
+
+    v1 matches on link text (the canonical Obsidian semantic), not on file path —
+    `[[KMW]]` matches notes that contain that wikilink regardless of which `.md`
+    file Obsidian would actually resolve it to. The target is normalized
+    (section anchor stripped, lowercased, whitespace collapsed).
+
+    Returns a deduped list of notes (collapsed by document_id) with the
+    `hop_distance` from the target.
+    """
+    from .vault_parser import normalize_wikilink
+
+    if hops not in (1, 2):
+        raise ValueError("graph_neighbors supports hops=1 or hops=2")
+
+    client = create_client()
+    norm_target = normalize_wikilink(target)
+    if not norm_target:
+        return []
+
+    # Hop 1: notes that link directly to the target.
+    hop1 = client.search(
+        index=OPENSEARCH_INDEX_NAME,
+        body={
+            "size": limit if hops == 1 else 200,
+            "_source": ["title", "date", "tags", "folder", "file_path", "doc_type", "wikilinks"],
+            "query": {"term": {"wikilinks": norm_target}},
+            "collapse": {"field": "document_id"},
+            "sort": [{"file_mtime": {"order": "desc", "missing": "_last"}}],
+        },
+    )
+    hop1_notes = [hit["_source"] for hit in hop1["hits"]["hits"]]
+    hop1_titles = {normalize_wikilink(n.get("title", "")) for n in hop1_notes}
+
+    results = [{**n, "hop_distance": 1} for n in hop1_notes]
+
+    if hops == 1:
+        return results[:limit]
+
+    # Hop 2: outgoing links from hop-1 notes, minus the target and the hop-1 set.
+    hop1_outgoing: set[str] = set()
+    for n in hop1_notes:
+        for link in n.get("wikilinks", []) or []:
+            hop1_outgoing.add(link)
+    hop1_outgoing.discard(norm_target)
+    hop1_outgoing -= hop1_titles
+    if not hop1_outgoing:
+        return results[:limit]
+
+    hop2 = client.search(
+        index=OPENSEARCH_INDEX_NAME,
+        body={
+            "size": limit,
+            "_source": ["title", "date", "tags", "folder", "file_path", "doc_type"],
+            "query": {"terms": {"wikilinks": list(hop1_outgoing)}},
+            "collapse": {"field": "document_id"},
+            "sort": [{"file_mtime": {"order": "desc", "missing": "_last"}}],
+        },
+    )
+    seen_paths = {n.get("file_path") for n in hop1_notes}
+    for hit in hop2["hits"]["hits"]:
+        src = hit["_source"]
+        if src.get("file_path") in seen_paths:
+            continue
+        seen_paths.add(src.get("file_path"))
+        results.append({**src, "hop_distance": 2})
+
+    return results[:limit]
+
+
 if __name__ == "__main__":
     import sys
 
