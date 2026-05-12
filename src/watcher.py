@@ -47,10 +47,15 @@ class VaultHandler(FileSystemEventHandler):
         self.timer.start()
 
     def _flush(self):
-        """Index all pending files; delete any chunks for renamed-away paths."""
+        """Index all pending files; delete any chunks for renamed-away / removed paths.
+
+        pending and pending_deletes are kept disjoint by on_moved/on_deleted (they
+        discard the source from pending), so a path queued for re-index won't also
+        be deleted in the same flush.
+        """
         if not self.pending and not self.pending_deletes:
             return
-        deletes = list(self.pending_deletes - self.pending)
+        deletes = list(self.pending_deletes)
         self.pending_deletes.clear()
         batch = list(self.pending)
         self.pending.clear()
@@ -99,10 +104,12 @@ class VaultHandler(FileSystemEventHandler):
         if event.is_directory:
             return
         # Stale chunks at the source path must be deleted, otherwise they
-        # linger under the old file_path forever.
+        # linger under the old file_path forever. If the source was queued
+        # for (re-)index in this debounce window, drop it — the file is gone.
         if self._should_index(event.src_path):
             try:
                 rel_src = str(Path(event.src_path).relative_to(self.vault_root))
+                self.pending.discard(rel_src)
                 self.pending_deletes.add(rel_src)
                 self._schedule_flush()
             except ValueError:
@@ -117,6 +124,9 @@ class VaultHandler(FileSystemEventHandler):
             rel = str(Path(event.src_path).relative_to(self.vault_root))
         except ValueError:
             return
+        # A modify+delete within the same debounce window must not try to
+        # index the now-missing path.
+        self.pending.discard(rel)
         self.pending_deletes.add(rel)
         self._schedule_flush()
 
