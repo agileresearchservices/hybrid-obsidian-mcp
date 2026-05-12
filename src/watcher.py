@@ -11,7 +11,7 @@ from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 
 from .config import OBSIDIAN_VAULT_PATH
-from .indexer import index_files
+from .indexer import delete_files, index_files
 
 logger = logging.getLogger(__name__)
 
@@ -24,6 +24,7 @@ class VaultHandler(FileSystemEventHandler):
     def __init__(self, vault_root: Path):
         self.vault_root = vault_root
         self.pending: set[str] = set()
+        self.pending_deletes: set[str] = set()
         self.timer: Timer | None = None
 
     def _should_index(self, path: str) -> bool:
@@ -46,11 +47,28 @@ class VaultHandler(FileSystemEventHandler):
         self.timer.start()
 
     def _flush(self):
-        """Index all pending files."""
-        if not self.pending:
+        """Index all pending files; delete any chunks for renamed-away / removed paths.
+
+        pending and pending_deletes are kept disjoint by on_moved/on_deleted (they
+        discard the source from pending), so a path queued for re-index won't also
+        be deleted in the same flush.
+        """
+        if not self.pending and not self.pending_deletes:
             return
+        deletes = list(self.pending_deletes)
+        self.pending_deletes.clear()
         batch = list(self.pending)
         self.pending.clear()
+
+        if deletes:
+            logger.info("Deleting stale chunks for %d renamed/removed file(s): %s", len(deletes), deletes)
+            try:
+                delete_files(deletes)
+            except Exception as e:
+                logger.warning("Stale-chunk delete failed: %s", e)
+
+        if not batch:
+            return
         logger.info("Indexing %d changed file(s): %s", len(batch), batch)
         try:
             stats = index_files(batch)
@@ -83,9 +101,34 @@ class VaultHandler(FileSystemEventHandler):
             self._enqueue(event.src_path)
 
     def on_moved(self, event):
-        # Index the destination file
-        if not event.is_directory and self._should_index(event.dest_path):
+        if event.is_directory:
+            return
+        # Stale chunks at the source path must be deleted, otherwise they
+        # linger under the old file_path forever. If the source was queued
+        # for (re-)index in this debounce window, drop it — the file is gone.
+        if self._should_index(event.src_path):
+            try:
+                rel_src = str(Path(event.src_path).relative_to(self.vault_root))
+                self.pending.discard(rel_src)
+                self.pending_deletes.add(rel_src)
+                self._schedule_flush()
+            except ValueError:
+                pass
+        if self._should_index(event.dest_path):
             self._enqueue(event.dest_path)
+
+    def on_deleted(self, event):
+        if event.is_directory or not self._should_index(event.src_path):
+            return
+        try:
+            rel = str(Path(event.src_path).relative_to(self.vault_root))
+        except ValueError:
+            return
+        # A modify+delete within the same debounce window must not try to
+        # index the now-missing path.
+        self.pending.discard(rel)
+        self.pending_deletes.add(rel)
+        self._schedule_flush()
 
 
 def main():
@@ -113,8 +156,12 @@ def main():
         logger.info("Shutting down...")
         if handler.timer:
             handler.timer.cancel()
-        if handler.pending:
-            logger.info("Flushing %d pending files before exit", len(handler.pending))
+        if handler.pending or handler.pending_deletes:
+            logger.info(
+                "Flushing %d pending / %d deletes before exit",
+                len(handler.pending),
+                len(handler.pending_deletes),
+            )
             handler._flush()
         observer.stop()
         observer.join()

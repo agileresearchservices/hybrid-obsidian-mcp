@@ -3,16 +3,13 @@
 import logging
 from typing import Optional
 
-import httpx
-
 from .config import (
-    OLLAMA_BASE_URL,
-    OLLAMA_EMBED_MODEL,
     OPENSEARCH_INDEX_NAME,
     OPENSEARCH_SEARCH_PIPELINE,
     RETRIEVER_K,
     RETRIEVER_FETCH_K,
 )
+from .embeddings import get_embedding as _embed
 from .opensearch_client import create_client
 from .reranker import get_reranker, ScoredChunk
 
@@ -20,14 +17,8 @@ logger = logging.getLogger(__name__)
 
 
 def get_embedding(text: str) -> list[float]:
-    """Get embedding from Ollama with asymmetric task prefix for nomic-embed-text."""
-    response = httpx.post(
-        f"{OLLAMA_BASE_URL}/api/embed",
-        json={"model": OLLAMA_EMBED_MODEL, "input": f"search_query: {text}"},
-        timeout=60.0,
-    )
-    response.raise_for_status()
-    return response.json()["embeddings"][0]
+    """Embed a search query (asymmetric `search_query:` prefix for nomic-embed-text)."""
+    return _embed(text, task="search_query")
 
 
 def hybrid_search(
@@ -114,7 +105,14 @@ def hybrid_search(
             params={"search_pipeline": OPENSEARCH_SEARCH_PIPELINE},
         )
     except Exception as e:
-        logger.warning("Native hybrid search failed, falling back to RRF: %s", e)
+        logger.warning(
+            "Native hybrid search failed (%s: %s) — falling back to client-side RRF. "
+            "Search pipeline '%s' may be missing or misconfigured; results will use RRF "
+            "weighting rather than the configured VECTOR_WEIGHT/LEXICAL_WEIGHT.",
+            type(e).__name__,
+            e,
+            OPENSEARCH_SEARCH_PIPELINE,
+        )
         return _rrf_fallback(query, query_embedding, k, fetch_k, filters, rerank)
 
     hits = response["hits"]["hits"]

@@ -208,7 +208,7 @@ def cmd_tag_apply(args: argparse.Namespace) -> int:
         print('{"error": "expected JSON list of {path, add_tags, remove_tags}"}',
               file=sys.stderr)
         return 2
-    print(json.dumps(tagger.bulk_apply(data), indent=2))
+    print(json.dumps(tagger.bulk_apply(data, dry_run=args.dry_run), indent=2))
     return 0
 
 
@@ -364,6 +364,7 @@ def build_parser() -> argparse.ArgumentParser:
     p = sp.add_parser("tag-list", help="Print all notes as JSON (for bulk tag batching)")
     p.set_defaults(func=cmd_tag_list)
     p = sp.add_parser("tag-apply", help="Read [{path, add_tags, remove_tags}] JSON from stdin and apply")
+    p.add_argument("--dry-run", action="store_true", help="Preview without writing to the vault")
     p.set_defaults(func=cmd_tag_apply)
     p = sp.add_parser("tag-verify", help="Verify a result file covers its batch input (exit 1 if not ok)")
     p.add_argument("batch_file")

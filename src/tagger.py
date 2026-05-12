@@ -353,14 +353,54 @@ def merge_tags(
     return result
 
 
-def bulk_apply(changes: list[dict]) -> list[dict]:
-    """Apply a list of {path, add_tags, remove_tags} entries. Returns per-entry results."""
-    results = []
+def bulk_apply(changes: list[dict], dry_run: bool = False) -> list[dict]:
+    """Apply a list of {path, add_tags, remove_tags} entries.
+
+    Pre-validates every path before writing anything; if any path is missing,
+    no writes occur and every entry is returned with status=preflight_failed.
+    With dry_run=True, returns the would-be-written tag merges without mutating
+    the vault.
+    """
+    # Preflight: resolve all paths up front so a missing file mid-batch can't
+    # leave the vault in a partial state.
+    preflight: list[tuple[dict, Optional[Path], Optional[str]]] = []
+    missing_paths: list[str] = []
     for entry in changes:
         rel = entry.get("path")
         if not rel:
-            results.append({"status": "error", "reason": "missing path"})
+            preflight.append((entry, None, "missing path"))
             continue
+        resolved = _resolve_path(rel)
+        if resolved is None:
+            missing_paths.append(rel)
+            preflight.append((entry, None, "file not found"))
+        else:
+            preflight.append((entry, resolved, None))
+
+    if missing_paths:
+        return [
+            {
+                "path": entry.get("path"),
+                "status": "preflight_failed",
+                "reason": reason or f"batch aborted: {len(missing_paths)} path(s) missing",
+            }
+            for entry, _, reason in preflight
+        ]
+
+    if dry_run:
+        return [
+            {
+                "path": entry.get("path"),
+                "status": "dry_run",
+                "add_tags": entry.get("add_tags") or [],
+                "remove_tags": entry.get("remove_tags") or [],
+            }
+            for entry, _, _ in preflight
+        ]
+
+    results: list[dict] = []
+    for entry, _, _ in preflight:
+        rel = entry["path"]
         try:
             results.append(merge_tags(
                 rel_path=rel,

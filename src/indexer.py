@@ -1,35 +1,19 @@
 """Vault indexer - crawls Obsidian vault, generates embeddings via Ollama, bulk indexes to OpenSearch."""
 
 import logging
-import sys
 import time
 from hashlib import sha256
 from pathlib import Path
 from typing import Optional
 
-import httpx
 from opensearchpy import helpers as os_helpers
 
-from .config import (
-    OLLAMA_BASE_URL,
-    OLLAMA_EMBED_MODEL,
-    OPENSEARCH_INDEX_NAME,
-)
+from .config import OPENSEARCH_INDEX_NAME
+from .embeddings import get_embeddings_batch
 from .opensearch_client import create_client, ensure_index
 from .vault_parser import parse_vault, ParsedNote
 
 logger = logging.getLogger(__name__)
-
-
-def get_embedding(text: str, base_url: str = OLLAMA_BASE_URL, model: str = OLLAMA_EMBED_MODEL) -> list[float]:
-    """Get embedding vector from Ollama."""
-    response = httpx.post(
-        f"{base_url}/api/embed",
-        json={"model": model, "input": text},
-        timeout=60.0,
-    )
-    response.raise_for_status()
-    return response.json()["embeddings"][0]
 
 
 def make_doc_id(file_path: str) -> str:
@@ -37,67 +21,95 @@ def make_doc_id(file_path: str) -> str:
     return sha256(file_path.encode()).hexdigest()[:16]
 
 
-def index_note(note: ParsedNote, client, batch_actions: list, vault_root: Optional[Path] = None) -> int:
-    """Add a note's chunks to the batch action list. Returns chunk count."""
+def _build_embed_input(note: ParsedNote, chunk_text: str) -> str:
+    tags_str = ", ".join(note.tags[:8]) if note.tags else ""
+    return (
+        f"Title: {note.title}\n"
+        f"Type: {note.doc_type}\n"
+        f"Tags: {tags_str}\n\n"
+        f"{chunk_text}"
+    )
+
+
+def _prepare_note_docs(note: ParsedNote, vault_root: Optional[Path]) -> list[tuple[str, dict]]:
+    """Return [(embed_input, doc_without_embedding), ...] for each chunk."""
     doc_id = make_doc_id(note.file_path)
-    chunk_count = 0
+    out: list[tuple[str, dict]] = []
+    mtime_ms: Optional[int] = None
+    if vault_root:
+        abs_path = vault_root / note.file_path
+        if abs_path.exists():
+            mtime_ms = int(abs_path.stat().st_mtime * 1000)
 
     for chunk_idx, chunk_text in enumerate(note.chunks):
-        try:
-            # Enriched embedding input: task prefix + metadata context for nomic-embed-text
-            tags_str = ", ".join(note.tags[:8]) if note.tags else ""
-            embed_input = (
-                f"search_document: Title: {note.title}\n"
-                f"Type: {note.doc_type}\n"
-                f"Tags: {tags_str}\n\n"
-                f"{chunk_text}"
-            )
-            embedding = get_embedding(embed_input)
-        except Exception as e:
-            logger.warning("Embedding failed for %s chunk %d: %s", note.file_path, chunk_idx, e)
-            continue
-
         doc = {
             "document_id": doc_id,
             "chunk_index": chunk_idx,
             "chunk_text": chunk_text,
-            "embedding": embedding,
             "title": note.title,
             "tags": note.tags,
             "folder": note.folder,
             "file_path": note.file_path,
             "doc_type": note.doc_type,
         }
-        # Only include date if it's a valid YYYY-MM-DD
         if note.date and len(note.date) == 10 and note.date[4] == "-" and note.date[7] == "-":
             doc["date"] = note.date
+        if mtime_ms is not None:
+            doc["file_mtime"] = mtime_ms
+        out.append((_build_embed_input(note, chunk_text), doc))
+    return out
 
-        # Capture file modification time (mtime) as epoch milliseconds
-        if vault_root:
-            abs_path = vault_root / note.file_path
-            if abs_path.exists():
-                doc["file_mtime"] = int(abs_path.stat().st_mtime * 1000)
 
+def _embed_and_extend(prepared: list[tuple[str, dict]], batch_actions: list) -> int:
+    """Embed prepared (input, doc) pairs as one Ollama call and append to batch_actions.
+
+    Returns the number of chunks added. On Ollama failure, logs and returns 0 —
+    the rest of the indexing run continues with the remaining notes.
+    """
+    if not prepared:
+        return 0
+    inputs = [p[0] for p in prepared]
+    try:
+        embeddings = get_embeddings_batch(inputs, task="search_document")
+    except Exception as e:
+        logger.warning("Embedding batch failed (%d chunks): %s", len(inputs), e)
+        return 0
+    for (_, doc), embedding in zip(prepared, embeddings):
+        doc["embedding"] = embedding
         batch_actions.append({
             "_index": OPENSEARCH_INDEX_NAME,
-            "_id": f"{doc_id}-{chunk_idx}",
+            "_id": f"{doc['document_id']}-{doc['chunk_index']}",
             "_source": doc,
         })
-        chunk_count += 1
+    return len(prepared)
 
-    return chunk_count
+
+def delete_files(file_paths: list[str], client=None) -> int:
+    """Delete all chunks for the given vault-relative paths. Returns count of paths processed."""
+    if not file_paths:
+        return 0
+    client = client or create_client()
+    try:
+        client.delete_by_query(
+            index=OPENSEARCH_INDEX_NAME,
+            body={"query": {"terms": {"file_path": file_paths}}},
+            refresh=True,
+        )
+    except Exception as e:
+        logger.debug("delete_files failed for %s: %s", file_paths, e)
+        return 0
+    return len(file_paths)
 
 
 def index_files(file_paths: list[str], vault_path: Optional[str] = None, batch_size: int = 50) -> dict:
     """Incrementally index specific files into OpenSearch.
 
-    Deletes existing chunks for each file, then re-parses and re-indexes.
-    File paths should be relative to the vault root (e.g. "Daily Log/2026-04-08.md").
-
-    Returns stats dict with counts.
+    Deletes existing chunks for each file (by file_path), then re-parses and re-indexes
+    with batched embeddings. Paths are relative to the vault root.
     """
     from pathlib import Path
     from .config import OBSIDIAN_VAULT_PATH
+    from .vault_parser import parse_note
 
     vault_root = Path(vault_path or OBSIDIAN_VAULT_PATH)
     client = create_client()
@@ -106,9 +118,13 @@ def index_files(file_paths: list[str], vault_path: Optional[str] = None, batch_s
     total_docs = 0
     total_chunks = 0
     errors = 0
-    deleted = 0
     batch_actions: list = []
+    pending: list[tuple[str, dict]] = []
     start_time = time.time()
+
+    # Single delete_by_query covers all paths — cheaper than one-call-per-file.
+    existing = [p for p in file_paths if (vault_root / p).exists()]
+    deleted = delete_files(existing, client=client)
 
     for rel_path in file_paths:
         full_path = vault_root / rel_path
@@ -117,40 +133,27 @@ def index_files(file_paths: list[str], vault_path: Optional[str] = None, batch_s
             errors += 1
             continue
 
-        doc_id = make_doc_id(rel_path)
-
-        # Delete existing chunks for this document
-        try:
-            client.delete_by_query(
-                index=OPENSEARCH_INDEX_NAME,
-                body={"query": {"term": {"document_id": doc_id}}},
-                refresh=True,
-            )
-            deleted += 1
-        except Exception as e:
-            logger.debug("No existing chunks to delete for %s: %s", rel_path, e)
-
-        # Parse and re-index
-        from .vault_parser import parse_note
         note = parse_note(full_path, vault_root)
         if not note:
             logger.warning("Could not parse: %s", rel_path)
             errors += 1
             continue
 
-        try:
-            chunks = index_note(note, client, batch_actions, vault_root=vault_root)
-            if chunks > 0:
-                total_docs += 1
-                total_chunks += chunks
-        except Exception as e:
-            logger.warning("Error indexing %s: %s", rel_path, e)
-            errors += 1
+        prepared = _prepare_note_docs(note, vault_root)
+        if not prepared:
+            continue
+        pending.extend(prepared)
+        total_docs += 1
 
-        if len(batch_actions) >= batch_size:
-            _flush_batch(client, batch_actions)
-            batch_actions.clear()
+        if len(pending) >= batch_size:
+            total_chunks += _embed_and_extend(pending, batch_actions)
+            pending = []
+            if len(batch_actions) >= batch_size:
+                _flush_batch(client, batch_actions)
+                batch_actions.clear()
 
+    if pending:
+        total_chunks += _embed_and_extend(pending, batch_actions)
     if batch_actions:
         _flush_batch(client, batch_actions)
 
@@ -190,6 +193,7 @@ def index_vault(vault_path: Optional[str] = None, batch_size: int = 50) -> dict:
     total_chunks = 0
     errors = 0
     batch_actions: list = []
+    pending: list[tuple[str, dict]] = []
     start_time = time.time()
 
     from .config import OBSIDIAN_VAULT_PATH
@@ -197,23 +201,27 @@ def index_vault(vault_path: Optional[str] = None, batch_size: int = 50) -> dict:
 
     for i, note in enumerate(notes, 1):
         try:
-            chunks = index_note(note, client, batch_actions, vault_root=vault_root)
-            if chunks > 0:
-                total_docs += 1
-                total_chunks += chunks
+            prepared = _prepare_note_docs(note, vault_root)
         except Exception as e:
-            logger.warning("Error indexing %s: %s", note.file_path, e)
+            logger.warning("Error preparing %s: %s", note.file_path, e)
             errors += 1
+            continue
+        if prepared:
+            pending.extend(prepared)
+            total_docs += 1
 
-        # Flush batch
-        if len(batch_actions) >= batch_size:
-            _flush_batch(client, batch_actions)
-            batch_actions.clear()
+        if len(pending) >= batch_size:
+            total_chunks += _embed_and_extend(pending, batch_actions)
+            pending = []
+            if len(batch_actions) >= batch_size:
+                _flush_batch(client, batch_actions)
+                batch_actions.clear()
 
         if i % 10 == 0:
             print(f"  Processed {i}/{len(notes)} notes ({total_chunks} chunks)...")
 
-    # Final flush
+    if pending:
+        total_chunks += _embed_and_extend(pending, batch_actions)
     if batch_actions:
         _flush_batch(client, batch_actions)
 
