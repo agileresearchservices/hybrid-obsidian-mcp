@@ -115,6 +115,7 @@ def list_notes(
     date_from: Optional[str] = None,
     date_to: Optional[str] = None,
     limit: int = 20,
+    exclude_tags: Optional[str] = None,
 ) -> str:
     """List Obsidian notes matching filters (without full-text search).
 
@@ -124,8 +125,10 @@ def list_notes(
         date_from: Filter from date (YYYY-MM-DD)
         date_to: Filter to date (YYYY-MM-DD)
         limit: Max notes to return (default 20)
+        exclude_tags: Comma-separated tags to EXCLUDE (e.g. "archived,draft")
     """
     tag_list = [t.strip() for t in tags.split(",")] if tags else None
+    exclude_list = [t.strip() for t in exclude_tags.split(",")] if exclude_tags else None
 
     results = list_notes_search(
         folder=folder,
@@ -133,6 +136,7 @@ def list_notes(
         date_from=date_from,
         date_to=date_to,
         limit=limit,
+        exclude_tags=exclude_list,
     )
 
     if not results:
