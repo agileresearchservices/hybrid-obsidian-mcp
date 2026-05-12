@@ -382,16 +382,19 @@ def bulk_tag_create_batches(paths: list[str], batch_size: Optional[int] = None) 
 
 
 @mcp.tool()
-def bulk_tag_apply(changes: list[dict]) -> str:
+def bulk_tag_apply(changes: list[dict], dry_run: bool = False) -> str:
     """Apply a batch of tag merges to notes. Each change entry is
     {path: str, add_tags: list[str], remove_tags: list[str]}.
 
     Tags are normalized to lowercase kebab-case, deduplicated, aliased, and
     merged into existing frontmatter. Blocklisted tags are dropped; new
-    proposals are capped at MAX_NEW_TAGS_PER_NOTE per note. Changes are
-    always written to the vault.
+    proposals are capped at MAX_NEW_TAGS_PER_NOTE per note.
+
+    All paths are validated up front — if any path is missing, the batch is
+    aborted with status=preflight_failed and no writes happen. Pass dry_run=True
+    to preview without mutating the vault.
     """
-    return json.dumps(tagger.bulk_apply(changes), indent=2)
+    return json.dumps(tagger.bulk_apply(changes, dry_run=dry_run), indent=2)
 
 
 @mcp.tool()
