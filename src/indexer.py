@@ -326,13 +326,25 @@ def index_vault(vault_path: Optional[str] = None, batch_size: int = 50) -> dict:
 
 
 def _flush_batch(client, actions: list) -> None:
-    """Bulk index a batch of actions."""
+    """Bulk index a batch of actions.
+
+    `raise_on_error=False` keeps a single bad doc from killing the whole run,
+    but we surface the per-doc reasons so silent drops don't hide. OpenSearch
+    returns each failed item as `{op: {error: {type, reason, ...}, _id}}`.
+    """
     try:
         success, errors = os_helpers.bulk(
             client, actions, refresh=False, raise_on_error=False
         )
         if errors:
-            logger.warning("Bulk indexing had %d errors", len(errors))
+            logger.warning("Bulk indexing had %d errors:", len(errors))
+            for item in errors:
+                # Each item is a single-key dict keyed by op (typically "index").
+                op_result = next(iter(item.values())) if isinstance(item, dict) else {}
+                doc_id = op_result.get("_id", "?")
+                err = op_result.get("error") or {}
+                reason = err.get("reason", str(err))
+                logger.warning("  - %s: %s: %s", doc_id, err.get("type", "?"), str(reason)[:200])
     except Exception as e:
         logger.warning("Bulk indexing exception: %s", e)
 

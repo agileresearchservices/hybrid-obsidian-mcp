@@ -2,6 +2,7 @@
 
 import re
 from dataclasses import dataclass, field
+from datetime import datetime
 from pathlib import Path
 from typing import Optional
 
@@ -106,15 +107,26 @@ def normalize_wikilink(target: str) -> str:
 
 
 def normalize_date(date_value) -> Optional[str]:
-    """Normalize a date value to YYYY-MM-DD string."""
+    """Normalize a date value to a real YYYY-MM-DD calendar date string.
+
+    Returns None when the input doesn't look like a date *or* when it looks
+    like one but isn't valid (e.g. frontmatter typos like `1031-20-25` or
+    `9999-99-99`). OpenSearch's strict date parser rejects invalid dates,
+    and the bulk indexer's `raise_on_error=False` would silently drop the
+    whole chunk — better to drop the bad date and index the rest of the doc.
+    """
     if date_value is None:
         return None
     date_str = str(date_value)
-    # Handle ISO datetime format
     match = re.match(r"(\d{4}-\d{2}-\d{2})", date_str)
-    if match:
-        return match.group(1)
-    return None
+    if not match:
+        return None
+    candidate = match.group(1)
+    try:
+        datetime.strptime(candidate, "%Y-%m-%d")
+    except ValueError:
+        return None
+    return candidate
 
 
 def parse_note(file_path: Path, vault_root: Path) -> Optional[ParsedNote]:
