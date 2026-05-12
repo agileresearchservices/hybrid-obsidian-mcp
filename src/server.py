@@ -23,6 +23,7 @@ def search_notes(
     date_from: Optional[str] = None,
     date_to: Optional[str] = None,
     folder: Optional[str] = None,
+    exclude_tags: Optional[str] = None,
     rerank: bool = True,
 ) -> str:
     """Search Obsidian vault notes using hybrid search (semantic + lexical).
@@ -37,9 +38,11 @@ def search_notes(
         date_from: Filter notes from this date (YYYY-MM-DD)
         date_to: Filter notes up to this date (YYYY-MM-DD)
         folder: Filter by folder path (e.g. "Daily Log", "KMW/Customers")
+        exclude_tags: Comma-separated tags to EXCLUDE (e.g. "archived,draft")
         rerank: Whether to apply cross-encoder reranking (default true)
     """
     tag_list = [t.strip() for t in tags.split(",")] if tags else None
+    exclude_list = [t.strip() for t in exclude_tags.split(",")] if exclude_tags else None
 
     results = hybrid_search(
         query=query,
@@ -48,6 +51,7 @@ def search_notes(
         date_from=date_from,
         date_to=date_to,
         folder=folder,
+        exclude_tags=exclude_list,
         rerank=rerank,
     )
 

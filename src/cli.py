@@ -120,6 +120,7 @@ def cmd_search(args: argparse.Namespace) -> int:
         folder=args.folder,
         date_from=args.date_from,
         date_to=args.date_to,
+        exclude_tags=_split_csv(args.exclude_tags),
         rerank=not args.no_rerank,
     )
     if not results:
@@ -146,6 +147,7 @@ def cmd_list_notes(args: argparse.Namespace) -> int:
         date_from=args.date_from,
         date_to=args.date_to,
         limit=args.limit,
+        exclude_tags=_split_csv(args.exclude_tags),
     )
     if not results:
         print("No notes found matching filters.")
@@ -337,6 +339,7 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("query", nargs="+")
     p.add_argument("--k", type=int, default=5)
     p.add_argument("--tags")
+    p.add_argument("--exclude-tags", dest="exclude_tags")
     p.add_argument("--folder")
     p.add_argument("--date-from", dest="date_from")
     p.add_argument("--date-to", dest="date_to")
@@ -346,6 +349,7 @@ def build_parser() -> argparse.ArgumentParser:
     p = sp.add_parser("list-notes")
     p.add_argument("--folder")
     p.add_argument("--tags")
+    p.add_argument("--exclude-tags", dest="exclude_tags")
     p.add_argument("--date-from", dest="date_from")
     p.add_argument("--date-to", dest="date_to")
     p.add_argument("--limit", type=int, default=20)

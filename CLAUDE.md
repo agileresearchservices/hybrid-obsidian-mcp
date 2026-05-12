@@ -88,7 +88,12 @@ LEXICAL_WEIGHT=0.7
 RETRIEVER_K=10          # results returned
 RETRIEVER_FETCH_K=40    # candidates before reranking
 ENABLE_RERANKING=true
+RECENCY_DECAY_ENABLED=true
+RECENCY_DECAY_SCALE=90d
+RECENCY_DECAY_WEIGHT=0.3
 ```
+
+Recency decay applies a `gauss(file_mtime)` function score to the BM25 sub-query of `hybrid_search` (and to the BM25 side of the RRF fallback). The hybrid search-pipeline's min-max normalization compresses absolute score magnitudes, so the decay influences in-window ordering rather than dominating the final score — tune `WEIGHT`/`SCALE` if you want a stronger pull. `exclude_tags` (comma-separated for the MCP tool / CLI) is a `must_not` filter on `tags.keyword` and is honored by both the hybrid path and the RRF fallback.
 
 ## OpenSearch Index Design
 

@@ -42,3 +42,9 @@ LEXICAL_WEIGHT = float(os.getenv("LEXICAL_WEIGHT", 0.7))
 # Chunking
 CHUNK_SIZE = int(os.getenv("CHUNK_SIZE", 1000))
 CHUNK_OVERLAP = int(os.getenv("CHUNK_OVERLAP", 200))
+
+# Recency decay (applied to BM25 sub-query of hybrid + fallback)
+# weight=0 disables the boost; scale is OpenSearch date-math (e.g. "90d", "30d").
+RECENCY_DECAY_ENABLED = os.getenv("RECENCY_DECAY_ENABLED", "true").lower() == "true"
+RECENCY_DECAY_SCALE = os.getenv("RECENCY_DECAY_SCALE", "90d")
+RECENCY_DECAY_WEIGHT = float(os.getenv("RECENCY_DECAY_WEIGHT", 0.3))

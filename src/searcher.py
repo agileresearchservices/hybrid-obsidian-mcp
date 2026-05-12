@@ -8,6 +8,9 @@ from .config import (
     OPENSEARCH_SEARCH_PIPELINE,
     RETRIEVER_K,
     RETRIEVER_FETCH_K,
+    RECENCY_DECAY_ENABLED,
+    RECENCY_DECAY_SCALE,
+    RECENCY_DECAY_WEIGHT,
 )
 from .embeddings import get_embedding as _embed
 from .opensearch_client import create_client
@@ -21,6 +24,62 @@ def get_embedding(text: str) -> list[float]:
     return _embed(text, task="search_query")
 
 
+def _build_filters(
+    tags: Optional[list[str]],
+    date_from: Optional[str],
+    date_to: Optional[str],
+    folder: Optional[str],
+    exclude_tags: Optional[list[str]],
+) -> tuple[list[dict], list[dict]]:
+    """Return (must_filters, must_not_filters) for the standard search params."""
+    filters: list[dict] = []
+    must_not: list[dict] = []
+    if tags:
+        filters.append({"terms": {"tags.keyword": tags}})
+    if date_from or date_to:
+        date_range: dict = {}
+        if date_from:
+            date_range["gte"] = date_from
+        if date_to:
+            date_range["lte"] = date_to
+        filters.append({"range": {"date": date_range}})
+    if folder:
+        filters.append({"prefix": {"folder": folder}})
+    if exclude_tags:
+        must_not.append({"terms": {"tags.keyword": exclude_tags}})
+    return filters, must_not
+
+
+def _apply_recency_decay(query: dict) -> dict:
+    """Wrap a query in function_score with a gauss decay on file_mtime.
+
+    No-op when disabled or weight=0. Multiplicative boost so a doc with low
+    text relevance can't be lifted past a strong-match older doc — the decay
+    only adjusts the ordering of similar-scoring results.
+    """
+    if not RECENCY_DECAY_ENABLED or RECENCY_DECAY_WEIGHT <= 0:
+        return query
+    return {
+        "function_score": {
+            "query": query,
+            "functions": [
+                {
+                    "gauss": {
+                        "file_mtime": {
+                            "origin": "now",
+                            "scale": RECENCY_DECAY_SCALE,
+                            "decay": 0.5,
+                        }
+                    },
+                    "weight": RECENCY_DECAY_WEIGHT,
+                }
+            ],
+            "score_mode": "multiply",
+            "boost_mode": "multiply",
+        }
+    }
+
+
 def hybrid_search(
     query: str,
     k: int = RETRIEVER_K,
@@ -29,6 +88,7 @@ def hybrid_search(
     date_from: Optional[str] = None,
     date_to: Optional[str] = None,
     folder: Optional[str] = None,
+    exclude_tags: Optional[list[str]] = None,
     rerank: bool = True,
 ) -> list[ScoredChunk]:
     """Execute hybrid search combining kNN vector + BM25 lexical.
@@ -39,21 +99,14 @@ def hybrid_search(
     client = create_client()
     query_embedding = get_embedding(query)
 
-    # Build filter clauses
-    filters = []
-    if tags:
-        filters.append({"terms": {"tags.keyword": tags}})
-    if date_from or date_to:
-        date_range = {}
-        if date_from:
-            date_range["gte"] = date_from
-        if date_to:
-            date_range["lte"] = date_to
-        filters.append({"range": {"date": date_range}})
-    if folder:
-        filters.append({"prefix": {"folder": folder}})
+    filters, must_not = _build_filters(tags, date_from, date_to, folder, exclude_tags)
 
-    # Build kNN query with optional filter
+    # Build kNN query with optional filter (kNN doesn't honor must_not via the
+    # nested filter; emulate exclusion by treating must_not as a negated filter).
+    knn_filter_clauses = list(filters)
+    if must_not:
+        knn_filter_clauses.append({"bool": {"must_not": must_not}})
+
     knn_query = {
         "knn": {
             "embedding": {
@@ -62,30 +115,30 @@ def hybrid_search(
             }
         }
     }
-    if filters:
-        knn_query["knn"]["embedding"]["filter"] = {"bool": {"must": filters}}
+    if knn_filter_clauses:
+        knn_query["knn"]["embedding"]["filter"] = {"bool": {"must": knn_filter_clauses}}
 
-    # Build BM25 query with optional filter
-    bm25_query: dict = {
+    # Build BM25 query — wrap in function_score for recency decay before any
+    # filter wrapping so the decay sees the raw match score.
+    bm25_match: dict = {
         "multi_match": {
             "query": query,
             "fields": ["chunk_text", "tags^2", "title^3"],
             "type": "best_fields",
         }
     }
-    if filters:
-        bm25_query = {
+    bm25_with_decay = _apply_recency_decay(bm25_match)
+
+    if filters or must_not:
+        bm25_query: dict = {
             "bool": {
-                "must": [{
-                    "multi_match": {
-                        "query": query,
-                        "fields": ["chunk_text", "tags^2"],
-                        "type": "best_fields",
-                    }
-                }],
+                "must": [bm25_with_decay],
                 "filter": filters,
+                "must_not": must_not,
             }
         }
+    else:
+        bm25_query = bm25_with_decay
 
     # Native hybrid query
     body = {
@@ -113,7 +166,7 @@ def hybrid_search(
             e,
             OPENSEARCH_SEARCH_PIPELINE,
         )
-        return _rrf_fallback(query, query_embedding, k, fetch_k, filters, rerank)
+        return _rrf_fallback(query, query_embedding, k, fetch_k, filters, must_not, rerank)
 
     hits = response["hits"]["hits"]
     chunks = [{"_score": hit["_score"], **hit["_source"]} for hit in hits]
@@ -139,6 +192,7 @@ def _rrf_fallback(
     k: int,
     fetch_k: int,
     filters: list,
+    must_not: list,
     rerank: bool,
 ) -> list[ScoredChunk]:
     """Client-side RRF when native hybrid query isn't available."""
@@ -152,6 +206,8 @@ def _rrf_fallback(
     vector_query: dict = {"bool": {"must": [knn_body]}}
     if filters:
         vector_query["bool"]["filter"] = filters
+    if must_not:
+        vector_query["bool"]["must_not"] = must_not
 
     vector_response = client.search(
         index=OPENSEARCH_INDEX_NAME,
@@ -162,17 +218,21 @@ def _rrf_fallback(
         },
     )
 
-    # Text search
-    text_must: dict = {
+    # Text search — wrap the match in function_score so recency decay applies
+    # in the fallback path too.
+    text_match: dict = {
         "multi_match": {
             "query": query,
             "fields": ["chunk_text", "tags^2", "title^3"],
             "type": "best_fields",
         }
     }
+    text_must = _apply_recency_decay(text_match)
     text_query: dict = {"bool": {"must": [text_must]}}
     if filters:
         text_query["bool"]["filter"] = filters
+    if must_not:
+        text_query["bool"]["must_not"] = must_not
 
     text_response = client.search(
         index=OPENSEARCH_INDEX_NAME,
@@ -222,22 +282,12 @@ def keyword_search(
     date_from: Optional[str] = None,
     date_to: Optional[str] = None,
     folder: Optional[str] = None,
+    exclude_tags: Optional[list[str]] = None,
 ) -> list[ScoredChunk]:
     """Pure BM25 text search (no vector component)."""
     client = create_client()
 
-    filters = []
-    if tags:
-        filters.append({"terms": {"tags.keyword": tags}})
-    if date_from or date_to:
-        date_range = {}
-        if date_from:
-            date_range["gte"] = date_from
-        if date_to:
-            date_range["lte"] = date_to
-        filters.append({"range": {"date": date_range}})
-    if folder:
-        filters.append({"prefix": {"folder": folder}})
+    filters, must_not = _build_filters(tags, date_from, date_to, folder, exclude_tags)
 
     must = [{
         "multi_match": {
@@ -249,6 +299,8 @@ def keyword_search(
     body_query: dict = {"bool": {"must": must}}
     if filters:
         body_query["bool"]["filter"] = filters
+    if must_not:
+        body_query["bool"]["must_not"] = must_not
 
     response = client.search(
         index=OPENSEARCH_INDEX_NAME,
@@ -279,26 +331,21 @@ def list_notes(
     date_from: Optional[str] = None,
     date_to: Optional[str] = None,
     limit: int = 50,
+    exclude_tags: Optional[list[str]] = None,
 ) -> list[dict]:
     """List notes matching filters (no full-text search, just metadata filtering)."""
     client = create_client()
 
-    filters = []
-    if tags:
-        filters.append({"terms": {"tags.keyword": tags}})
-    if date_from or date_to:
-        date_range = {}
-        if date_from:
-            date_range["gte"] = date_from
-        if date_to:
-            date_range["lte"] = date_to
-        filters.append({"range": {"date": date_range}})
-    if folder:
-        filters.append({"prefix": {"folder": folder}})
+    filters, must_not = _build_filters(tags, date_from, date_to, folder, exclude_tags)
 
     query: dict = {"match_all": {}}
-    if filters:
-        query = {"bool": {"filter": filters}}
+    if filters or must_not:
+        bool_body: dict = {}
+        if filters:
+            bool_body["filter"] = filters
+        if must_not:
+            bool_body["must_not"] = must_not
+        query = {"bool": bool_body}
 
     response = client.search(
         index=OPENSEARCH_INDEX_NAME,
