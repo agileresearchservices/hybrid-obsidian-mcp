@@ -29,6 +29,27 @@ def test_extract_wiki_links_with_alias():
     assert extract_wiki_links(text) == ["KMW", "Hyrule Project"]
 
 
+def test_extract_wiki_links_ignores_code_blocks():
+    text = """
+Real link: [[KMW]]
+
+```bash
+if [[ -z "$x" ]]; then
+  echo "[[Not a link]]"
+fi
+```
+
+Inline `if [[ -z "$x" ]]` should also be skipped.
+"""
+    assert extract_wiki_links(text) == ["KMW"]
+
+
+def test_extract_wiki_links_skips_bash_in_unclosed_fence():
+    # Slack copy-paste often produces a single-line fence that never closes.
+    text = '- chat: ```    if [[ -z "$LB_URL" ]]; then         LB_URL="..." fi\nReal: [[Hyrule Project]]\n'
+    assert extract_wiki_links(text) == ["Hyrule Project"]
+
+
 def test_parsed_note_default_wikilinks_is_empty():
     n = ParsedNote(
         file_path="a.md", title="A", date=None, tags=[], folder="",

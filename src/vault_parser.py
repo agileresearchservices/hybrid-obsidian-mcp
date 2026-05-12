@@ -81,8 +81,16 @@ def extract_inline_tags(content: str) -> list[str]:
 
 
 def extract_wiki_links(content: str) -> list[str]:
-    """Extract [[wiki links]] from content."""
-    return re.findall(r"\[\[([^\]|]+)(?:\|[^\]]+)?\]\]", content)
+    """Extract [[wiki links]] from content, ignoring matches inside code blocks.
+
+    Shell scripts use `[[ ... ]]` for conditionals; we strip fenced and inline
+    code first, then require the wiki-link inner text to start with a non-space
+    character and stay on one line. That kicks out residual matches from
+    unclosed Slack-style ``` fences (which leave bash conditionals exposed).
+    """
+    cleaned = re.sub(r"```[\s\S]*?```", "", content)
+    cleaned = re.sub(r"`[^`]+`", "", cleaned)
+    return re.findall(r"\[\[(\S[^\]|\n]*?)(?:\|[^\]\n]+)?\]\]", cleaned)
 
 
 def normalize_wikilink(target: str) -> str:
@@ -144,7 +152,7 @@ def parse_note(file_path: Path, vault_root: Path) -> Optional[ParsedNote]:
     chunks = chunk_text(content, doc_type)
 
     raw_links = extract_wiki_links(post.content)
-    wikilinks = sorted({normalize_wikilink(t) for t in raw_links if t.strip()})
+    wikilinks = sorted({n for n in (normalize_wikilink(t) for t in raw_links) if n})
 
     return ParsedNote(
         file_path=relative,
