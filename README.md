@@ -5,6 +5,7 @@ An MCP (Model Context Protocol) server providing **hybrid search** (semantic + l
 ## Features
 
 - **Hybrid Search** — Combines BM25 full-text matching with semantic vector similarity (kNN), reranked via cross-encoder for relevance, with optional recency decay (see [Search Tuning](#search-tuning))
+- **Graph Queries** — Traverse 1–2 wikilink hops from any note via `graph_neighbors` (see [Graph Queries](#graph-queries))
 - **Full-Text Indexing** — Frontmatter-aware chunking with tag and wikilink extraction
 - **Vault Management** — CRUD operations for notes, todos, and daily logs
 - **Bulk Tagging** — LLM-powered taxonomy collection and note tagging with consolidation
@@ -108,6 +109,83 @@ Ollama embeddings (768-dim `nomic-embed-text`)
       ↓
 OpenSearch bulk index
 ```
+
+## Graph Queries
+
+`graph_neighbors` answers: *given a note, what links to it, and what's two hops away?* It's the building block for "context around X" workflows — daily-digest pulls, project trees, customer-account neighborhoods.
+
+### Quick usage
+
+```bash
+# Direct linkers
+uv run obsidian-cli graph-neighbors "Hyrule Project"
+
+# Two-hop neighborhood
+uv run obsidian-cli graph-neighbors "KMW" --hops 2 --limit 30
+```
+
+Via MCP:
+
+```python
+mcp__obsidian-search__graph_neighbors(target="Hyrule Project", hops=2, limit=20)
+```
+
+### How it works
+
+**1. Wikilink extraction (indexing time).** During `parse_note`, every `[[...]]` in a note's body is extracted, normalized, and stored as a `wikilinks: keyword` array on every chunk doc for that note.
+
+Normalization (`normalize_wikilink`):
+- Strip section anchor: `[[KMW#Setup]]` → `kmw`
+- Strip alias: `[[KMW|the company]]` → `kmw`
+- Lowercase, collapse whitespace
+- Deduplicate, sort
+
+Why per-chunk and not per-note? It matches the existing tag/title pattern — fast term/terms filters reuse the same single-index design, and `collapse: document_id` deduplicates at query time. Storage cost is small (a few short strings × chunks/note).
+
+**2. Filtering at index time** — two real-world traps the regex handles:
+- *Unclosed Slack-style code fences* (`` ``` if [[ -z "$LB_URL" ]]; then ... ``) leak bash conditionals as wikilinks. The extractor first strips fenced and inline code, then requires the wiki-link inner text to start with a non-space character and stay on one line.
+- *Section-only links* (`[[#Feedback]]`) normalize to empty string after the section strip and get filtered post-normalize.
+
+A full reindex on a 250-note vault yielded 7 genuine link targets and 0 spurious ones after these guards landed.
+
+**3. Hop-1 query.** Single `term` query on `wikilinks`:
+
+```json
+{ "query": { "term": { "wikilinks": "hyrule project" } },
+  "collapse": { "field": "document_id" },
+  "sort": [{ "file_mtime": "desc" }] }
+```
+
+Returns the *notes that contain that wikilink in their body*. The collapse dedupes chunks; the sort gives recent-first ordering.
+
+**4. Hop-2 expansion.** Union the wikilinks arrays of the hop-1 result set, subtract the original target and the hop-1 titles themselves, and issue one `terms` query against that union:
+
+```python
+hop1_outgoing = {link for note in hop1_notes for link in note["wikilinks"]}
+hop1_outgoing -= {norm_target} | {normalize_wikilink(n["title"]) for n in hop1_notes}
+# → terms query, then dedup by file_path against the hop-1 set
+```
+
+Each returned note carries a `hop_distance: 1 | 2` field so callers can render or weight by depth.
+
+### Semantic — link text, not file path
+
+`graph_neighbors("KMW")` returns notes whose body contains `[[KMW]]`, regardless of which `.md` file Obsidian would actually resolve that link to. That's the **canonical Obsidian semantic** — wikilinks are textual references first, file paths second. For v1 we don't attempt path resolution (which would require walking Obsidian's resolver: title-match → unique filename → folder-fallback). The current behavior is correct and predictable; path resolution is opt-in future work.
+
+### Limitations (intentionally out of scope)
+
+- **No graph viz** — this is a query primitive, not a renderer.
+- **No backlink counts or link-strength scoring** — every link weighs the same.
+- **No path resolution** — `[[KMW]]` and a note titled "KMW" are treated as distinct identifiers; users who want them unified can normalize their titles to match their link text.
+- **No reverse direction at hop 1** — we don't return "notes the target links *to*"; only "notes that link to the target" (and at hop 2, "notes those linkers also link to").
+
+### Reindex requirement
+
+The `wikilinks` field is populated as notes are parsed. Existing indexed docs from before this feature shipped won't have it until they're re-indexed:
+- The launchd watcher fills it incrementally as notes are touched.
+- For immediate full coverage, run `python -m src.indexer` (≈45s for a 250-note vault thanks to batched embeddings).
+
+`ensure_index` does a best-effort `put_mapping(wikilinks)` on startup so existing indices accept the new field without manual migration.
 
 ## Configuration
 
@@ -233,6 +311,7 @@ launchctl load ~/Library/LaunchAgents/com.obsidian.search-watcher.plist
 | `folder` | keyword | Folder filtering |
 | `doc_type` | keyword | Note type (daily-log, todo, etc.) |
 | `file_path` | keyword | Source file path |
+| `wikilinks` | keyword (multi-value) | Normalized `[[link]]` targets — drives `graph_neighbors` |
 | `date` | date | Date filtering (YYYY-MM-DD) |
 
 **Search Pipeline:** `obsidian_hybrid_pipeline` — min-max normalization + weighted arithmetic mean.

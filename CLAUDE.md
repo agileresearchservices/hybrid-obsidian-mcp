@@ -46,9 +46,9 @@ This is a **FastMCP server** providing hybrid search and vault management over a
 2. Chunks → `src/embeddings.py` batches them to Ollama → OpenSearch bulk index
 
 **Module responsibilities:**
-- `src/server.py` — FastMCP tool definitions (search, index, todos, daily logs, notes, bulk-tag)
+- `src/server.py` — FastMCP tool definitions (search, graph_neighbors, index, todos, daily logs, notes, bulk-tag)
 - `src/cli.py` — `obsidian-cli` shell entrypoint; same codepath as MCP tools. Used by slack-gateway, daily-digest, and any other automation.
-- `src/searcher.py` — Hybrid search (kNN + BM25), keyword search, list/filter by metadata
+- `src/searcher.py` — Hybrid search (kNN + BM25), keyword search, list/filter by metadata, `graph_neighbors` wikilink traversal
 - `src/indexer.py` — Full reindex, incremental `index_files()` (with chunk-level embed cache via `chunk_hash`), and `delete_files()` (stale-chunk cleanup by `file_path`)
 - `src/embeddings.py` — Shared Ollama client with tenacity retry + array-input batching. Both indexer (`search_document:` prefix) and searcher (`search_query:` prefix) call through here
 - `src/writer.py` — Vault write operations: todos, daily logs, note create/append. Paths must be vault-relative; absolute or `~`-prefixed paths are rejected
@@ -100,7 +100,8 @@ Recency decay applies a `gauss(file_mtime)` function score to the BM25 sub-query
 - Index: `obsidian_notes`
 - `embedding`: knn_vector (768 dims, HNSW, cosinesimil)
 - `chunk_text`: text with English analyzer
-- `tags`, `folder`, `doc_type`, `file_path`: keyword (filterable)
+- `tags`, `folder`, `doc_type`, `file_path`, `wikilinks`: keyword (filterable)
+- `wikilinks`: lowercase, section-anchor-stripped, per-chunk (duplicated within a note); used by `graph_neighbors`
 - `date`: date field (YYYY-MM-DD)
 - Search pipeline `obsidian_hybrid_pipeline`: min-max normalization + weighted arithmetic mean
 

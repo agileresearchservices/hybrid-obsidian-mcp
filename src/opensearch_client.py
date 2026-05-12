@@ -69,6 +69,7 @@ INDEX_MAPPING = {
             "document_id": {"type": "keyword"},
             "chunk_index": {"type": "integer"},
             "chunk_hash": {"type": "keyword"},
+            "wikilinks": {"type": "keyword"},
             "doc_type": {"type": "keyword"},
         }
     },
@@ -110,14 +111,17 @@ def ensure_index(client: OpenSearch) -> None:
     else:
         logger.info("Index '%s' already exists", OPENSEARCH_INDEX_NAME)
         # Best-effort additive mapping update for fields added after initial create.
-        # Missing chunk_hash on old docs just means cache miss, not error.
+        # Missing fields on old docs are harmless (cache miss / graph miss, not error).
         try:
             client.indices.put_mapping(
                 index=OPENSEARCH_INDEX_NAME,
-                body={"properties": {"chunk_hash": {"type": "keyword"}}},
+                body={"properties": {
+                    "chunk_hash": {"type": "keyword"},
+                    "wikilinks": {"type": "keyword"},
+                }},
             )
         except Exception as e:
-            logger.debug("put_mapping(chunk_hash) skipped: %s", e)
+            logger.debug("put_mapping(chunk_hash, wikilinks) skipped: %s", e)
 
     try:
         client.transport.perform_request(
