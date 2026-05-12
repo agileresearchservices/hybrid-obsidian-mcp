@@ -43,20 +43,25 @@ This is a **FastMCP server** providing hybrid search and vault management over a
 
 **Data flow for indexing:**
 1. Vault `.md` files → `src/vault_parser.py` (frontmatter, chunking, tag/link extraction)
-2. Chunks → Ollama for embeddings → OpenSearch bulk index
+2. Chunks → `src/embeddings.py` batches them to Ollama → OpenSearch bulk index
 
 **Module responsibilities:**
 - `src/server.py` — FastMCP tool definitions (search, index, todos, daily logs, notes, bulk-tag)
 - `src/cli.py` — `obsidian-cli` shell entrypoint; same codepath as MCP tools. Used by slack-gateway, daily-digest, and any other automation.
 - `src/searcher.py` — Hybrid search (kNN + BM25), keyword search, list/filter by metadata
-- `src/indexer.py` — Full reindex and incremental `index_files()` for specific paths
-- `src/writer.py` — Vault write operations: todos, daily logs, note create/append
-- `src/tagger.py` — Bulk tag operations: taxonomy collection, frontmatter merges, workflow prompt
+- `src/indexer.py` — Full reindex, incremental `index_files()`, and `delete_files()` (stale-chunk cleanup by `file_path`)
+- `src/embeddings.py` — Shared Ollama client with tenacity retry + array-input batching. Both indexer (`search_document:` prefix) and searcher (`search_query:` prefix) call through here
+- `src/writer.py` — Vault write operations: todos, daily logs, note create/append. Paths must be vault-relative; absolute or `~`-prefixed paths are rejected
+- `src/tagger.py` — Bulk tag operations: taxonomy collection, frontmatter merges, workflow prompt. `bulk_apply` pre-validates every path before any write and supports `dry_run`
 - `src/vault_parser.py` — YAML frontmatter, section-aware chunking, tag/wikilink extraction
 - `src/opensearch_client.py` — Client setup, index mapping (768-dim HNSW), hybrid search pipeline
 - `src/reranker.py` — Lazy-loaded cross-encoder singleton; disabled via `ENABLE_RERANKING=false`
-- `src/watcher.py` — watchdog-based file watcher with 10s debounce → calls `index_files()`
+- `src/watcher.py` — watchdog file watcher with 10s debounce; handles modify/create/move/delete and routes to `index_files()` / `delete_files()`
 - `src/config.py` — All config from `.env` with defaults
+
+**Indexing performance:** `_prepare_note_docs()` builds chunk docs without embeddings, then `_embed_and_extend()` calls `get_embeddings_batch()` once per ~50-chunk window. This collapses what was previously one HTTP call per chunk into one call per batch — full reindex drops from ~1 hour to a few minutes.
+
+**Tests:** `tests/test_embeddings.py` and `tests/test_writer_paths.py`. Run with `uv run pytest tests/`.
 
 **Single source of truth**: this project owns every Obsidian vault operation. The former `~/.claude/skills/obsidian/` skill has been deleted; slack-gateway and daily-digest now call `obsidian-cli` directly.
 

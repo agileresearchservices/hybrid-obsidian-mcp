@@ -1,7 +1,6 @@
 """Vault indexer - crawls Obsidian vault, generates embeddings via Ollama, bulk indexes to OpenSearch."""
 
 import logging
-import sys
 import time
 from hashlib import sha256
 from pathlib import Path
@@ -15,10 +14,6 @@ from .opensearch_client import create_client, ensure_index
 from .vault_parser import parse_vault, ParsedNote
 
 logger = logging.getLogger(__name__)
-
-# Notes to accumulate before flushing embeddings + bulk-index. Tuned to keep
-# Ollama happy (~32 chunks per request) while still amortizing HTTP overhead.
-EMBED_BATCH_NOTES = 16
 
 
 def make_doc_id(file_path: str) -> str:
