@@ -32,7 +32,11 @@ def _build_embed_input(note: ParsedNote, chunk_text: str) -> str:
 
 
 def _prepare_note_docs(note: ParsedNote, vault_root: Optional[Path]) -> list[tuple[str, dict]]:
-    """Return [(embed_input, doc_without_embedding), ...] for each chunk."""
+    """Return [(embed_input, doc_without_embedding), ...] for each chunk.
+
+    The doc carries `chunk_hash` (sha256 of the embed input) for cache lookup
+    on incremental reindex.
+    """
     doc_id = make_doc_id(note.file_path)
     out: list[tuple[str, dict]] = []
     mtime_ms: Optional[int] = None
@@ -42,10 +46,13 @@ def _prepare_note_docs(note: ParsedNote, vault_root: Optional[Path]) -> list[tup
             mtime_ms = int(abs_path.stat().st_mtime * 1000)
 
     for chunk_idx, chunk_text in enumerate(note.chunks):
+        embed_input = _build_embed_input(note, chunk_text)
+        chunk_hash = sha256(embed_input.encode("utf-8")).hexdigest()
         doc = {
             "document_id": doc_id,
             "chunk_index": chunk_idx,
             "chunk_text": chunk_text,
+            "chunk_hash": chunk_hash,
             "title": note.title,
             "tags": note.tags,
             "folder": note.folder,
@@ -56,32 +63,105 @@ def _prepare_note_docs(note: ParsedNote, vault_root: Optional[Path]) -> list[tup
             doc["date"] = note.date
         if mtime_ms is not None:
             doc["file_mtime"] = mtime_ms
-        out.append((_build_embed_input(note, chunk_text), doc))
+        out.append((embed_input, doc))
     return out
 
 
-def _embed_and_extend(prepared: list[tuple[str, dict]], batch_actions: list) -> int:
-    """Embed prepared (input, doc) pairs as one Ollama call and append to batch_actions.
+def _embed_and_extend(
+    prepared: list[tuple[str, dict]],
+    batch_actions: list,
+    cache: Optional[dict[str, list[float]]] = None,
+    stats: Optional[dict] = None,
+) -> int:
+    """Embed prepared (input, doc) pairs and append to batch_actions.
 
-    Returns the number of chunks added. On Ollama failure, logs and returns 0 —
-    the rest of the indexing run continues with the remaining notes.
+    If `cache` is provided, docs whose `chunk_hash` is already in the cache
+    skip the Ollama call entirely. `stats` (if provided) is updated with
+    `cache_hits` and `cache_misses` counts.
+
+    Returns the number of chunks added. On Ollama failure, logs and returns
+    only the cache-hit count for this batch — the rest of the run continues.
     """
     if not prepared:
         return 0
-    inputs = [p[0] for p in prepared]
+
+    misses: list[tuple[str, dict]] = []
+    added = 0
+    for embed_input, doc in prepared:
+        cached = cache.get(doc["chunk_hash"]) if cache else None
+        if cached is not None:
+            doc["embedding"] = cached
+            batch_actions.append({
+                "_index": OPENSEARCH_INDEX_NAME,
+                "_id": f"{doc['document_id']}-{doc['chunk_index']}",
+                "_source": doc,
+            })
+            added += 1
+            if stats is not None:
+                stats["cache_hits"] = stats.get("cache_hits", 0) + 1
+        else:
+            misses.append((embed_input, doc))
+
+    if not misses:
+        return added
+
+    inputs = [p[0] for p in misses]
     try:
         embeddings = get_embeddings_batch(inputs, task="search_document")
     except Exception as e:
         logger.warning("Embedding batch failed (%d chunks): %s", len(inputs), e)
-        return 0
-    for (_, doc), embedding in zip(prepared, embeddings):
+        return added
+    for (_, doc), embedding in zip(misses, embeddings):
         doc["embedding"] = embedding
         batch_actions.append({
             "_index": OPENSEARCH_INDEX_NAME,
             "_id": f"{doc['document_id']}-{doc['chunk_index']}",
             "_source": doc,
         })
-    return len(prepared)
+        if stats is not None:
+            stats["cache_misses"] = stats.get("cache_misses", 0) + 1
+    return added + len(misses)
+
+
+def _load_cached_embeddings(client, file_paths: list[str]) -> dict[str, list[float]]:
+    """Return {chunk_hash: embedding} for all existing chunks under these paths.
+
+    Used before delete_by_query in incremental reindex: unchanged chunks
+    short-circuit the Ollama call. Missing field / older docs simply produce
+    cache misses, which is correct.
+    """
+    if not file_paths:
+        return {}
+    # Cap pulls at a generous ceiling per call; incremental batches are small.
+    size_cap = max(1000, len(file_paths) * 200)
+    try:
+        response = client.search(
+            index=OPENSEARCH_INDEX_NAME,
+            body={
+                "size": size_cap,
+                "_source": ["chunk_hash", "embedding"],
+                "query": {
+                    "bool": {
+                        "filter": [
+                            {"terms": {"file_path": file_paths}},
+                            {"exists": {"field": "chunk_hash"}},
+                        ]
+                    }
+                },
+            },
+        )
+    except Exception as e:
+        logger.debug("Cache load failed (%s) — proceeding without cache", e)
+        return {}
+
+    cache: dict[str, list[float]] = {}
+    for hit in response["hits"]["hits"]:
+        src = hit["_source"]
+        h = src.get("chunk_hash")
+        emb = src.get("embedding")
+        if h and emb:
+            cache[h] = emb
+    return cache
 
 
 def delete_files(file_paths: list[str], client=None) -> int:
@@ -120,10 +200,14 @@ def index_files(file_paths: list[str], vault_path: Optional[str] = None, batch_s
     errors = 0
     batch_actions: list = []
     pending: list[tuple[str, dict]] = []
+    cache_stats: dict = {"cache_hits": 0, "cache_misses": 0}
     start_time = time.time()
 
-    # Single delete_by_query covers all paths — cheaper than one-call-per-file.
     existing = [p for p in file_paths if (vault_root / p).exists()]
+    # Load embeddings for existing chunks BEFORE deletion so we can short-circuit
+    # Ollama for unchanged chunks. delete_by_query then clears stale entries
+    # (handles shrinks and content changes).
+    cache = _load_cached_embeddings(client, existing)
     deleted = delete_files(existing, client=client)
 
     for rel_path in file_paths:
@@ -146,14 +230,14 @@ def index_files(file_paths: list[str], vault_path: Optional[str] = None, batch_s
         total_docs += 1
 
         if len(pending) >= batch_size:
-            total_chunks += _embed_and_extend(pending, batch_actions)
+            total_chunks += _embed_and_extend(pending, batch_actions, cache=cache, stats=cache_stats)
             pending = []
             if len(batch_actions) >= batch_size:
                 _flush_batch(client, batch_actions)
                 batch_actions.clear()
 
     if pending:
-        total_chunks += _embed_and_extend(pending, batch_actions)
+        total_chunks += _embed_and_extend(pending, batch_actions, cache=cache, stats=cache_stats)
     if batch_actions:
         _flush_batch(client, batch_actions)
 
@@ -165,6 +249,8 @@ def index_files(file_paths: list[str], vault_path: Optional[str] = None, batch_s
         "notes_indexed": total_docs,
         "chunks_indexed": total_chunks,
         "chunks_deleted": deleted,
+        "cache_hits": cache_stats["cache_hits"],
+        "cache_misses": cache_stats["cache_misses"],
         "errors": errors,
         "elapsed_seconds": round(elapsed, 1),
     }
