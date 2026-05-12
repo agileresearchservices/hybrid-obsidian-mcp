@@ -115,9 +115,10 @@ def parse_note(file_path: Path, vault_root: Path) -> Optional[ParsedNote]:
     if isinstance(fm_tags, str):
         fm_tags = [t.strip() for t in fm_tags.split(",")]
 
-    # Extract inline tags and merge
+    # Extract inline tags and merge. Sorted so the chunk_hash used by the embed
+    # cache is stable across runs (set() ordering varies with hash randomization).
     inline_tags = extract_inline_tags(post.content)
-    all_tags = list(set(
+    all_tags = sorted(set(
         [t.lstrip("#") for t in fm_tags] + inline_tags
     ))
 

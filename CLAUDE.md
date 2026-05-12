@@ -49,7 +49,7 @@ This is a **FastMCP server** providing hybrid search and vault management over a
 - `src/server.py` — FastMCP tool definitions (search, index, todos, daily logs, notes, bulk-tag)
 - `src/cli.py` — `obsidian-cli` shell entrypoint; same codepath as MCP tools. Used by slack-gateway, daily-digest, and any other automation.
 - `src/searcher.py` — Hybrid search (kNN + BM25), keyword search, list/filter by metadata
-- `src/indexer.py` — Full reindex, incremental `index_files()`, and `delete_files()` (stale-chunk cleanup by `file_path`)
+- `src/indexer.py` — Full reindex, incremental `index_files()` (with chunk-level embed cache via `chunk_hash`), and `delete_files()` (stale-chunk cleanup by `file_path`)
 - `src/embeddings.py` — Shared Ollama client with tenacity retry + array-input batching. Both indexer (`search_document:` prefix) and searcher (`search_query:` prefix) call through here
 - `src/writer.py` — Vault write operations: todos, daily logs, note create/append. Paths must be vault-relative; absolute or `~`-prefixed paths are rejected
 - `src/tagger.py` — Bulk tag operations: taxonomy collection, frontmatter merges, workflow prompt. `bulk_apply` pre-validates every path before any write and supports `dry_run`
@@ -61,7 +61,9 @@ This is a **FastMCP server** providing hybrid search and vault management over a
 
 **Indexing performance:** `_prepare_note_docs()` builds chunk docs without embeddings, then `_embed_and_extend()` calls `get_embeddings_batch()` once per ~50-chunk window. This collapses what was previously one HTTP call per chunk into one call per batch — full reindex drops from ~1 hour to a few minutes.
 
-**Tests:** `tests/test_embeddings.py` and `tests/test_writer_paths.py`. Run with `uv run pytest tests/`.
+**Embed cache (incremental only):** every chunk doc stores `chunk_hash = sha256(embed_input)`. `index_files()` loads `{chunk_hash: embedding}` for the affected paths *before* `delete_by_query`, and `_embed_and_extend()` reuses cached vectors for matching hashes — so editing one paragraph in a long note re-embeds only the touched chunks. Stats are returned as `cache_hits` / `cache_misses`. Tag order is sorted in `parse_note` to keep the hash stable across runs. Full reindex (`index_vault`) bypasses the cache.
+
+**Tests:** `tests/test_embeddings.py`, `tests/test_embed_cache.py`, and `tests/test_writer_paths.py`. Run with `uv run pytest tests/`.
 
 **Single source of truth**: this project owns every Obsidian vault operation. The former `~/.claude/skills/obsidian/` skill has been deleted; slack-gateway and daily-digest now call `obsidian-cli` directly.
 
