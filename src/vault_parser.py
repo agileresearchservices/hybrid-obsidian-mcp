@@ -157,18 +157,31 @@ def parse_note(file_path: Path, vault_root: Path) -> Optional[ParsedNote]:
 
     doc_type = classify_doc_type(relative)
     content = post.content.strip()
-
-    if not content or len(content) < 20:
-        return None
-
-    chunks = chunk_text(content, doc_type)
+    title_str = title if isinstance(title, str) else str(title)
 
     raw_links = extract_wiki_links(post.content)
     wikilinks = sorted({n for n in (normalize_wikilink(t) for t in raw_links) if n})
 
+    if len(content) >= 20:
+        chunks = chunk_text(content, doc_type)
+    elif content or all_tags:
+        # Short-by-design note (credentials, single-fact configs, stubs with tags).
+        # Build a synthetic chunk from frontmatter signal so the note stays
+        # searchable by title/tags instead of vanishing from the index.
+        parts = [title_str]
+        if folder:
+            parts.append(f"Folder: {folder}")
+        if all_tags:
+            parts.append(f"Tags: {', '.join(all_tags)}")
+        if content:
+            parts.append(content)
+        chunks = ["\n".join(parts)]
+    else:
+        return None
+
     return ParsedNote(
         file_path=relative,
-        title=title if isinstance(title, str) else str(title),
+        title=title_str,
         date=date,
         tags=all_tags,
         folder=folder,
