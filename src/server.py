@@ -11,7 +11,6 @@ from .searcher import (
     hybrid_search,
     keyword_search,
     list_notes as list_notes_search,
-    graph_neighbors as graph_neighbors_search,
 )
 from .indexer import index_vault, index_files, get_index_stats
 from . import writer
@@ -160,39 +159,6 @@ def list_notes(
         output.append(line)
 
     return "\n".join(output)
-
-
-@mcp.tool()
-def graph_neighbors(target: str, hops: int = 1, limit: int = 20) -> str:
-    """Find notes 1–2 wikilink hops from `target`.
-
-    v1 matches on link text (the canonical Obsidian semantic) — `[[KMW]]`
-    matches notes that contain that wikilink regardless of which `.md` file
-    Obsidian would actually resolve it to. The target is normalized (section
-    anchor stripped, lowercased).
-
-    Args:
-        target: The wikilink target to find neighbors of (e.g. "KMW", "Hyrule Project")
-        hops: 1 (notes linking directly to target) or 2 (plus notes those notes link to)
-        limit: Max notes returned (default 20)
-    """
-    results = graph_neighbors_search(target=target, hops=hops, limit=limit)
-    if not results:
-        return f"No notes link to '{target}'."
-
-    lines = [f"### Graph neighbors of '{target}' (hops={hops})", ""]
-    for n in results:
-        hop = n.get("hop_distance", "?")
-        title = n.get("title", "?")
-        fp = n.get("file_path", "")
-        date = n.get("date", "")
-        line = f"- [hop {hop}] **{title}**"
-        if date:
-            line += f" ({date})"
-        if fp:
-            line += f" — `{fp}`"
-        lines.append(line)
-    return "\n".join(lines)
 
 
 @mcp.tool()

@@ -58,7 +58,6 @@ def _prepare_note_docs(note: ParsedNote, vault_root: Optional[Path]) -> list[tup
             "folder": note.folder,
             "file_path": note.file_path,
             "doc_type": note.doc_type,
-            "wikilinks": note.wikilinks,
         }
         if note.date and len(note.date) == 10 and note.date[4] == "-" and note.date[7] == "-":
             doc["date"] = note.date

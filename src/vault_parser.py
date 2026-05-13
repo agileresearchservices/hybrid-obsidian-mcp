@@ -40,7 +40,6 @@ class ParsedNote:
     doc_type: str
     content: str  # full raw content (without frontmatter)
     chunks: list[str] = field(default_factory=list)
-    wikilinks: list[str] = field(default_factory=list)  # normalized [[link]] targets
 
 
 def classify_doc_type(relative_path: str) -> str:
@@ -79,31 +78,6 @@ def extract_inline_tags(content: str) -> list[str]:
     # Match #tag patterns (not part of headings)
     tags = re.findall(r"(?:^|[\s(])#([a-zA-Z][\w-]*(?:/[\w-]+)*)", cleaned)
     return list(set(tags))
-
-
-def extract_wiki_links(content: str) -> list[str]:
-    """Extract [[wiki links]] from content, ignoring matches inside code blocks.
-
-    Shell scripts use `[[ ... ]]` for conditionals; we strip fenced and inline
-    code first, then require the wiki-link inner text to start with a non-space
-    character and stay on one line. That kicks out residual matches from
-    unclosed Slack-style ``` fences (which leave bash conditionals exposed).
-    """
-    cleaned = re.sub(r"```[\s\S]*?```", "", content)
-    cleaned = re.sub(r"`[^`]+`", "", cleaned)
-    return re.findall(r"\[\[(\S[^\]|\n]*?)(?:\|[^\]\n]+)?\]\]", cleaned)
-
-
-def normalize_wikilink(target: str) -> str:
-    """Normalize a wikilink target for indexing/lookup.
-
-    Strips section anchors (`Note#Section`), collapses whitespace, lowercases.
-    Obsidian semantics: link text resolves to a note title, case-insensitive
-    on the filesystem of typical vaults — lowercasing avoids `[[KMW]]` vs
-    `[[kmw]]` mismatches.
-    """
-    target = target.split("#", 1)[0]
-    return " ".join(target.split()).strip().lower()
 
 
 def normalize_date(date_value) -> Optional[str]:
@@ -159,9 +133,6 @@ def parse_note(file_path: Path, vault_root: Path) -> Optional[ParsedNote]:
     content = post.content.strip()
     title_str = title if isinstance(title, str) else str(title)
 
-    raw_links = extract_wiki_links(post.content)
-    wikilinks = sorted({n for n in (normalize_wikilink(t) for t in raw_links) if n})
-
     if len(content) >= 20:
         chunks = chunk_text(content, doc_type)
     elif content or all_tags:
@@ -188,7 +159,6 @@ def parse_note(file_path: Path, vault_root: Path) -> Optional[ParsedNote]:
         doc_type=doc_type,
         content=content,
         chunks=chunks,
-        wikilinks=wikilinks,
     )
 
 

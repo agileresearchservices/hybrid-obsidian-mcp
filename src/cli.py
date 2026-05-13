@@ -169,26 +169,6 @@ def cmd_list_notes(args: argparse.Namespace) -> int:
     return 0
 
 
-def cmd_graph_neighbors(args: argparse.Namespace) -> int:
-    from .searcher import graph_neighbors
-    results = graph_neighbors(target=args.target, hops=args.hops, limit=args.limit)
-    if not results:
-        print(f"No notes link to '{args.target}'.")
-        return 0
-    for n in results:
-        hop = n.get("hop_distance", "?")
-        title = n.get("title", "?")
-        fp = n.get("file_path", "")
-        date = n.get("date", "")
-        line = f"- [hop {hop}] {title}"
-        if date:
-            line += f" ({date})"
-        if fp:
-            line += f" — {fp}"
-        print(line)
-    return 0
-
-
 def cmd_read_note(args: argparse.Namespace) -> int:
     from pathlib import Path
     from .config import OBSIDIAN_VAULT_PATH
@@ -378,12 +358,6 @@ def build_parser() -> argparse.ArgumentParser:
     p = sp.add_parser("read-note")
     p.add_argument("path")
     p.set_defaults(func=cmd_read_note)
-
-    p = sp.add_parser("graph-neighbors", help="Find notes 1-2 wikilink hops from a target")
-    p.add_argument("target")
-    p.add_argument("--hops", type=int, default=1, choices=[1, 2])
-    p.add_argument("--limit", type=int, default=20)
-    p.set_defaults(func=cmd_graph_neighbors)
 
     # Bulk tags
     p = sp.add_parser("taxonomy", help="Print tag→count JSON")
