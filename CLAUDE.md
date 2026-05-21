@@ -54,7 +54,7 @@ This is a **FastMCP server** providing hybrid search and vault management over a
 - `src/writer.py` — Vault write operations: todos, daily logs, note create/append. Paths must be vault-relative; absolute or `~`-prefixed paths are rejected
 - `src/tagger.py` — Bulk tag operations: taxonomy collection, frontmatter merges, workflow prompt. `bulk_apply` pre-validates every path before any write and supports `dry_run`. `collect_taxonomy()` is memoized for `TAXONOMY_CACHE_TTL_SECONDS` (default 60s, 0 disables) so a bulk-tag workflow doesn't rescan the vault 3-4× per run. `clear_taxonomy_cache()` / `taxonomy_cache_info()` for ops
 - `src/vault_parser.py` — YAML frontmatter, section-aware chunking, tag extraction
-- `src/opensearch_client.py` — Client setup, index mapping (768-dim HNSW), hybrid search pipeline
+- `src/opensearch_client.py` — Client setup, index mapping (768-dim HNSW), hybrid search pipeline. `index.refresh_interval` controlled by `OPENSEARCH_REFRESH_INTERVAL` (default `5s`); `ensure_index` syncs the setting to existing indexes via `put_settings` so config changes propagate without recreating the index
 - `src/reranker.py` — Lazy-loaded cross-encoder singleton; disabled via `ENABLE_RERANKING=false`. Per-pair score cache keyed on `(sha256(query), chunk_hash)`; size controlled by `RERANKER_CACHE_SIZE` (default 1024, 0 disables). Misses fall through to `CrossEncoder.predict()`; only the missing pairs are passed to the model
 - `src/watcher.py` — watchdog file watcher with 10s debounce; handles modify/create/move/delete and routes to `index_files()` / `delete_files()`
 - `src/config.py` — All config from `.env` with defaults
@@ -81,6 +81,7 @@ This is a **FastMCP server** providing hybrid search and vault management over a
 ```
 OBSIDIAN_VAULT_PATH=~/Library/Mobile Documents/iCloud~md~obsidian/Documents/obsidian-vault
 OPENSEARCH_HOST=localhost
+OPENSEARCH_REFRESH_INTERVAL=5s  # index refresh cadence; default 5s (was OpenSearch default 1s)
 OLLAMA_BASE_URL=http://localhost:11434
 OLLAMA_EMBED_MODEL=nomic-embed-text
 EMBEDDING_QUERY_CACHE_SIZE=256  # LRU for single-text query embeddings; 0 = disabled

@@ -8,6 +8,7 @@ from .config import (
     OPENSEARCH_HOST,
     OPENSEARCH_PORT,
     OPENSEARCH_INDEX_NAME,
+    OPENSEARCH_REFRESH_INTERVAL,
     OPENSEARCH_SEARCH_PIPELINE,
     OPENSEARCH_TIMEOUT,
     VECTOR_DIMENSION,
@@ -24,6 +25,7 @@ INDEX_MAPPING = {
             "number_of_replicas": 0,
             "knn": True,
             "knn.algo_param.ef_search": 100,
+            "refresh_interval": OPENSEARCH_REFRESH_INTERVAL,
         },
         "analysis": {
             "analyzer": {
@@ -120,6 +122,14 @@ def ensure_index(client: OpenSearch) -> None:
             )
         except Exception as e:
             logger.debug("put_mapping(chunk_hash) skipped: %s", e)
+        # Sync refresh_interval setting so config changes propagate to existing indexes.
+        try:
+            client.indices.put_settings(
+                index=OPENSEARCH_INDEX_NAME,
+                body={"index": {"refresh_interval": OPENSEARCH_REFRESH_INTERVAL}},
+            )
+        except Exception as e:
+            logger.debug("put_settings(refresh_interval) skipped: %s", e)
 
     try:
         client.transport.perform_request(

@@ -120,6 +120,7 @@ OBSIDIAN_VAULT_PATH=~/Library/Mobile Documents/iCloud~md~obsidian/Documents/obsi
 # OpenSearch
 OPENSEARCH_HOST=localhost
 OPENSEARCH_PORT=9201
+OPENSEARCH_REFRESH_INTERVAL=5s  # Index refresh cadence; default 5s. Watcher already debounces 10s so users see no extra lag.
 
 # Ollama
 OLLAMA_BASE_URL=http://localhost:11434
