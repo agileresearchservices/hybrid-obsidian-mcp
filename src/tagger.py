@@ -5,14 +5,16 @@ from __future__ import annotations
 import difflib
 import json
 import re
+import time
 import unicodedata
 from collections import Counter
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional
 
 import frontmatter
 
-from .config import OBSIDIAN_VAULT_PATH
+from .config import OBSIDIAN_VAULT_PATH, TAXONOMY_CACHE_TTL_SECONDS
 
 VAULT = Path(OBSIDIAN_VAULT_PATH).expanduser().resolve()
 
@@ -181,11 +183,21 @@ def _truncate(text: str) -> tuple[str, bool]:
     return head + divider + tail, True
 
 
-def collect_taxonomy() -> dict[str, int]:
-    """Scan vault, return {tag: count} sorted by descending count.
+@dataclass
+class TaxonomyCacheInfo:
+    hits: int = 0
+    misses: int = 0
+    ttl_seconds: int = 0
+    age_seconds: Optional[float] = None
+    size: int = 0
 
-    Applies aliases and filters blocklisted tags (same rules as aggregate_results).
-    """
+
+_taxonomy_cache: Optional[tuple[float, dict[str, int]]] = None
+_taxonomy_hits = 0
+_taxonomy_misses = 0
+
+
+def _collect_taxonomy_uncached() -> dict[str, int]:
     counts: Counter[str] = Counter()
     for p in _iter_notes():
         try:
@@ -200,6 +212,52 @@ def collect_taxonomy() -> dict[str, int]:
             if nt and nt not in TAG_BLOCKLIST:
                 counts[nt] += 1
     return dict(counts.most_common())
+
+
+def collect_taxonomy() -> dict[str, int]:
+    """Scan vault, return {tag: count} sorted by descending count.
+
+    Applies aliases and filters blocklisted tags (same rules as aggregate_results).
+    Result is memoized for `TAXONOMY_CACHE_TTL_SECONDS` (default 60s); set to 0
+    in env to bypass and always rescan.
+    """
+    global _taxonomy_cache, _taxonomy_hits, _taxonomy_misses
+    if TAXONOMY_CACHE_TTL_SECONDS > 0 and _taxonomy_cache is not None:
+        cached_at, cached_value = _taxonomy_cache
+        if time.monotonic() - cached_at < TAXONOMY_CACHE_TTL_SECONDS:
+            _taxonomy_hits += 1
+            return cached_value
+
+    _taxonomy_misses += 1
+    value = _collect_taxonomy_uncached()
+    if TAXONOMY_CACHE_TTL_SECONDS > 0:
+        _taxonomy_cache = (time.monotonic(), value)
+    return value
+
+
+def clear_taxonomy_cache() -> None:
+    """Drop the cached taxonomy. Next call rescans the vault."""
+    global _taxonomy_cache, _taxonomy_hits, _taxonomy_misses
+    _taxonomy_cache = None
+    _taxonomy_hits = 0
+    _taxonomy_misses = 0
+
+
+def taxonomy_cache_info() -> TaxonomyCacheInfo:
+    """Return cache state: hits, misses, configured TTL, current age, size."""
+    age: Optional[float] = None
+    size = 0
+    if _taxonomy_cache is not None:
+        cached_at, cached_value = _taxonomy_cache
+        age = time.monotonic() - cached_at
+        size = len(cached_value)
+    return TaxonomyCacheInfo(
+        hits=_taxonomy_hits,
+        misses=_taxonomy_misses,
+        ttl_seconds=TAXONOMY_CACHE_TTL_SECONDS,
+        age_seconds=age,
+        size=size,
+    )
 
 
 def collect_taxonomy_top_k(k: int = 100) -> list[str]:
