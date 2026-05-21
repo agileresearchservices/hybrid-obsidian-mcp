@@ -50,7 +50,7 @@ This is a **FastMCP server** providing hybrid search and vault management over a
 - `src/cli.py` — `obsidian-cli` shell entrypoint; same codepath as MCP tools. Used by slack-gateway, daily-digest, and any other automation.
 - `src/searcher.py` — Hybrid search (kNN + BM25), keyword search, list/filter by metadata
 - `src/indexer.py` — Full reindex, incremental `index_files()` (with chunk-level embed cache via `chunk_hash`), and `delete_files()` (stale-chunk cleanup by `file_path`)
-- `src/embeddings.py` — Shared Ollama client with tenacity retry + array-input batching. Both indexer (`search_document:` prefix) and searcher (`search_query:` prefix) call through here
+- `src/embeddings.py` — Shared Ollama client with tenacity retry + array-input batching. Both indexer (`search_document:` prefix) and searcher (`search_query:` prefix) call through here. `get_embedding()` is memoized via `functools.lru_cache` keyed on `(task, text)`; size controlled by `EMBEDDING_QUERY_CACHE_SIZE` (default 256, set to 0 to disable). Cleared on process restart
 - `src/writer.py` — Vault write operations: todos, daily logs, note create/append. Paths must be vault-relative; absolute or `~`-prefixed paths are rejected
 - `src/tagger.py` — Bulk tag operations: taxonomy collection, frontmatter merges, workflow prompt. `bulk_apply` pre-validates every path before any write and supports `dry_run`
 - `src/vault_parser.py` — YAML frontmatter, section-aware chunking, tag extraction
@@ -83,6 +83,7 @@ OBSIDIAN_VAULT_PATH=~/Library/Mobile Documents/iCloud~md~obsidian/Documents/obsi
 OPENSEARCH_HOST=localhost
 OLLAMA_BASE_URL=http://localhost:11434
 OLLAMA_EMBED_MODEL=nomic-embed-text
+EMBEDDING_QUERY_CACHE_SIZE=256  # LRU for single-text query embeddings; 0 = disabled
 VECTOR_WEIGHT=0.3       # weight in hybrid score
 LEXICAL_WEIGHT=0.7
 RETRIEVER_K=10          # results returned
