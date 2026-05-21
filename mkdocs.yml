@@ -1,0 +1,74 @@
+site_name: hybrid-obsidian-mcp
+site_description: Hybrid search and vault management MCP server for Obsidian, backed by OpenSearch and Ollama.
+site_url: https://agileresearchservices.github.io/hybrid-obsidian-mcp/
+repo_url: https://github.com/agileresearchservices/hybrid-obsidian-mcp
+repo_name: agileresearchservices/hybrid-obsidian-mcp
+edit_uri: edit/main/docs/
+
+theme:
+  name: material
+  features:
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.top
+    - navigation.tracking
+    - navigation.indexes
+    - toc.follow
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+    - content.action.edit
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+  icon:
+    repo: fontawesome/brands/github
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+  - pymdownx.details
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+
+plugins:
+  - search
+
+nav:
+  - Home: index.md
+  - Quick Start: quickstart.md
+  - Architecture: architecture.md
+  - MCP Tools Reference: mcp-tools.md
+  - CLI Reference: cli.md
+  - Configuration: configuration.md
+  - Search Tuning: search-tuning.md
+  - Deployment: deployment.md
+  - Development: development.md
