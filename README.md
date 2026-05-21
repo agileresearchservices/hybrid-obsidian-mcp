@@ -134,6 +134,7 @@ RETRIEVER_FETCH_K=40        # Candidates considered before reranking
 
 # Reranking
 ENABLE_RERANKING=true       # Use cross-encoder (slower but higher quality)
+RERANKER_CACHE_SIZE=1024    # In-process LRU for (query, chunk_hash) -> score; 0 disables
 
 # Recency decay (applied to BM25 sub-query; see Search Tuning)
 RECENCY_DECAY_ENABLED=true

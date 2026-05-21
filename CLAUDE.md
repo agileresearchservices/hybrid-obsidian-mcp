@@ -55,7 +55,7 @@ This is a **FastMCP server** providing hybrid search and vault management over a
 - `src/tagger.py` — Bulk tag operations: taxonomy collection, frontmatter merges, workflow prompt. `bulk_apply` pre-validates every path before any write and supports `dry_run`
 - `src/vault_parser.py` — YAML frontmatter, section-aware chunking, tag extraction
 - `src/opensearch_client.py` — Client setup, index mapping (768-dim HNSW), hybrid search pipeline
-- `src/reranker.py` — Lazy-loaded cross-encoder singleton; disabled via `ENABLE_RERANKING=false`
+- `src/reranker.py` — Lazy-loaded cross-encoder singleton; disabled via `ENABLE_RERANKING=false`. Per-pair score cache keyed on `(sha256(query), chunk_hash)`; size controlled by `RERANKER_CACHE_SIZE` (default 1024, 0 disables). Misses fall through to `CrossEncoder.predict()`; only the missing pairs are passed to the model
 - `src/watcher.py` — watchdog file watcher with 10s debounce; handles modify/create/move/delete and routes to `index_files()` / `delete_files()`
 - `src/config.py` — All config from `.env` with defaults
 
@@ -89,6 +89,7 @@ LEXICAL_WEIGHT=0.7
 RETRIEVER_K=10          # results returned
 RETRIEVER_FETCH_K=40    # candidates before reranking
 ENABLE_RERANKING=true
+RERANKER_CACHE_SIZE=1024 # LRU of (query, chunk_hash) -> score; 0 = disabled
 RECENCY_DECAY_ENABLED=true
 RECENCY_DECAY_SCALE=90d
 RECENCY_DECAY_WEIGHT=0.3
