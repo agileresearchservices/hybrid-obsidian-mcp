@@ -7,14 +7,14 @@ import json
 import re
 import time
 import unicodedata
-from collections import Counter
+from collections import Counter, OrderedDict
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional
 
 import frontmatter
 
-from .config import OBSIDIAN_VAULT_PATH, TAXONOMY_CACHE_TTL_SECONDS
+from .config import OBSIDIAN_VAULT_PATH, READ_NOTE_CACHE_SIZE, TAXONOMY_CACHE_TTL_SECONDS
 
 VAULT = Path(OBSIDIAN_VAULT_PATH).expanduser().resolve()
 
@@ -181,6 +181,72 @@ def _truncate(text: str) -> tuple[str, bool]:
     omitted = len(body) - HEAD_CHARS - TAIL_CHARS
     divider = f"\n\n...[truncated {omitted} chars]...\n\n"
     return head + divider + tail, True
+
+
+@dataclass
+class ReadNoteCacheInfo:
+    hits: int = 0
+    misses: int = 0
+    maxsize: int = 0
+    currsize: int = 0
+
+
+_read_note_cache: "OrderedDict[tuple[str, int], str]" = OrderedDict()
+_read_note_hits = 0
+_read_note_misses = 0
+
+
+def read_note(rel_path: str) -> Optional[str]:
+    """Read a vault-relative note, memoized on (resolved_path, mtime_ns).
+
+    Returns None if the path can't be resolved. Edits change `mtime_ns` so
+    cached content automatically becomes stale on the next call; no manual
+    invalidation needed. Set `READ_NOTE_CACHE_SIZE=0` in env to bypass.
+    """
+    global _read_note_hits, _read_note_misses
+    resolved = _resolve_path(rel_path)
+    if resolved is None:
+        return None
+
+    if READ_NOTE_CACHE_SIZE == 0:
+        return resolved.read_text(encoding="utf-8")
+
+    try:
+        mtime_ns = resolved.stat().st_mtime_ns
+    except OSError:
+        return resolved.read_text(encoding="utf-8")
+
+    key = (str(resolved), mtime_ns)
+    if key in _read_note_cache:
+        _read_note_cache.move_to_end(key)
+        _read_note_hits += 1
+        return _read_note_cache[key]
+
+    _read_note_misses += 1
+    text = resolved.read_text(encoding="utf-8")
+    _read_note_cache[key] = text
+    _read_note_cache.move_to_end(key)
+    while len(_read_note_cache) > READ_NOTE_CACHE_SIZE:
+        _read_note_cache.popitem(last=False)
+    return text
+
+
+def clear_read_note_cache() -> None:
+    """Drop the read_note cache and reset counters."""
+    global _read_note_hits, _read_note_misses
+    _read_note_cache.clear()
+    _read_note_hits = 0
+    _read_note_misses = 0
+
+
+def read_note_cache_info() -> ReadNoteCacheInfo:
+    """Return current cache state."""
+    return ReadNoteCacheInfo(
+        hits=_read_note_hits,
+        misses=_read_note_misses,
+        maxsize=READ_NOTE_CACHE_SIZE,
+        currsize=len(_read_note_cache),
+    )
 
 
 @dataclass

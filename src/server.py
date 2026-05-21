@@ -101,10 +101,10 @@ def read_note(file_path: str) -> str:
     Args:
         file_path: Path relative to vault root (e.g. "Daily Log/2026-04-07.md")
     """
-    resolved = tagger._resolve_path(file_path)
-    if resolved is None:
+    content = tagger.read_note(file_path)
+    if content is None:
         return f"Note not found: {file_path}"
-    return resolved.read_text(encoding="utf-8")
+    return content
 
 
 @mcp.tool()

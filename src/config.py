@@ -48,6 +48,10 @@ RERANKER_CACHE_SIZE = int(os.getenv("RERANKER_CACHE_SIZE", 1024))
 # Set to 0 to bypass (every call rescans the vault).
 TAXONOMY_CACHE_TTL_SECONDS = int(os.getenv("TAXONOMY_CACHE_TTL_SECONDS", 60))
 
+# In-process LRU for read_note(), keyed on (resolved_path, mtime_ns) so edits
+# automatically invalidate. Set to 0 to disable.
+READ_NOTE_CACHE_SIZE = int(os.getenv("READ_NOTE_CACHE_SIZE", 64))
+
 # Search defaults
 RETRIEVER_K = int(os.getenv("RETRIEVER_K", 10))
 RETRIEVER_FETCH_K = int(os.getenv("RETRIEVER_FETCH_K", 40))

@@ -140,6 +140,9 @@ RERANKER_CACHE_SIZE=1024    # In-process LRU for (query, chunk_hash) -> score; 0
 # Taxonomy (bulk-tag workflows)
 TAXONOMY_CACHE_TTL_SECONDS=60  # Memoize collect_taxonomy() to avoid 3-4 rescans per workflow; 0 disables
 
+# Note reads
+READ_NOTE_CACHE_SIZE=64        # In-process LRU for read_note() keyed on (path, mtime_ns); 0 disables
+
 # Recency decay (applied to BM25 sub-query; see Search Tuning)
 RECENCY_DECAY_ENABLED=true
 RECENCY_DECAY_SCALE=90d     # OpenSearch date-math: 30d, 90d, 365d, ...
