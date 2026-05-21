@@ -2,6 +2,8 @@
 
 An MCP (Model Context Protocol) server providing **hybrid search** (semantic + lexical) and **vault management** over an Obsidian vault. Powered by [OpenSearch](https://opensearch.org/) and [Ollama](https://ollama.ai/) with cross-encoder reranking for search quality.
 
+📚 **Full docs:** <https://agileresearchservices.github.io/hybrid-obsidian-mcp/> — Quick Start, MCP & CLI references, search tuning, deployment.
+
 ## Features
 
 - **Hybrid Search** — Combines BM25 full-text matching with semantic vector similarity (kNN), reranked via cross-encoder for relevance, with optional recency decay (see [Search Tuning](#search-tuning))
