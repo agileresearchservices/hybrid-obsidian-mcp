@@ -24,6 +24,9 @@ OPENSEARCH_TIMEOUT = int(os.getenv("OPENSEARCH_TIMEOUT", 30))
 # Ollama
 OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
 OLLAMA_EMBED_MODEL = os.getenv("OLLAMA_EMBED_MODEL", "nomic-embed-text")
+# In-process LRU cache for single-text query embeddings (per-process, cleared on restart).
+# Set to 0 to disable.
+EMBEDDING_QUERY_CACHE_SIZE = int(os.getenv("EMBEDDING_QUERY_CACHE_SIZE", 256))
 
 # Vector config
 VECTOR_DIMENSION = 768  # nomic-embed-text output

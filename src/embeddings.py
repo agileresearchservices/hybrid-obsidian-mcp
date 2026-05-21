@@ -5,6 +5,7 @@ so the wire format, timeout, and retry policy live in one place.
 """
 
 import logging
+from functools import lru_cache
 from typing import Literal
 
 import httpx
@@ -15,7 +16,7 @@ from tenacity import (
     wait_exponential,
 )
 
-from .config import OLLAMA_BASE_URL, OLLAMA_EMBED_MODEL
+from .config import EMBEDDING_QUERY_CACHE_SIZE, OLLAMA_BASE_URL, OLLAMA_EMBED_MODEL
 
 logger = logging.getLogger(__name__)
 
@@ -56,13 +57,32 @@ def _post(payload: dict) -> dict:
     return response.json()
 
 
-def get_embedding(text: str, task: Task = "search_query") -> list[float]:
-    """Embed a single string. Applies the nomic asymmetric task prefix."""
+@lru_cache(maxsize=EMBEDDING_QUERY_CACHE_SIZE)
+def _get_embedding_cached(task: Task, text: str) -> tuple[float, ...]:
     data = _post({"model": OLLAMA_EMBED_MODEL, "input": _prefix(text, task)})
     embeddings = data.get("embeddings") or []
     if not embeddings:
         raise EmbeddingError(f"Ollama returned no embeddings for task={task}")
-    return embeddings[0]
+    return tuple(embeddings[0])
+
+
+def get_embedding(text: str, task: Task = "search_query") -> list[float]:
+    """Embed a single string. Applies the nomic asymmetric task prefix.
+
+    Results are memoized in a per-process LRU keyed on (task, text). Set
+    `EMBEDDING_QUERY_CACHE_SIZE=0` in env to bypass (every call hits Ollama).
+    """
+    return list(_get_embedding_cached(task, text))
+
+
+def clear_embedding_cache() -> None:
+    """Clear the in-process query embedding cache."""
+    _get_embedding_cached.cache_clear()
+
+
+def embedding_cache_info():
+    """Return functools CacheInfo (hits, misses, maxsize, currsize)."""
+    return _get_embedding_cached.cache_info()
 
 
 def get_embeddings_batch(

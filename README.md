@@ -124,6 +124,7 @@ OPENSEARCH_PORT=9201
 # Ollama
 OLLAMA_BASE_URL=http://localhost:11434
 OLLAMA_EMBED_MODEL=nomic-embed-text
+EMBEDDING_QUERY_CACHE_SIZE=256  # In-process LRU for query embeddings; 0 disables
 
 # Search tuning
 VECTOR_WEIGHT=0.3           # How much to weight semantic similarity
