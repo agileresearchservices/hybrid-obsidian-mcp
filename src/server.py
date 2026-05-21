@@ -1,20 +1,24 @@
 """MCP server for hybrid search over Obsidian vault."""
 
 import json
+import logging
 from pathlib import Path
 from typing import Optional
 
 from mcp.server.fastmcp import FastMCP
 
-from .config import OBSIDIAN_VAULT_PATH
+from .config import ENABLE_RERANKING, OBSIDIAN_VAULT_PATH, RERANKER_PREWARM
 from .searcher import (
     hybrid_search,
     keyword_search,
     list_notes as list_notes_search,
 )
 from .indexer import index_vault, index_files, get_index_stats
+from .reranker import get_reranker
 from . import writer
 from . import tagger
+
+logger = logging.getLogger(__name__)
 
 mcp = FastMCP("obsidian-search")
 
@@ -466,7 +470,22 @@ def bulk_tag_workflow() -> str:
     return tagger.workflow_prompt()
 
 
+def _prewarm_reranker_if_enabled() -> bool:
+    """Load the cross-encoder eagerly so the first search query doesn't pay
+    the model-load tax. Returns True if the model was loaded, False otherwise.
+    """
+    if not (RERANKER_PREWARM and ENABLE_RERANKING):
+        return False
+    try:
+        get_reranker()._ensure_model()
+        return True
+    except Exception as e:
+        logger.warning("Reranker prewarm failed (%s); first search will load on demand.", e)
+        return False
+
+
 def main():
+    _prewarm_reranker_if_enabled()
     mcp.run(transport="stdio")
 
 
