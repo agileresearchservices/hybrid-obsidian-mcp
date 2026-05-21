@@ -52,7 +52,7 @@ This is a **FastMCP server** providing hybrid search and vault management over a
 - `src/indexer.py` — Full reindex, incremental `index_files()` (with chunk-level embed cache via `chunk_hash`), and `delete_files()` (stale-chunk cleanup by `file_path`)
 - `src/embeddings.py` — Shared Ollama client with tenacity retry + array-input batching. Both indexer (`search_document:` prefix) and searcher (`search_query:` prefix) call through here. `get_embedding()` is memoized via `functools.lru_cache` keyed on `(task, text)`; size controlled by `EMBEDDING_QUERY_CACHE_SIZE` (default 256, set to 0 to disable). Cleared on process restart
 - `src/writer.py` — Vault write operations: todos, daily logs, note create/append. Paths must be vault-relative; absolute or `~`-prefixed paths are rejected
-- `src/tagger.py` — Bulk tag operations: taxonomy collection, frontmatter merges, workflow prompt. `bulk_apply` pre-validates every path before any write and supports `dry_run`. `collect_taxonomy()` is memoized for `TAXONOMY_CACHE_TTL_SECONDS` (default 60s, 0 disables) so a bulk-tag workflow doesn't rescan the vault 3-4× per run. `clear_taxonomy_cache()` / `taxonomy_cache_info()` for ops
+- `src/tagger.py` — Bulk tag operations: taxonomy collection, frontmatter merges, workflow prompt. `bulk_apply` pre-validates every path before any write and supports `dry_run`. `collect_taxonomy()` is memoized for `TAXONOMY_CACHE_TTL_SECONDS` (default 60s, 0 disables) so a bulk-tag workflow doesn't rescan the vault 3-4× per run. `read_note(rel_path)` is LRU-cached keyed on `(resolved_path, mtime_ns)` (size `READ_NOTE_CACHE_SIZE`, default 64) — edits auto-invalidate because mtime changes the key. `clear_taxonomy_cache()` / `taxonomy_cache_info()` / `clear_read_note_cache()` / `read_note_cache_info()` for ops
 - `src/vault_parser.py` — YAML frontmatter, section-aware chunking, tag extraction
 - `src/opensearch_client.py` — Client setup, index mapping (768-dim HNSW), hybrid search pipeline. `index.refresh_interval` controlled by `OPENSEARCH_REFRESH_INTERVAL` (default `5s`); `ensure_index` syncs the setting to existing indexes via `put_settings` so config changes propagate without recreating the index
 - `src/reranker.py` — Lazy-loaded cross-encoder singleton; disabled via `ENABLE_RERANKING=false`. Per-pair score cache keyed on `(sha256(query), chunk_hash)`; size controlled by `RERANKER_CACHE_SIZE` (default 1024, 0 disables). Misses fall through to `CrossEncoder.predict()`; only the missing pairs are passed to the model
@@ -92,6 +92,7 @@ RETRIEVER_FETCH_K=40    # candidates before reranking
 ENABLE_RERANKING=true
 RERANKER_CACHE_SIZE=1024 # LRU of (query, chunk_hash) -> score; 0 = disabled
 TAXONOMY_CACHE_TTL_SECONDS=60 # TTL for collect_taxonomy(); 0 = disabled
+READ_NOTE_CACHE_SIZE=64       # LRU for read_note() keyed on (path, mtime_ns); 0 = disabled
 RECENCY_DECAY_ENABLED=true
 RECENCY_DECAY_SCALE=90d
 RECENCY_DECAY_WEIGHT=0.3

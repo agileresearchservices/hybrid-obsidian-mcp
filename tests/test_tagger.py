@@ -1,5 +1,6 @@
-"""Tests for the TTL-based taxonomy cache in src/tagger.py."""
+"""Tests for the TTL-based taxonomy cache and read_note LRU in src/tagger.py."""
 
+from pathlib import Path
 from unittest.mock import patch
 
 import pytest
@@ -10,8 +11,10 @@ from src import tagger
 @pytest.fixture(autouse=True)
 def _isolate_taxonomy_cache():
     tagger.clear_taxonomy_cache()
+    tagger.clear_read_note_cache()
     yield
     tagger.clear_taxonomy_cache()
+    tagger.clear_read_note_cache()
 
 
 def _stub_uncached(side_effect=None, return_value=None):
@@ -117,3 +120,104 @@ def test_collect_taxonomy_top_k_uses_cache(monkeypatch):
         tagger.collect_taxonomy_top_k(2)
         tagger.collect_taxonomy_top_k(3)
         assert m.call_count == 1
+
+
+# ---------------------------------------------------------------------------
+# read_note LRU
+# ---------------------------------------------------------------------------
+
+
+@pytest.fixture
+def vault_note(tmp_path, monkeypatch):
+    """Point tagger.VAULT at a tmp dir and create a sample note. Yields the rel path."""
+    monkeypatch.setattr(tagger, "VAULT", tmp_path)
+    note = tmp_path / "sample.md"
+    note.write_text("hello world", encoding="utf-8")
+    yield "sample.md", note
+
+
+def test_read_note_returns_content(vault_note, monkeypatch):
+    monkeypatch.setattr(tagger, "READ_NOTE_CACHE_SIZE", 64)
+    rel, _ = vault_note
+    assert tagger.read_note(rel) == "hello world"
+
+
+def test_read_note_caches_within_same_mtime(vault_note, monkeypatch):
+    monkeypatch.setattr(tagger, "READ_NOTE_CACHE_SIZE", 64)
+    rel, path = vault_note
+    tagger.read_note(rel)
+    # Mutate the underlying file's content but force mtime to stay the same
+    # (simulating same-mtime read — cache should serve stale)
+    original_mtime_ns = path.stat().st_mtime_ns
+    path.write_bytes(b"different content")
+    import os
+    os.utime(path, ns=(original_mtime_ns, original_mtime_ns))
+
+    cached = tagger.read_note(rel)
+    assert cached == "hello world"  # served from cache
+    info = tagger.read_note_cache_info()
+    assert info.hits == 1
+    assert info.misses == 1
+
+
+def test_read_note_reloads_when_mtime_changes(vault_note, monkeypatch):
+    monkeypatch.setattr(tagger, "READ_NOTE_CACHE_SIZE", 64)
+    rel, path = vault_note
+    tagger.read_note(rel)
+
+    # Edit + bump mtime
+    path.write_text("v2 content", encoding="utf-8")
+    import os
+    new_mtime_ns = path.stat().st_mtime_ns + 1_000_000_000
+    os.utime(path, ns=(new_mtime_ns, new_mtime_ns))
+
+    assert tagger.read_note(rel) == "v2 content"
+    info = tagger.read_note_cache_info()
+    # Two misses, no hits — old key abandoned, new key inserted
+    assert info.misses == 2
+
+
+def test_read_note_missing_file_returns_none(monkeypatch, tmp_path):
+    monkeypatch.setattr(tagger, "VAULT", tmp_path)
+    monkeypatch.setattr(tagger, "READ_NOTE_CACHE_SIZE", 64)
+    assert tagger.read_note("does/not/exist.md") is None
+    assert tagger.read_note_cache_info().misses == 0
+
+
+def test_read_note_disabled_when_cache_size_zero(vault_note, monkeypatch):
+    monkeypatch.setattr(tagger, "READ_NOTE_CACHE_SIZE", 0)
+    rel, _ = vault_note
+    tagger.read_note(rel)
+    tagger.read_note(rel)
+    info = tagger.read_note_cache_info()
+    assert info.hits == 0
+    assert info.misses == 0  # bypass path doesn't increment counters
+    assert info.currsize == 0
+
+
+def test_read_note_lru_evicts_oldest(monkeypatch, tmp_path):
+    monkeypatch.setattr(tagger, "VAULT", tmp_path)
+    monkeypatch.setattr(tagger, "READ_NOTE_CACHE_SIZE", 2)
+    for name in ("a.md", "b.md", "c.md"):
+        (tmp_path / name).write_text(name, encoding="utf-8")
+    tagger.read_note("a.md")
+    tagger.read_note("b.md")
+    tagger.read_note("c.md")  # evicts a.md
+    info = tagger.read_note_cache_info()
+    assert info.currsize == 2
+    # Reading a.md again should be a miss
+    tagger.read_note("a.md")
+    info = tagger.read_note_cache_info()
+    assert info.misses == 4
+
+
+def test_clear_read_note_cache(vault_note, monkeypatch):
+    monkeypatch.setattr(tagger, "READ_NOTE_CACHE_SIZE", 64)
+    rel, _ = vault_note
+    tagger.read_note(rel)
+    assert tagger.read_note_cache_info().currsize == 1
+    tagger.clear_read_note_cache()
+    info = tagger.read_note_cache_info()
+    assert info.currsize == 0
+    assert info.hits == 0
+    assert info.misses == 0
