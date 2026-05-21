@@ -40,6 +40,9 @@ VECTOR_DIMENSION = 768  # nomic-embed-text output
 RERANKER_MODEL = os.getenv("RERANKER_MODEL", "cross-encoder/ms-marco-MiniLM-L-6-v2")
 ENABLE_RERANKING = os.getenv("ENABLE_RERANKING", "true").lower() == "true"
 RERANKER_TOP_K = int(os.getenv("RERANKER_TOP_K", 10))
+# When true, load the cross-encoder at MCP startup so the first search doesn't
+# pay the ~4s model-load tax. Set to false for fast dev/test iteration.
+RERANKER_PREWARM = os.getenv("RERANKER_PREWARM", "true").lower() == "true"
 # In-process LRU for cross-encoder scores, keyed on (sha256(query), chunk_hash).
 # Set to 0 to disable (every rerank() runs the full model forward pass).
 RERANKER_CACHE_SIZE = int(os.getenv("RERANKER_CACHE_SIZE", 1024))

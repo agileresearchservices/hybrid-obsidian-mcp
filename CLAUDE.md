@@ -46,7 +46,7 @@ This is a **FastMCP server** providing hybrid search and vault management over a
 2. Chunks → `src/embeddings.py` batches them to Ollama → OpenSearch bulk index
 
 **Module responsibilities:**
-- `src/server.py` — FastMCP tool definitions (search, index, todos, daily logs, notes, bulk-tag)
+- `src/server.py` — FastMCP tool definitions (search, index, todos, daily logs, notes, bulk-tag). `_prewarm_reranker_if_enabled()` runs at startup so the first search query doesn't pay the ~4s cross-encoder load; gated behind `RERANKER_PREWARM` (default `true`). Failures are logged and swallowed — the on-demand load path remains the fallback
 - `src/cli.py` — `obsidian-cli` shell entrypoint; same codepath as MCP tools. Used by slack-gateway, daily-digest, and any other automation.
 - `src/searcher.py` — Hybrid search (kNN + BM25), keyword search, list/filter by metadata
 - `src/indexer.py` — Full reindex, incremental `index_files()` (with chunk-level embed cache via `chunk_hash`), and `delete_files()` (stale-chunk cleanup by `file_path`)
@@ -90,6 +90,7 @@ LEXICAL_WEIGHT=0.7
 RETRIEVER_K=10          # results returned
 RETRIEVER_FETCH_K=40    # candidates before reranking
 ENABLE_RERANKING=true
+RERANKER_PREWARM=true    # Load cross-encoder at MCP startup; false for fast dev iteration
 RERANKER_CACHE_SIZE=1024 # LRU of (query, chunk_hash) -> score; 0 = disabled
 TAXONOMY_CACHE_TTL_SECONDS=60 # TTL for collect_taxonomy(); 0 = disabled
 READ_NOTE_CACHE_SIZE=64       # LRU for read_note() keyed on (path, mtime_ns); 0 = disabled
