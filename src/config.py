@@ -20,6 +20,11 @@ OPENSEARCH_PORT = int(os.getenv("OPENSEARCH_PORT", 9201))
 OPENSEARCH_INDEX_NAME = os.getenv("OPENSEARCH_INDEX_NAME", "obsidian_notes")
 OPENSEARCH_SEARCH_PIPELINE = os.getenv("OPENSEARCH_SEARCH_PIPELINE", "obsidian_hybrid_pipeline")
 OPENSEARCH_TIMEOUT = int(os.getenv("OPENSEARCH_TIMEOUT", 30))
+# OpenSearch index refresh_interval. Default 5s (vs OpenSearch's 1s default) since
+# the watcher already debounces writes by 10s — searches don't see new docs faster
+# than that anyway, and bumping the interval cuts segment-flush overhead during
+# bulk reindexes. Set to "-1" to disable refresh during big imports.
+OPENSEARCH_REFRESH_INTERVAL = os.getenv("OPENSEARCH_REFRESH_INTERVAL", "5s")
 
 # Ollama
 OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
