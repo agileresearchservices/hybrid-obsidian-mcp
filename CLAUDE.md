@@ -46,7 +46,8 @@ This is a **FastMCP server** providing hybrid search and vault management over a
 2. Chunks → `src/embeddings.py` batches them to Ollama → OpenSearch bulk index
 
 **Module responsibilities:**
-- `src/server.py` — FastMCP tool definitions (search, index, todos, daily logs, notes, bulk-tag). `_prewarm_reranker_if_enabled()` runs at startup so the first search query doesn't pay the ~4s cross-encoder load; gated behind `RERANKER_PREWARM` (default `true`). Failures are logged and swallowed — the on-demand load path remains the fallback
+- `src/server.py` — FastMCP tool definitions (search, index, todos, daily logs, notes, bulk-tag, cache_stats). `_prewarm_reranker_if_enabled()` runs at startup so the first search query doesn't pay the ~4s cross-encoder load; gated behind `RERANKER_PREWARM` (default `true`). Failures are logged and swallowed — the on-demand load path remains the fallback
+- `src/cache_stats.py` — single aggregator over the four in-process caches; surfaces `hits/misses/sizes/hit_rate` via the `cache_stats` MCP tool and `obsidian-cli cache-stats`
 - `src/cli.py` — `obsidian-cli` shell entrypoint; same codepath as MCP tools. Used by slack-gateway, daily-digest, and any other automation.
 - `src/searcher.py` — Hybrid search (kNN + BM25), keyword search, list/filter by metadata
 - `src/indexer.py` — Full reindex, incremental `index_files()` (with chunk-level embed cache via `chunk_hash`), and `delete_files()` (stale-chunk cleanup by `file_path`)
