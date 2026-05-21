@@ -18,6 +18,7 @@ from typing import Optional
 
 from . import writer
 from . import tagger
+from .cache_stats import collect_cache_stats
 
 
 def _split_csv(s: Optional[str]) -> Optional[list[str]]:
@@ -187,6 +188,11 @@ def cmd_read_note(args: argparse.Namespace) -> int:
 # ----------------------------------------------------------------------------
 # Bulk tag handlers
 # ----------------------------------------------------------------------------
+
+def cmd_cache_stats(_args: argparse.Namespace) -> int:
+    print(json.dumps(collect_cache_stats(), indent=2, default=str))
+    return 0
+
 
 def cmd_taxonomy(_args: argparse.Namespace) -> int:
     print(json.dumps(tagger.collect_taxonomy(), indent=2))
@@ -360,6 +366,8 @@ def build_parser() -> argparse.ArgumentParser:
     p.set_defaults(func=cmd_read_note)
 
     # Bulk tags
+    p = sp.add_parser("cache-stats", help="Snapshot in-process caches: hits/misses/sizes/hit_rate")
+    p.set_defaults(func=cmd_cache_stats)
     p = sp.add_parser("taxonomy", help="Print tag→count JSON")
     p.set_defaults(func=cmd_taxonomy)
     p = sp.add_parser("taxonomy-topk", help="Print top-K tags (one per line)")

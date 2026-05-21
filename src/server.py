@@ -13,6 +13,7 @@ from .searcher import (
     keyword_search,
     list_notes as list_notes_search,
 )
+from .cache_stats import collect_cache_stats
 from .indexer import index_vault, index_files, get_index_stats
 from .reranker import get_reranker
 from . import writer
@@ -195,6 +196,19 @@ def index_stats() -> str:
     """Show current index statistics - document counts, types, tags, etc."""
     stats = get_index_stats()
     return json.dumps(stats, indent=2)
+
+
+@mcp.tool()
+def cache_stats() -> str:
+    """Snapshot in-process cache state for the embedding, reranker score,
+    taxonomy, and read_note caches. Returns JSON with hits/misses/sizes and
+    a derived hit_rate per cache.
+
+    Useful for confirming the caches are actually doing work in production —
+    if hit_rate is low or null, either the workload doesn't repeat queries or
+    the cache size is too small.
+    """
+    return json.dumps(collect_cache_stats(), indent=2, default=str)
 
 
 # ============================================================================

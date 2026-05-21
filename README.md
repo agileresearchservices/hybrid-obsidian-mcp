@@ -65,6 +65,9 @@ uv run obsidian-cli daily-log append "Meeting with team" --section "Notes"
 
 # Bulk tagging
 uv run obsidian-cli bulk-tag-workflow
+
+# Cache hit/miss snapshot (embedding / reranker / taxonomy / read_note)
+uv run obsidian-cli cache-stats
 ```
 
 ## Architecture
