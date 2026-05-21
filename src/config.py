@@ -39,6 +39,10 @@ RERANKER_TOP_K = int(os.getenv("RERANKER_TOP_K", 10))
 # Set to 0 to disable (every rerank() runs the full model forward pass).
 RERANKER_CACHE_SIZE = int(os.getenv("RERANKER_CACHE_SIZE", 1024))
 
+# TTL (seconds) for the vault taxonomy cache used by bulk_tag_taxonomy and friends.
+# Set to 0 to bypass (every call rescans the vault).
+TAXONOMY_CACHE_TTL_SECONDS = int(os.getenv("TAXONOMY_CACHE_TTL_SECONDS", 60))
+
 # Search defaults
 RETRIEVER_K = int(os.getenv("RETRIEVER_K", 10))
 RETRIEVER_FETCH_K = int(os.getenv("RETRIEVER_FETCH_K", 40))
