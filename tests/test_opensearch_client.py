@@ -1,8 +1,17 @@
-"""Tests for index settings and ensure_index behavior."""
+"""Tests for index settings, ensure_index, and client lifecycle."""
 
 from unittest.mock import MagicMock
 
+import pytest
+
 from src import opensearch_client
+
+
+@pytest.fixture(autouse=True)
+def _reset_client_singleton():
+    opensearch_client.reset_client()
+    yield
+    opensearch_client.reset_client()
 
 
 def test_index_mapping_includes_refresh_interval():
@@ -49,3 +58,48 @@ def test_ensure_index_swallows_put_settings_errors():
 
     # Should not raise
     opensearch_client.ensure_index(client)
+
+
+# ---------------------------------------------------------------------------
+# Client singleton
+# ---------------------------------------------------------------------------
+
+
+def test_create_client_returns_same_instance_across_calls(monkeypatch):
+    """Calling create_client() N times must return the same object."""
+    constructor = MagicMock(return_value=MagicMock(name="opensearch-client"))
+    monkeypatch.setattr(opensearch_client, "OpenSearch", constructor)
+
+    a = opensearch_client.create_client()
+    b = opensearch_client.create_client()
+    c = opensearch_client.create_client()
+
+    assert a is b is c
+    assert constructor.call_count == 1
+
+
+def test_reset_client_forces_fresh_instantiation(monkeypatch):
+    constructor = MagicMock(side_effect=lambda **kw: MagicMock(name="client"))
+    monkeypatch.setattr(opensearch_client, "OpenSearch", constructor)
+
+    a = opensearch_client.create_client()
+    opensearch_client.reset_client()
+    b = opensearch_client.create_client()
+
+    assert a is not b
+    assert constructor.call_count == 2
+
+
+def test_create_client_passes_expected_kwargs(monkeypatch):
+    constructor = MagicMock(return_value=MagicMock())
+    monkeypatch.setattr(opensearch_client, "OpenSearch", constructor)
+
+    opensearch_client.create_client()
+
+    constructor.assert_called_once()
+    kwargs = constructor.call_args.kwargs
+    assert kwargs["hosts"] == [
+        {"host": opensearch_client.OPENSEARCH_HOST, "port": opensearch_client.OPENSEARCH_PORT}
+    ]
+    assert kwargs["retry_on_timeout"] is True
+    assert kwargs["max_retries"] == 3

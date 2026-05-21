@@ -1,6 +1,7 @@
 """OpenSearch client, index mapping, and search pipeline setup."""
 
 import logging
+from typing import Optional
 
 from opensearchpy import OpenSearch
 
@@ -92,16 +93,34 @@ SEARCH_PIPELINE = {
 }
 
 
+_client: Optional[OpenSearch] = None
+
+
 def create_client() -> OpenSearch:
-    """Create an OpenSearch client."""
-    return OpenSearch(
-        hosts=[{"host": OPENSEARCH_HOST, "port": OPENSEARCH_PORT}],
-        use_ssl=False,
-        verify_certs=False,
-        timeout=OPENSEARCH_TIMEOUT,
-        retry_on_timeout=True,
-        max_retries=3,
-    )
+    """Return the process-wide OpenSearch client, instantiating on first call.
+
+    The opensearchpy client is thread-safe and manages its own urllib3 connection
+    pool, so sharing one across the process amortizes transport-pool setup costs
+    and lets keep-alive connections survive between queries. Use `reset_client()`
+    in tests that need a fresh instance.
+    """
+    global _client
+    if _client is None:
+        _client = OpenSearch(
+            hosts=[{"host": OPENSEARCH_HOST, "port": OPENSEARCH_PORT}],
+            use_ssl=False,
+            verify_certs=False,
+            timeout=OPENSEARCH_TIMEOUT,
+            retry_on_timeout=True,
+            max_retries=3,
+        )
+    return _client
+
+
+def reset_client() -> None:
+    """Drop the cached client. Next `create_client()` call rebuilds it."""
+    global _client
+    _client = None
 
 
 def ensure_index(client: OpenSearch) -> None:
