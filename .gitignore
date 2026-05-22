@@ -7,7 +7,7 @@ build/
 .uv/
 uv.lock
 .env
-logs/tag-run/
+logs/
 
 # MkDocs build output
 site/
