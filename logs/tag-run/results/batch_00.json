@@ -1,1 +1,184 @@
-[{"path": "Agentic coding only becomes \u201cdaily-usable\u201d.md", "add_tags": ["technical"], "remove_tags": []}, {"path": "Daily Log/2026-02-13.md", "add_tags": ["troubleshooting"], "remove_tags": []}, {"path": "Daily Log/2026-02-14.md", "add_tags": [], "remove_tags": []}, {"path": "Daily Log/2026-02-15.md", "add_tags": [], "remove_tags": []}, {"path": "Daily Log/2026-02-16.md", "add_tags": [], "remove_tags": []}, {"path": "Daily Log/2026-02-17.md", "add_tags": ["standup"], "remove_tags": []}, {"path": "Daily Log/2026-02-18.md", "add_tags": ["troubleshooting"], "remove_tags": []}, {"path": "Daily Log/2026-02-19.md", "add_tags": ["standup"], "remove_tags": []}, {"path": "Daily Log/2026-02-20.md", "add_tags": ["working-session", "standup"], "remove_tags": []}, {"path": "Daily Log/2026-02-23.md", "add_tags": ["standup"], "remove_tags": []}, {"path": "Daily Log/2026-02-24.md", "add_tags": ["standup", "troubleshooting", "planning"], "remove_tags": []}, {"path": "Daily Log/2026-02-25.md", "add_tags": ["working-session", "standup", "planning"], "remove_tags": []}, {"path": "Daily Log/2026-02-26.md", "add_tags": [], "remove_tags": []}, {"path": "Daily Log/2026-02-27.md", "add_tags": [], "remove_tags": []}, {"path": "Daily Log/2026-03-02.md", "add_tags": [], "remove_tags": []}, {"path": "Daily Log/2026-03-03.md", "add_tags": ["standup"], "remove_tags": []}, {"path": "Daily Log/2026-03-04.md", "add_tags": ["standup", "planning"], "remove_tags": []}, {"path": "Daily Log/2026-03-05.md", "add_tags": ["troubleshooting"], "remove_tags": []}, {"path": "Daily Log/2026-03-06.md", "add_tags": ["standup", "troubleshooting", "planning"], "remove_tags": []}, {"path": "Daily Log/2026-03-09.md", "add_tags": ["standup", "working-session", "planning"], "remove_tags": []}, {"path": "Daily Log/2026-03-10.md", "add_tags": ["deployment"], "remove_tags": []}]
+[
+  {
+    "path": "Daily Log/2026-02-13.md",
+    "add_tags": [
+      "testing",
+      "api",
+      "security"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "Daily Log/2026-02-14.md",
+    "add_tags": [
+      "planning",
+      "api"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "Daily Log/2026-02-15.md",
+    "add_tags": [
+      "api",
+      "security"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "Daily Log/2026-02-16.md",
+    "add_tags": [
+      "api",
+      "security"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "Daily Log/2026-02-17.md",
+    "add_tags": [
+      "api",
+      "security"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "Daily Log/2026-02-18.md",
+    "add_tags": [
+      "testing",
+      "postgres",
+      "api"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "Daily Log/2026-02-19.md",
+    "add_tags": [
+      "testing",
+      "kafka",
+      "api",
+      "security",
+      "workflow"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "Daily Log/2026-02-20.md",
+    "add_tags": [
+      "planning",
+      "api",
+      "workflow"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "Daily Log/2026-02-23.md",
+    "add_tags": [
+      "lucille",
+      "planning",
+      "api"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "Daily Log/2026-02-24.md",
+    "add_tags": [
+      "lucille",
+      "testing",
+      "incident-response",
+      "workflow"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "Daily Log/2026-02-25.md",
+    "add_tags": [],
+    "remove_tags": []
+  },
+  {
+    "path": "Daily Log/2026-02-26.md",
+    "add_tags": [
+      "lucille",
+      "troubleshooting",
+      "testing",
+      "planning",
+      "security"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "Daily Log/2026-02-27.md",
+    "add_tags": [
+      "lucille",
+      "testing"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "Daily Log/2026-03-02.md",
+    "add_tags": [
+      "lucille",
+      "testing",
+      "api",
+      "incident-response"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "Daily Log/2026-03-03.md",
+    "add_tags": [
+      "lucille",
+      "troubleshooting",
+      "security",
+      "incident-response",
+      "workflow"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "Daily Log/2026-03-04.md",
+    "add_tags": [
+      "lucille",
+      "docker",
+      "testing"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "Daily Log/2026-03-05.md",
+    "add_tags": [
+      "lucille",
+      "api"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "Daily Log/2026-03-06.md",
+    "add_tags": [
+      "workflow"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "Daily Log/2026-03-09.md",
+    "add_tags": [
+      "incident-response"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "Daily Log/2026-03-10.md",
+    "add_tags": [
+      "incident-response"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "Daily Log/2026-03-11.md",
+    "add_tags": [
+      "deployment",
+      "testing",
+      "planning",
+      "kafka"
+    ],
+    "remove_tags": []
+  }
+]

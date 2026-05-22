@@ -72,7 +72,10 @@
       "Bash(claude mcp *)",
       "Bash(kill 44903 44901)",
       "Bash(.venv/bin/obsidian-cli tag-list *)",
-      "Write(/Users/kevin/github/personal/hybrid-obsidian-mcp/logs/tag-run/results/**)"
+      "Write(/Users/kevin/github/personal/hybrid-obsidian-mcp/logs/tag-run/results/**)",
+      "Bash(git restore *)",
+      "Bash(git clean *)",
+      "Bash(gh repo *)"
     ]
   },
   "guard": {

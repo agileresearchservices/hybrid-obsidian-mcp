@@ -1,7 +1,7 @@
 """obsidian-cli — shell-facing CLI over the Obsidian MCP project.
 
 Exposes every write op, read op, and bulk-tag op as a subcommand. This is the
-single surface for shell/cron/automation consumers (slack-gateway, daily-digest,
+single surface for shell/cron/automation consumers (slack-gateway, cron jobs,
 etc.). Same Python codepath as the MCP tools.
 
 Usage:

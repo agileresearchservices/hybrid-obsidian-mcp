@@ -1,1 +1,158 @@
-[{"path": "KMW/Customers/ThermoFisher/Onboarding and Account History/ThermoFisher D&B Video Presentation Summary.md", "add_tags": ["onboarding", "documentation"], "remove_tags": []}, {"path": "KMW/Customers/ThermoFisher/Repos and APIs/Address Validator Project Documentation.md", "add_tags": [], "remove_tags": []}, {"path": "KMW/Customers/ThermoFisher/Repos and APIs/Brave Search API Research.md", "add_tags": ["address-normalization"], "remove_tags": []}, {"path": "KMW/Customers/ThermoFisher/Research/Fedex Address Validation Testing.md", "add_tags": [], "remove_tags": []}, {"path": "KMW/Customers/ThermoFisher/Research/Thermo Fisher \u2013 Weekly Sales Insights Email Project.md", "add_tags": [], "remove_tags": []}, {"path": "KMW/Customers/ThermoFisher/Standups/Standup Thermo 05272025.md", "add_tags": ["duns", "dnb-matching"], "remove_tags": []}, {"path": "KMW/Customers/ThermoFisher/Standups/Standup Thermo 06162025.md", "add_tags": [], "remove_tags": []}, {"path": "KMW/Customers/ThermoFisher/Standups/Standup Thermo 06162025_2.md", "add_tags": [], "remove_tags": []}, {"path": "KMW/Customers/ThermoFisher/Standups/Standup Thermo 06172025.md", "add_tags": [], "remove_tags": []}, {"path": "KMW/Customers/ThermoFisher/Standups/Standup Thermo 06172025_2.md", "add_tags": [], "remove_tags": []}, {"path": "KMW/Customers/ThermoFisher/Standups/Standup Thermo 06182025.md", "add_tags": [], "remove_tags": []}, {"path": "KMW/Customers/ThermoFisher/Standups/Standup Thermo 06192025.md", "add_tags": ["address-normalization"], "remove_tags": []}, {"path": "KMW/Customers/ThermoFisher/Standups/Standup Thermo 06202025.md", "add_tags": ["api"], "remove_tags": []}, {"path": "KMW/Customers/ThermoFisher/Standups/Standup Thermo 06272025.md", "add_tags": ["api", "dnb-matching"], "remove_tags": []}, {"path": "KMW/Customers/ThermoFisher/Standups/Standup Thermo 07022025.md", "add_tags": ["api"], "remove_tags": []}, {"path": "KMW/Customers/ThermoFisher/Standups/Standup Thermo 07032025.md", "add_tags": [], "remove_tags": []}, {"path": "KMW/Customers/ThermoFisher/Standups/Standup Thermo 07102025.md", "add_tags": ["address-normalization", "api"], "remove_tags": []}, {"path": "KMW/Customers/ThermoFisher/Standups/Standup Thermo 07112025.md", "add_tags": [], "remove_tags": []}, {"path": "KMW/Customers/ThermoFisher/Standups/Standup Thermo 07142025.md", "add_tags": [], "remove_tags": []}, {"path": "KMW/Customers/ThermoFisher/Standups/Standup Thermo 07162025.md", "add_tags": [], "remove_tags": []}, {"path": "KMW/Customers/ThermoFisher/Standups/Standup Thermo 07182025.md", "add_tags": ["address-normalization", "api"], "remove_tags": []}, {"path": "KMW/Customers/ThermoFisher/Standups/Standup Thermo 07232025.md", "add_tags": ["dnb-matching"], "remove_tags": []}, {"path": "KMW/Customers/ThermoFisher/Standups/Standup Thermo 07242025.md", "add_tags": ["duns", "dnb-matching"], "remove_tags": []}, {"path": "KMW/Customers/ThermoFisher/Standups/Standup Thermo 07252025.md", "add_tags": ["api", "duns", "dnb-matching"], "remove_tags": []}]
+[
+  {
+    "path": "KMW/Customers/Nasuni/RCA_staging1_clean_install.md",
+    "add_tags": [],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/Nasuni/Weekly Insights Project/Generative_AI_Sales_Insights_Meeting_Notes.md",
+    "add_tags": [
+      "decision"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/Nasuni/eks-clusters-current-state.md",
+    "add_tags": [
+      "operations"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/Nasuni/hyrule-eks-cluster-branch-deployment-and-teardown.md",
+    "add_tags": [
+      "ci-cd"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/Nasuni/hyrule-opensearch-s3-backups-hyr-93-hyr-69.md",
+    "add_tags": [],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/Nasuni/interview notes Anshul Dubey.md",
+    "add_tags": [
+      "research"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/Pinecone/Pinecone Reboot.md",
+    "add_tags": [
+      "operations"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Code references and definitions/Description of v_us_eu_1000_null_999999999.md",
+    "add_tags": [
+      "documentation"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Code references and definitions/Geotrans.conf changes 07092025.md",
+    "add_tags": [],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Code references and definitions/LLM Error Example.md",
+    "add_tags": [],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Code references and definitions/Multi-pass AND Single-shot web search approach.md",
+    "add_tags": [
+      "research"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Code references and definitions/Plan for test runs.md",
+    "add_tags": [
+      "planning"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Code references and definitions/Proposed Production Process.md",
+    "add_tags": [
+      "operations"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Configs and Keys/Azure OpenAI API Keys for TF.md",
+    "add_tags": [],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Configs and Keys/EHP Hardware Specs.md",
+    "add_tags": [],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Configs and Keys/Enterprise OpenAI Key.md",
+    "add_tags": [],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Configs and Keys/Git Troubleshooting.md",
+    "add_tags": [
+      "debugging"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Configs and Keys/Google API Keys.md",
+    "add_tags": [],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Configs and Keys/Google Quotas (KMW).md",
+    "add_tags": [],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Configs and Keys/Oracle and Solr settings.md",
+    "add_tags": [],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Configs and Keys/Run geotrans.conf locally.md",
+    "add_tags": [],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Configs and Keys/Set up Solr with TF configs.md",
+    "add_tags": [],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Confluence Links/Links and descriptions.md",
+    "add_tags": [],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Governance/Governance Thermo 06062025.md",
+    "add_tags": [
+      "decision"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Governance/Governance Thermo 06202025.md",
+    "add_tags": [
+      "decision"
+    ],
+    "remove_tags": []
+  },
+  {
+    "path": "KMW/Customers/ThermoFisher/Governance/Governance Thermo 06272025.md",
+    "add_tags": [
+      "decision"
+    ],
+    "remove_tags": []
+  }
+]

@@ -19,7 +19,7 @@ uv run obsidian-mcp
 uv run obsidian-watcher
 # or: python -m src.watcher
 
-# Shell CLI (same Python as the MCP server — used by slack-gateway, daily-digest, cron, etc.)
+# Shell CLI (same Python as the MCP server — used by slack-gateway, cron, etc.)
 uv run obsidian-cli <subcommand>
 # e.g. obsidian-cli list-todos, obsidian-cli daily-log view, obsidian-cli taxonomy
 
@@ -48,7 +48,7 @@ This is a **FastMCP server** providing hybrid search and vault management over a
 **Module responsibilities:**
 - `src/server.py` — FastMCP tool definitions (search, index, todos, daily logs, notes, bulk-tag, cache_stats). `_prewarm_reranker_if_enabled()` runs at startup so the first search query doesn't pay the ~4s cross-encoder load; gated behind `RERANKER_PREWARM` (default `true`). Failures are logged and swallowed — the on-demand load path remains the fallback
 - `src/cache_stats.py` — single aggregator over the four in-process caches; surfaces `hits/misses/sizes/hit_rate` via the `cache_stats` MCP tool and `obsidian-cli cache-stats`
-- `src/cli.py` — `obsidian-cli` shell entrypoint; same codepath as MCP tools. Used by slack-gateway, daily-digest, and any other automation.
+- `src/cli.py` — `obsidian-cli` shell entrypoint; same codepath as MCP tools. Used by slack-gateway, cron jobs, and any other automation.
 - `src/searcher.py` — Hybrid search (kNN + BM25), keyword search, list/filter by metadata
 - `src/indexer.py` — Full reindex, incremental `index_files()` (with chunk-level embed cache via `chunk_hash`), and `delete_files()` (stale-chunk cleanup by `file_path`)
 - `src/embeddings.py` — Shared Ollama client with tenacity retry + array-input batching. Both indexer (`search_document:` prefix) and searcher (`search_query:` prefix) call through here. `get_embedding()` is memoized via `functools.lru_cache` keyed on `(task, text)`; size controlled by `EMBEDDING_QUERY_CACHE_SIZE` (default 256, set to 0 to disable). Cleared on process restart
@@ -66,7 +66,7 @@ This is a **FastMCP server** providing hybrid search and vault management over a
 
 **Tests:** `tests/test_embeddings.py`, `tests/test_embed_cache.py`, and `tests/test_writer_paths.py`. Run with `uv run pytest tests/`.
 
-**Single source of truth**: this project owns every Obsidian vault operation. The former `~/.claude/skills/obsidian/` skill has been deleted; slack-gateway and daily-digest now call `obsidian-cli` directly.
+**Single source of truth**: this project owns every Obsidian vault operation. The former `~/.claude/skills/obsidian/` skill has been deleted; slack-gateway and cron jobs now call `obsidian-cli` directly.
 
 **Bulk tag workflow**: `mcp__obsidian-search__bulk_tag_workflow()` returns an orchestration prompt. The flow dispatches `general-purpose` subagents with `model: "haiku"` to propose tags per-note in parallel batches, then applies via `bulk_tag_apply`. All classification LLM work uses Haiku for cost efficiency.
 

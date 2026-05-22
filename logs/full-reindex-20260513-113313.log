@@ -1,0 +1,170 @@
+INFO: HEAD http://localhost:9201/obsidian_notes [status:200 request:0.006s]
+INFO: Index 'obsidian_notes' already exists
+INFO: PUT http://localhost:9201/obsidian_notes/_mapping [status:200 request:0.008s]
+INFO: PUT http://localhost:9201/_search/pipeline/obsidian_hybrid_pipeline [status:200 request:0.006s]
+INFO: Search pipeline 'obsidian_hybrid_pipeline' created/updated
+INFO: DELETE http://localhost:9201/obsidian_notes [status:200 request:0.025s]
+INFO: PUT http://localhost:9201/obsidian_notes [status:200 request:0.036s]
+INFO: Created index 'obsidian_notes'
+INFO: PUT http://localhost:9201/_search/pipeline/obsidian_hybrid_pipeline [status:200 request:0.004s]
+INFO: Search pipeline 'obsidian_hybrid_pipeline' created/updated
+INFO: Cleared existing index
+INFO: Parsed 251 notes from vault
+INFO: HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+INFO: HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+INFO: HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+INFO: POST http://localhost:9201/_bulk?refresh=false [status:200 request:0.045s]
+INFO: HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+INFO: HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+INFO: POST http://localhost:9201/_bulk?refresh=false [status:200 request:0.037s]
+INFO: HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+INFO: HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+INFO: POST http://localhost:9201/_bulk?refresh=false [status:200 request:0.035s]
+INFO: HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+INFO: HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+INFO: POST http://localhost:9201/_bulk?refresh=false [status:200 request:0.039s]
+INFO: HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+INFO: HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+INFO: HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+INFO: HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+INFO: POST http://localhost:9201/_bulk?refresh=false [status:200 request:0.054s]
+INFO: HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+INFO: HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+INFO: POST http://localhost:9201/_bulk?refresh=false [status:200 request:0.033s]
+INFO: HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+INFO: HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+INFO: HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+INFO: POST http://localhost:9201/_bulk?refresh=false [status:200 request:0.038s]
+INFO: HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+INFO: HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+INFO: POST http://localhost:9201/_bulk?refresh=false [status:200 request:0.035s]
+INFO: HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+INFO: HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+INFO: POST http://localhost:9201/_bulk?refresh=false [status:200 request:0.038s]
+INFO: HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+INFO: HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+INFO: POST http://localhost:9201/_bulk?refresh=false [status:200 request:0.030s]
+INFO: HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+INFO: HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+INFO: HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+INFO: POST http://localhost:9201/_bulk?refresh=false [status:200 request:0.045s]
+INFO: HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+INFO: HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+INFO: HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+INFO: POST http://localhost:9201/_bulk?refresh=false [status:200 request:0.054s]
+INFO: HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+INFO: HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+INFO: POST http://localhost:9201/_bulk?refresh=false [status:200 request:0.036s]
+INFO: HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+INFO: HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+INFO: POST http://localhost:9201/_bulk?refresh=false [status:200 request:0.034s]
+INFO: HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+INFO: HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+INFO: POST http://localhost:9201/_bulk?refresh=false [status:200 request:0.033s]
+INFO: HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+INFO: HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+INFO: POST http://localhost:9201/_bulk?refresh=false [status:200 request:0.030s]
+INFO: HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+INFO: HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+INFO: HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+INFO: POST http://localhost:9201/_bulk?refresh=false [status:200 request:0.043s]
+INFO: HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+INFO: HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+INFO: POST http://localhost:9201/_bulk?refresh=false [status:200 request:0.029s]
+INFO: HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+INFO: HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+INFO: HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+INFO: POST http://localhost:9201/_bulk?refresh=false [status:200 request:0.046s]
+INFO: HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+INFO: HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+INFO: POST http://localhost:9201/_bulk?refresh=false [status:200 request:0.041s]
+INFO: HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+INFO: HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+INFO: POST http://localhost:9201/_bulk?refresh=false [status:200 request:0.035s]
+INFO: HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+INFO: HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+INFO: HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+INFO: HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+INFO: POST http://localhost:9201/_bulk?refresh=false [status:200 request:0.064s]
+INFO: HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+INFO: HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+INFO: POST http://localhost:9201/_bulk?refresh=false [status:200 request:0.036s]
+INFO: HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+INFO: HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+INFO: POST http://localhost:9201/_bulk?refresh=false [status:200 request:0.041s]
+INFO: HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+INFO: HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+INFO: POST http://localhost:9201/_bulk?refresh=false [status:200 request:0.042s]
+INFO: HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+INFO: HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+INFO: POST http://localhost:9201/_bulk?refresh=false [status:200 request:0.055s]
+INFO: HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+INFO: HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+INFO: POST http://localhost:9201/_bulk?refresh=false [status:200 request:0.046s]
+INFO: HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+INFO: HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+INFO: POST http://localhost:9201/_bulk?refresh=false [status:200 request:0.059s]
+INFO: HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+INFO: HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+INFO: POST http://localhost:9201/_bulk?refresh=false [status:200 request:0.056s]
+INFO: HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+INFO: HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+INFO: POST http://localhost:9201/_bulk?refresh=false [status:200 request:0.052s]
+INFO: HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+INFO: HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+INFO: POST http://localhost:9201/_bulk?refresh=false [status:200 request:0.056s]
+INFO: HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+INFO: HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+INFO: POST http://localhost:9201/_bulk?refresh=false [status:200 request:0.061s]
+INFO: HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+INFO: HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+INFO: POST http://localhost:9201/_bulk?refresh=false [status:200 request:0.059s]
+INFO: HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+INFO: HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+INFO: POST http://localhost:9201/_bulk?refresh=false [status:200 request:0.047s]
+INFO: HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+INFO: HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+INFO: POST http://localhost:9201/_bulk?refresh=false [status:200 request:0.064s]
+INFO: HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+INFO: HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+INFO: POST http://localhost:9201/_bulk?refresh=false [status:200 request:0.053s]
+INFO: HTTP Request: POST http://localhost:11434/api/embed "HTTP/1.1 200 OK"
+INFO: POST http://localhost:9201/_bulk?refresh=false [status:200 request:0.012s]
+INFO: POST http://localhost:9201/obsidian_notes/_refresh [status:200 request:0.032s]
+INFO: POST http://localhost:9201/obsidian_notes/_count [status:200 request:0.003s]
+INFO: POST http://localhost:9201/obsidian_notes/_search [status:200 request:0.004s]
+
+Indexing Obsidian vault...
+  Processed 10/251 notes (129 chunks)...
+  Processed 20/251 notes (467 chunks)...
+  Processed 30/251 notes (588 chunks)...
+  Processed 40/251 notes (715 chunks)...
+  Processed 50/251 notes (1024 chunks)...
+  Processed 60/251 notes (1243 chunks)...
+  Processed 70/251 notes (1307 chunks)...
+  Processed 80/251 notes (1481 chunks)...
+  Processed 90/251 notes (1532 chunks)...
+  Processed 100/251 notes (1582 chunks)...
+  Processed 110/251 notes (1632 chunks)...
+  Processed 120/251 notes (1696 chunks)...
+  Processed 130/251 notes (1750 chunks)...
+  Processed 140/251 notes (1814 chunks)...
+  Processed 150/251 notes (1814 chunks)...
+  Processed 160/251 notes (1871 chunks)...
+  Processed 170/251 notes (1871 chunks)...
+  Processed 180/251 notes (1921 chunks)...
+  Processed 190/251 notes (1921 chunks)...
+  Processed 200/251 notes (1971 chunks)...
+  Processed 210/251 notes (1971 chunks)...
+  Processed 220/251 notes (2084 chunks)...
+  Processed 230/251 notes (2084 chunks)...
+  Processed 240/251 notes (2135 chunks)...
+  Processed 250/251 notes (2251 chunks)...
+Done! 251 notes, 2257 chunks in 47.2s
+
+Index stats:
+  total_chunks: 2257
+  unique_documents: 251
+  by_doc_type: {'daily_log': 1317, 'customer': 563, 'project': 119, 'conference': 100, 'personal': 62, 'archive': 61, 'note': 20, 'weekly_summary': 6, 'blog': 4, 'todo': 4, 'work': 1}
+  by_folder: {'Daily Log': 1317, 'KMW/Lucille': 110, 'KMW/Conferences/Haystack-2026': 99, 'KMW/Customers/ThermoFisher/Standups': 82, 'KMW/Customers/ThermoFisher/Working Sessions': 66, 'KMW/Archive': 56, 'KMW/Customers/Nasuni/Hyrule Project/Research': 53, 'KMW/Customers/Nasuni/Hyrule Project/Documentation': 50, 'Personal/Whiskers & Homes': 47, 'KMW/Customers/Nasuni/Hyrule Project/Working Sessions': 45, 'KMW/Customers/Nasuni/Hyrule Project/Configs and Keys': 39, 'KMW/Customers/ThermoFisher/Governance': 34, 'KMW/Customers/Nasuni': 27, 'KMW/Customers/Nasuni/Hyrule Project/Governance': 26, '': 24, 'KMW/Customers/Gartner/Technical': 21, 'KMW/Customers/Nasuni/Hyrule Project/Standups': 20, 'KMW/Customers/Pinecone': 17, 'KMW/Customers/ThermoFisher/Configs and Keys': 16, 'KMW/Customers/Nasuni/Hyrule Project': 13, 'KMW/Customers/Gartner/Configs and Keys/Onboarding': 12, 'KMW/Customers/ThermoFisher/Code references and definitions': 11, 'KMW/Lucille/LC-811': 9, 'KMW/Customers/ThermoFisher/Onboarding and Account History': 8, 'KMW/Customers/ThermoFisher/Repos and APIs': 6, 'KMW/Customers/ThermoFisher/Research': 6, 'Personal/Guidepoint': 6, 'Weekly': 6, 'Personal/Recipes': 5, 'KMW/Blog': 4, 'KMW/Customers/Gartner/Standups': 4, 'Personal': 4, 'KMW/Customers/Nasuni/Weekly Insights Project': 3, 'KMW/Archive/OAI2025': 2, 'KMW/Customers/Gartner/Documentation': 2, 'KMW/Customers/ThermoFisher/Confluence Links': 2, 'KMW': 1, 'KMW/Archive/Crownpeak': 1, 'KMW/Archive/Octopus': 1, 'KMW/Archive/Verizon': 1, 'KMW/Conferences/OpenSearchCon 2026': 1}
+  top_tags: {'lucille': 1440, 'opensearch': 1426, 'calendar': 1317, 'daily-log': 1317, 'email': 1317, 'nasuni': 1282, 'haystack-2026': 1254, 'hyrule': 1194, 'development-log': 1130, 'slack': 1116, 'in-progress': 1097, 'nasuni-int': 1067, 'aws': 1055, 'deployment': 1044, 'infrastructure': 1039, 'ihg-int': 943, 'eks': 929, 'standup': 858, 'development': 842, 'other': 781, 'kubernetes': 657, 'testing': 653, 'performance': 619, 'architecture': 618, 's3-backups': 590, 'troubleshooting': 552, 'code-ref': 550, 'api': 533, 'rag': 517, 'security': 480, 'ihg': 477, 'kafka': 464, 'general': 462, 'admin-ui': 457, 'configuration': 451, 'planning': 413, 'research': 409, 'technical': 401, 'relevancy': 384, 'documentation': 374, 'search': 357, 'sharding': 350, 'backlog': 346, 'working-session': 340, 'docker': 329, 'hybrid-search': 320, 'agentic-hybrid-search': 318, 'java': 310, 'random': 306, 'thermofisher': 299}
