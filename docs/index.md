@@ -1,6 +1,12 @@
 # hybrid-obsidian-mcp
 
-An [MCP (Model Context Protocol)](https://modelcontextprotocol.io/) server that adds **hybrid search** and **vault management** to an [Obsidian](https://obsidian.md/) vault. Search is powered by [OpenSearch](https://opensearch.org/) (BM25 + kNN) and [Ollama](https://ollama.ai/) embeddings, with optional cross-encoder reranking for quality.
+An [MCP (Model Context Protocol)](https://modelcontextprotocol.io/) server that adds **hybrid search** and **vault management** to an [Obsidian](https://obsidian.md/) vault. Search is powered by [OpenSearch](https://opensearch.org/) (BM25 + kNN) and [Ollama](https://ollama.ai/) embeddings, with optional cross-encoder reranking for quality. 29 MCP tools, mirrored as `obsidian-cli` subcommands for shell / cron / automation.
+
+```text
+Query → Ollama (768d) → OpenSearch hybrid (kNN + BM25 + recency decay)
+      → obsidian_hybrid_pipeline (min-max norm + weighted mean)
+      → Cross-encoder rerank → Ranked SearchResult[]
+```
 
 ## What you get
 
@@ -38,13 +44,25 @@ An [MCP (Model Context Protocol)](https://modelcontextprotocol.io/) server that 
 
     Tag exclusion, recency decay, hybrid pipeline behaviour, RRF fallback.
 
+- :material-tag-multiple: **[Bulk Tagging](bulk-tagging.md)**
+
+    Multi-agent Haiku workflow that proposes, verifies, and applies frontmatter tags across the vault.
+
 - :material-cloud-upload: **[Deployment](deployment.md)**
 
     Local dev, macOS launchd daemon, logs, restart procedure.
 
+- :material-medical-bag: **[Troubleshooting](troubleshooting.md)**
+
+    Symptom → diagnostic → fix. Index, watcher, Ollama, OpenSearch.
+
 - :material-flask: **[Development](development.md)**
 
     Tests, debugging, full and incremental reindex.
+
+- :material-help-circle: **[FAQ](faq.md)**
+
+    Why hybrid? Why Ollama? Why the 10s debounce? Reindex rules.
 
 </div>
 
