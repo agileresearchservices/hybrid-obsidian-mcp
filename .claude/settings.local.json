@@ -75,7 +75,8 @@
       "Write(/Users/kevin/github/personal/hybrid-obsidian-mcp/logs/tag-run/results/**)",
       "Bash(git restore *)",
       "Bash(git clean *)",
-      "Bash(gh repo *)"
+      "Bash(gh repo *)",
+      "Bash(git -C /Users/kevin/github/personal/hybrid-obsidian-mcp ls-files logs/)"
     ]
   },
   "guard": {
