@@ -12,6 +12,7 @@ from watchdog.events import FileSystemEventHandler
 
 from .config import OBSIDIAN_VAULT_PATH
 from .indexer import delete_files, index_files
+from .nas_sync import sync_to_nas
 
 logger = logging.getLogger(__name__)
 
@@ -68,6 +69,7 @@ class VaultHandler(FileSystemEventHandler):
                 logger.warning("Stale-chunk delete failed: %s", e)
 
         if not batch:
+            sync_to_nas([], deletes)  # mirror deletions even when nothing to index
             return
         logger.info("Indexing %d changed file(s): %s", len(batch), batch)
         try:
@@ -80,6 +82,8 @@ class VaultHandler(FileSystemEventHandler):
             )
         except Exception as e:
             logger.warning("Indexing failed (OpenSearch/Ollama down?): %s", e)
+
+        sync_to_nas(batch, deletes)  # mirror to NAS after indexing (non-blocking)
 
     def _enqueue(self, path: str):
         """Add a file to the pending set and schedule a flush."""

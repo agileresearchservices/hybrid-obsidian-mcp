@@ -70,3 +70,11 @@ CHUNK_OVERLAP = int(os.getenv("CHUNK_OVERLAP", 200))
 RECENCY_DECAY_ENABLED = os.getenv("RECENCY_DECAY_ENABLED", "true").lower() == "true"
 RECENCY_DECAY_SCALE = os.getenv("RECENCY_DECAY_SCALE", "90d")
 RECENCY_DECAY_WEIGHT = float(os.getenv("RECENCY_DECAY_WEIGHT", 0.3))
+
+# NAS vault sync (mirrors vault .md files to a mounted Synology SMB share so
+# Synology FileIndexing makes them searchable via the synology-search MCP).
+# Set NAS_VAULT_SYNC_PATH to the mounted share path, e.g.:
+#   /Volumes/Blanton/Obsidian vault
+# Leave NAS_SYNC_ENABLED=false (the default) to disable entirely.
+NAS_SYNC_ENABLED = os.getenv("NAS_SYNC_ENABLED", "false").lower() == "true"
+NAS_VAULT_SYNC_PATH = os.getenv("NAS_VAULT_SYNC_PATH", "")
