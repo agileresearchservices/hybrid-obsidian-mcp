@@ -11,7 +11,6 @@ from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 
 from .config import OBSIDIAN_VAULT_PATH
-from .indexer import delete_files, index_files
 from .nas_sync import sync_to_nas
 
 logger = logging.getLogger(__name__)
@@ -48,42 +47,14 @@ class VaultHandler(FileSystemEventHandler):
         self.timer.start()
 
     def _flush(self):
-        """Index all pending files; delete any chunks for renamed-away / removed paths.
-
-        pending and pending_deletes are kept disjoint by on_moved/on_deleted (they
-        discard the source from pending), so a path queued for re-index won't also
-        be deleted in the same flush.
-        """
+        """Mirror all pending changed/deleted vault files to the NAS sync mount."""
         if not self.pending and not self.pending_deletes:
             return
         deletes = list(self.pending_deletes)
         self.pending_deletes.clear()
         batch = list(self.pending)
         self.pending.clear()
-
-        if deletes:
-            logger.info("Deleting stale chunks for %d renamed/removed file(s): %s", len(deletes), deletes)
-            try:
-                delete_files(deletes)
-            except Exception as e:
-                logger.warning("Stale-chunk delete failed: %s", e)
-
-        if not batch:
-            sync_to_nas([], deletes)  # mirror deletions even when nothing to index
-            return
-        logger.info("Indexing %d changed file(s): %s", len(batch), batch)
-        try:
-            stats = index_files(batch)
-            logger.info(
-                "Indexed %d notes, %d chunks in %.1fs",
-                stats["notes_indexed"],
-                stats["chunks_indexed"],
-                stats["elapsed_seconds"],
-            )
-        except Exception as e:
-            logger.warning("Indexing failed (OpenSearch/Ollama down?): %s", e)
-
-        sync_to_nas(batch, deletes)  # mirror to NAS after indexing (non-blocking)
+        sync_to_nas(batch, deletes)
 
     def _enqueue(self, path: str):
         """Add a file to the pending set and schedule a flush."""

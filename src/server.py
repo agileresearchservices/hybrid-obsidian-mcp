@@ -1,21 +1,15 @@
-"""MCP server for hybrid search over Obsidian vault."""
+"""MCP server for Obsidian vault management (write/management tools only).
+
+Search and retrieval is handled by the synology-search MCP, which indexes
+vault files synced to the NAS by the vault watcher.
+"""
 
 import json
 import logging
-from pathlib import Path
 from typing import Optional
 
 from mcp.server.fastmcp import FastMCP
 
-from .config import ENABLE_RERANKING, OBSIDIAN_VAULT_PATH, RERANKER_PREWARM
-from .searcher import (
-    hybrid_search,
-    keyword_search,
-    list_notes as list_notes_search,
-)
-from .cache_stats import collect_cache_stats
-from .indexer import index_vault, index_files, get_index_stats
-from .reranker import get_reranker
 from . import writer
 from . import tagger
 
@@ -24,80 +18,9 @@ logger = logging.getLogger(__name__)
 mcp = FastMCP("obsidian-search")
 
 
-@mcp.tool()
-def search_notes(
-    query: str,
-    k: int = 5,
-    tags: Optional[str] = None,
-    date_from: Optional[str] = None,
-    date_to: Optional[str] = None,
-    folder: Optional[str] = None,
-    exclude_tags: Optional[str] = None,
-    rerank: bool = True,
-) -> str:
-    """Search Obsidian vault notes using hybrid search (semantic + lexical).
-
-    Combines kNN vector similarity with BM25 full-text search, then reranks
-    results using a cross-encoder model for optimal relevance.
-
-    Args:
-        query: Natural language search query
-        k: Number of results to return (default 5)
-        tags: Comma-separated tags to filter by (e.g. "nasuni,lucille")
-        date_from: Filter notes from this date (YYYY-MM-DD)
-        date_to: Filter notes up to this date (YYYY-MM-DD)
-        folder: Filter by folder path (e.g. "Daily Log", "KMW/Customers")
-        exclude_tags: Comma-separated tags to EXCLUDE (e.g. "archived,draft")
-        rerank: Whether to apply cross-encoder reranking (default true)
-    """
-    tag_list = [t.strip() for t in tags.split(",")] if tags else None
-    exclude_list = [t.strip() for t in exclude_tags.split(",")] if exclude_tags else None
-
-    results = hybrid_search(
-        query=query,
-        k=k,
-        tags=tag_list,
-        date_from=date_from,
-        date_to=date_to,
-        folder=folder,
-        exclude_tags=exclude_list,
-        rerank=rerank,
-    )
-
-    if not results:
-        return "No results found."
-
-    output = []
-    for i, r in enumerate(results, 1):
-        title = r.metadata.get("title", "Unknown")
-        date = r.metadata.get("date", "")
-        file_path = r.metadata.get("file_path", "")
-        score = r.score
-        doc_type = r.metadata.get("doc_type", "")
-        note_tags = r.metadata.get("tags", [])
-
-        header = f"### {i}. {title}"
-        if date:
-            header += f" ({date})"
-        header += f" [score: {score:.3f}]"
-
-        meta_parts = []
-        if file_path:
-            meta_parts.append(f"File: {file_path}")
-        if doc_type:
-            meta_parts.append(f"Type: {doc_type}")
-        if note_tags:
-            meta_parts.append(f"Tags: {', '.join(note_tags) if isinstance(note_tags, list) else note_tags}")
-
-        output.append(header)
-        if meta_parts:
-            output.append("  ".join(meta_parts))
-        output.append("")
-        output.append(r.chunk_text)
-        output.append("")
-
-    return "\n".join(output)
-
+# ============================================================================
+# Note tools
+# ============================================================================
 
 @mcp.tool()
 def read_note(file_path: str) -> str:
@@ -113,102 +36,49 @@ def read_note(file_path: str) -> str:
 
 
 @mcp.tool()
-def list_notes(
+def note_create(
+    title: str,
+    content: str = "",
     folder: Optional[str] = None,
     tags: Optional[str] = None,
-    date_from: Optional[str] = None,
-    date_to: Optional[str] = None,
-    limit: int = 20,
-    exclude_tags: Optional[str] = None,
 ) -> str:
-    """List Obsidian notes matching filters (without full-text search).
+    """Create a new note in the Obsidian vault with YAML frontmatter.
 
     Args:
-        folder: Filter by folder (e.g. "Daily Log", "KMW")
-        tags: Comma-separated tags to filter by
-        date_from: Filter from date (YYYY-MM-DD)
-        date_to: Filter to date (YYYY-MM-DD)
-        limit: Max notes to return (default 20)
-        exclude_tags: Comma-separated tags to EXCLUDE (e.g. "archived,draft")
+        title: Note title (also used as filename)
+        content: Initial body content (markdown)
+        folder: Vault-relative folder path (e.g. "KMW/Customers/Nasuni")
+        tags: Comma-separated tags (e.g. "nasuni,opensearch")
     """
-    tag_list = [t.strip() for t in tags.split(",")] if tags else None
-    exclude_list = [t.strip() for t in exclude_tags.split(",")] if exclude_tags else None
-
-    results = list_notes_search(
-        folder=folder,
-        tags=tag_list,
-        date_from=date_from,
-        date_to=date_to,
-        limit=limit,
-        exclude_tags=exclude_list,
-    )
-
-    if not results:
-        return "No notes found matching filters."
-
-    output = []
-    for note in results:
-        title = note.get("title", "?")
-        date = note.get("date", "")
-        fp = note.get("file_path", "")
-        note_tags = note.get("tags", [])
-
-        line = f"- **{title}**"
-        if date:
-            line += f" ({date})"
-        if fp:
-            line += f" — `{fp}`"
-        if note_tags:
-            tags_str = ", ".join(note_tags) if isinstance(note_tags, list) else note_tags
-            line += f" [{tags_str}]"
-        output.append(line)
-
-    return "\n".join(output)
+    tag_list = [t.strip() for t in tags.split(",")] if tags else []
+    return writer.note_create(title=title, content=content, folder=folder, tags=tag_list)
 
 
 @mcp.tool()
-def index_notes(file_paths: list[str]) -> str:
-    """Incrementally index specific notes into OpenSearch.
-
-    Deletes existing chunks for each file and re-indexes with fresh embeddings.
-    Use this after creating or updating notes to keep the search index current.
+def note_append(file_path: str, content: str) -> str:
+    """Append content to the end of an existing note.
 
     Args:
-        file_paths: List of paths relative to vault root (e.g. ["Daily Log/2026-04-08.md"])
+        file_path: Vault-relative path (e.g. "KMW/Customers/Nasuni/Meeting Notes.md")
+        content: Markdown content to append
     """
-    stats = index_files(file_paths)
-    return json.dumps(stats, indent=2)
+    return writer.note_append(rel_path=file_path, content=content)
 
 
 @mcp.tool()
-def reindex_vault() -> str:
-    """Re-index the entire Obsidian vault into OpenSearch.
+def recent_notes(limit: int = 10) -> str:
+    """List recently modified notes in the vault.
 
-    This will delete all existing indexed data and re-crawl the vault,
-    generating fresh embeddings and indexing all notes.
+    Args:
+        limit: Max notes to return (default 10)
     """
-    stats = index_vault()
-    return json.dumps(stats, indent=2)
+    return writer.recent_notes(limit=limit)
 
 
 @mcp.tool()
-def index_stats() -> str:
-    """Show current index statistics - document counts, types, tags, etc."""
-    stats = get_index_stats()
-    return json.dumps(stats, indent=2)
-
-
-@mcp.tool()
-def cache_stats() -> str:
-    """Snapshot in-process cache state for the embedding, reranker score,
-    taxonomy, and read_note caches. Returns JSON with hits/misses/sizes and
-    a derived hit_rate per cache.
-
-    Useful for confirming the caches are actually doing work in production —
-    if hit_rate is low or null, either the workload doesn't repeat queries or
-    the cache size is too small.
-    """
-    return json.dumps(collect_cache_stats(), indent=2, default=str)
+def vault_stats() -> str:
+    """Show vault statistics: note count, size, todo counts, top tags."""
+    return writer.vault_stats()
 
 
 # ============================================================================
@@ -301,7 +171,7 @@ def daily_log_append(content: str, section: Optional[str] = None, date: Optional
 
     Args:
         content: Text to append
-        section: Section heading to insert under (e.g. "Notes 📝", "Tasks ✅", "Completed Today 🎉")
+        section: Section heading to insert under (e.g. "Notes 📝", "Tasks ✅")
         date: Date in YYYY-MM-DD format (default: today)
     """
     return writer.daily_log_append(content=content, section=section, date_str=date)
@@ -315,56 +185,6 @@ def daily_log_summary(days: int = 7) -> str:
         days: Number of days to look back (default 7)
     """
     return writer.daily_log_summary(days=days)
-
-
-# ============================================================================
-# Note tools
-# ============================================================================
-
-@mcp.tool()
-def note_create(
-    title: str,
-    content: str = "",
-    folder: Optional[str] = None,
-    tags: Optional[str] = None,
-) -> str:
-    """Create a new note in the Obsidian vault with YAML frontmatter.
-
-    Args:
-        title: Note title (also used as filename)
-        content: Initial body content (markdown)
-        folder: Vault-relative folder path (e.g. "KMW/Customers/Nasuni")
-        tags: Comma-separated tags (e.g. "nasuni,opensearch")
-    """
-    tag_list = [t.strip() for t in tags.split(",")] if tags else []
-    return writer.note_create(title=title, content=content, folder=folder, tags=tag_list)
-
-
-@mcp.tool()
-def note_append(file_path: str, content: str) -> str:
-    """Append content to the end of an existing note.
-
-    Args:
-        file_path: Vault-relative path (e.g. "KMW/Customers/Nasuni/Meeting Notes.md")
-        content: Markdown content to append
-    """
-    return writer.note_append(rel_path=file_path, content=content)
-
-
-@mcp.tool()
-def recent_notes(limit: int = 10) -> str:
-    """List recently modified notes in the vault.
-
-    Args:
-        limit: Max notes to return (default 10)
-    """
-    return writer.recent_notes(limit=limit)
-
-
-@mcp.tool()
-def vault_stats() -> str:
-    """Show vault statistics: note count, size, todo counts, top tags."""
-    return writer.vault_stats()
 
 
 # ============================================================================
@@ -384,8 +204,8 @@ def bulk_tag_taxonomy() -> str:
 def bulk_tag_taxonomy_topk(k: int = 100) -> str:
     """Return the top K tags by frequency as a newline-separated list.
 
-    Optimized for subagent prompts (reduces token waste). Default k=100 covers
-    ~80-90% of typical tagging needs while minimizing prompt overhead.
+    Optimized for subagent prompts. Default k=100 covers ~80-90% of typical
+    tagging needs while minimizing prompt overhead.
     """
     tags = tagger.collect_taxonomy_top_k(k)
     return "\n".join(tags)
@@ -404,9 +224,7 @@ def bulk_tag_create_batches(paths: list[str], batch_size: Optional[int] = None) 
     """Split a list of note paths into batch files for parallel agent processing.
 
     Creates batch_00.json, batch_01.json, etc. in logs/tag-run/batches/, clears
-    stale files, and returns metadata. If batch_size is omitted, chooses adaptively
-    based on vault size: <100 notes→20, 100-500→30, 500+→40. Use this as part of
-    Step 2 in the workflow.
+    stale files, and returns metadata.
     """
     return json.dumps(tagger.create_batches(paths, batch_size), indent=2)
 
@@ -416,13 +234,8 @@ def bulk_tag_apply(changes: list[dict], dry_run: bool = False) -> str:
     """Apply a batch of tag merges to notes. Each change entry is
     {path: str, add_tags: list[str], remove_tags: list[str]}.
 
-    Tags are normalized to lowercase kebab-case, deduplicated, aliased, and
-    merged into existing frontmatter. Blocklisted tags are dropped; new
-    proposals are capped at MAX_NEW_TAGS_PER_NOTE per note.
-
     All paths are validated up front — if any path is missing, the batch is
-    aborted with status=preflight_failed and no writes happen. Pass dry_run=True
-    to preview without mutating the vault.
+    aborted. Pass dry_run=True to preview without mutating the vault.
     """
     return json.dumps(tagger.bulk_apply(changes, dry_run=dry_run), indent=2)
 
@@ -430,8 +243,7 @@ def bulk_tag_apply(changes: list[dict], dry_run: bool = False) -> str:
 @mcp.tool()
 def bulk_tag_prepare(paths: list[str]) -> str:
     """Prepare a batch of notes for tag proposal: returns per-note existing_tags
-    and a head+tail content_excerpt. Replaces 20× read_note round trips per
-    batch with one call and signals to agents which tags are already present.
+    and a head+tail content_excerpt.
     """
     return json.dumps(tagger.prepare_batch(paths), indent=2)
 
@@ -460,46 +272,22 @@ def bulk_tag_consolidate(
 ) -> str:
     """Auto-merge near-duplicate tags in changes.
 
-    For candidates with score >= confidence_threshold, automatically replace the
-    proposed new tag with the existing nearest tag. Returns (updated_changes,
-    flagged_for_review) where flagged_for_review are candidates with
+    Returns (updated_changes, flagged_for_review) where flagged items have
     0.85 <= score < threshold.
     """
     updated, flagged = tagger.apply_consolidation(changes, consolidation_candidates, confidence_threshold)
-    return json.dumps({
-        "changes": updated,
-        "flagged_for_review": flagged,
-    }, indent=2)
+    return json.dumps({"changes": updated, "flagged_for_review": flagged}, indent=2)
 
 
 @mcp.tool()
 def bulk_tag_workflow() -> str:
     """Return the orchestration prompt for running the full bulk-tag workflow
-    end-to-end: seed taxonomy, enumerate notes, dispatch Haiku subagents in
-    parallel for per-note tag proposals, aggregate, apply, and report.
-
-    Call this when the user wants to refresh tags across the whole vault.
-    Follow the returned instructions step by step.
+    end-to-end. Call this when the user wants to refresh tags across the vault.
     """
     return tagger.workflow_prompt()
 
 
-def _prewarm_reranker_if_enabled() -> bool:
-    """Load the cross-encoder eagerly so the first search query doesn't pay
-    the model-load tax. Returns True if the model was loaded, False otherwise.
-    """
-    if not (RERANKER_PREWARM and ENABLE_RERANKING):
-        return False
-    try:
-        get_reranker()._ensure_model()
-        return True
-    except Exception as e:
-        logger.warning("Reranker prewarm failed (%s); first search will load on demand.", e)
-        return False
-
-
 def main():
-    _prewarm_reranker_if_enabled()
     mcp.run(transport="stdio")
 
 
