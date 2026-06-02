@@ -13,7 +13,7 @@ from typing import Optional
 from .config import OBSIDIAN_VAULT_PATH
 
 VAULT_PATH = Path(OBSIDIAN_VAULT_PATH)
-TODO_FILE = "TODO.md"
+TODO_FILE = "KMW/TODO.md"
 DAILY_LOG_DIR = "Daily Log"
 
 
