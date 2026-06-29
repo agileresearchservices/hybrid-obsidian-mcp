@@ -10,8 +10,7 @@ import frontmatter
 
 from .config import CHUNK_SIZE, CHUNK_OVERLAP, OBSIDIAN_VAULT_PATH
 
-# Per-doc_type chunk sizes: balance between semantic coherence and reranker effectiveness
-# nomic-embed-text: 8192 token limit (~32K chars); cross-encoder: ~512 token sweet spot (~2K chars)
+# Per-doc_type chunk sizes for content excerpts used in bulk-tag prepare batches
 _CHUNK_SIZES: dict[str, int] = {
     "daily_log": 1500,  # section-aware primary; char fallback ceiling
     "weekly_summary": 2000,
@@ -81,14 +80,7 @@ def extract_inline_tags(content: str) -> list[str]:
 
 
 def normalize_date(date_value) -> Optional[str]:
-    """Normalize a date value to a real YYYY-MM-DD calendar date string.
-
-    Returns None when the input doesn't look like a date *or* when it looks
-    like one but isn't valid (e.g. frontmatter typos like `1031-20-25` or
-    `9999-99-99`). OpenSearch's strict date parser rejects invalid dates,
-    and the bulk indexer's `raise_on_error=False` would silently drop the
-    whole chunk — better to drop the bad date and index the rest of the doc.
-    """
+    """Normalize a date value to YYYY-MM-DD, returning None for invalid/missing dates."""
     if date_value is None:
         return None
     date_str = str(date_value)
@@ -122,8 +114,6 @@ def parse_note(file_path: Path, vault_root: Path) -> Optional[ParsedNote]:
     if isinstance(fm_tags, str):
         fm_tags = [t.strip() for t in fm_tags.split(",")]
 
-    # Extract inline tags and merge. Sorted so the chunk_hash used by the embed
-    # cache is stable across runs (set() ordering varies with hash randomization).
     inline_tags = extract_inline_tags(post.content)
     all_tags = sorted(set(
         [t.lstrip("#") for t in fm_tags] + inline_tags
@@ -136,9 +126,7 @@ def parse_note(file_path: Path, vault_root: Path) -> Optional[ParsedNote]:
     if len(content) >= 20:
         chunks = chunk_text(content, doc_type)
     elif content or all_tags:
-        # Short-by-design note (credentials, single-fact configs, stubs with tags).
-        # Build a synthetic chunk from frontmatter signal so the note stays
-        # searchable by title/tags instead of vanishing from the index.
+        # Short-by-design note: build a synthetic chunk from frontmatter signal.
         parts = [title_str]
         if folder:
             parts.append(f"Folder: {folder}")

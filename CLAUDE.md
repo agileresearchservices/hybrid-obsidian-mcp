@@ -2,120 +2,135 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## What this project is (and is not)
+
+A **FastMCP server for Obsidian vault write/management** — notes, todos, daily logs, and
+bulk tag operations — plus a file **watcher that mirrors vault `.md` files to a mounted
+Synology share** so they become searchable elsewhere.
+
+**Search and retrieval are NOT handled here.** They are delegated to the **synology-search
+MCP**, which queries Synology FileIndexing over the NAS copy of the vault. There is **no
+OpenSearch, no Ollama, no embeddings, no reranker, and no local vector index** in this
+project anymore — that stack was removed (see "History" below). The MCP server name is
+`obsidian-search` for backward compatibility, but it exposes only write/management tools.
+
 ## Commands
 
 ```bash
-# Start OpenSearch
-docker compose up -d
-
 # Install dependencies
 uv sync
 
-# Run MCP server
+# Run the MCP server (stdio) — write/management + bulk-tag tools
 uv run obsidian-mcp
 # or: python -m src.server
 
-# Run vault file watcher
+# Run the vault watcher — mirrors .md changes to the NAS sync mount
 uv run obsidian-watcher
 # or: python -m src.watcher
 
-# Shell CLI (same Python as the MCP server — used by slack-gateway, cron, etc.)
+# Shell CLI (same Python codepath as the MCP tools; used by cron/automation)
 uv run obsidian-cli <subcommand>
-# e.g. obsidian-cli list-todos, obsidian-cli daily-log view, obsidian-cli taxonomy
+# e.g. obsidian-cli list-todos | add-todo "#nasuni ..." | daily-log view | taxonomy
 
-# Full vault reindex
-python -m src.indexer
-
-# Incremental index specific files
-python -m src.indexer --files "Daily Log/2026-04-08.md" "KMW/Notes.md"
-
-# Search from CLI
-python -m src.searcher "your query"
+# Tests
+uv run pytest tests/
 ```
+
+No Docker is required to run anything in the current architecture.
 
 ## Architecture
 
-This is a **FastMCP server** providing hybrid search and vault management over an Obsidian vault, backed by OpenSearch and Ollama.
+Two independent paths, both operating directly on vault `.md` files. Nothing in this
+process indexes, embeds, or searches.
 
-**Data flow for search:**
-1. Query → `src/searcher.py` → Ollama embeddings + OpenSearch hybrid query (kNN + BM25)
-2. Top-K results → `src/reranker.py` (cross-encoder ms-marco-MiniLM-L-6-v2) → reranked results
+**Write path** (MCP tools / `obsidian-cli` → vault files):
+- `src/writer.py` performs the vault mutations — notes, todos, daily logs, `vault_stats`,
+  `recent_notes`. All paths are vault-relative; absolute or `~`-prefixed paths are rejected.
+- `src/tagger.py` performs read + bulk-tag operations — taxonomy collection, per-note
+  frontmatter tag merges (`bulk_apply` validates every path before any write and supports
+  `dry_run`), batch prepare/verify/aggregate/consolidate, and the workflow prompt.
 
-**Data flow for indexing:**
-1. Vault `.md` files → `src/vault_parser.py` (frontmatter, chunking, tag/link extraction)
-2. Chunks → `src/embeddings.py` batches them to Ollama → OpenSearch bulk index
+**Sync path** (vault change → NAS → Synology index → synology-search):
+1. `src/watcher.py` — watchdog observer over the vault, 10s debounce. Filters to `.md`
+   files, excluding `.obsidian/` and `.trash/`. Tracks pending changes and deletes;
+   handles modify/create/move/delete (a move enqueues the dest and deletes the source).
+2. On each debounce flush it calls `src/nas_sync.py:sync_to_nas(changed, deleted)`, which
+   `shutil.copyfile`s changed files to `NAS_VAULT_SYNC_PATH` and unlinks deleted ones.
+   Uses `copyfile` (data only) because macOS SMB mounts reject xattr/metadata writes
+   (`copy2` → `[Errno 22]`). Errors are logged and swallowed — sync must never disrupt
+   the vault.
+3. Synology FileIndexing picks up the mirrored files; retrieval happens through the
+   **synology-search** MCP (lexical / BM25 over file contents and names). This is the
+   single retrieval path for vault content today.
 
-**Module responsibilities:**
-- `src/server.py` — FastMCP tool definitions (search, index, todos, daily logs, notes, bulk-tag, cache_stats). `_prewarm_reranker_if_enabled()` runs at startup so the first search query doesn't pay the ~4s cross-encoder load; gated behind `RERANKER_PREWARM` (default `true`). Failures are logged and swallowed — the on-demand load path remains the fallback
-- `src/cache_stats.py` — single aggregator over the four in-process caches; surfaces `hits/misses/sizes/hit_rate` via the `cache_stats` MCP tool and `obsidian-cli cache-stats`
-- `src/cli.py` — `obsidian-cli` shell entrypoint; same codepath as MCP tools. Used by slack-gateway, cron jobs, and any other automation.
-- `src/searcher.py` — Hybrid search (kNN + BM25), keyword search, list/filter by metadata
-- `src/indexer.py` — Full reindex, incremental `index_files()` (with chunk-level embed cache via `chunk_hash`), and `delete_files()` (stale-chunk cleanup by `file_path`)
-- `src/embeddings.py` — Shared Ollama client with tenacity retry + array-input batching. Both indexer (`search_document:` prefix) and searcher (`search_query:` prefix) call through here. `get_embedding()` is memoized via `functools.lru_cache` keyed on `(task, text)`; size controlled by `EMBEDDING_QUERY_CACHE_SIZE` (default 256, set to 0 to disable). Cleared on process restart
-- `src/writer.py` — Vault write operations: todos, daily logs, note create/append. Paths must be vault-relative; absolute or `~`-prefixed paths are rejected
-- `src/tagger.py` — Bulk tag operations: taxonomy collection, frontmatter merges, workflow prompt. `bulk_apply` pre-validates every path before any write and supports `dry_run`. `collect_taxonomy()` is memoized for `TAXONOMY_CACHE_TTL_SECONDS` (default 60s, 0 disables) so a bulk-tag workflow doesn't rescan the vault 3-4× per run. `read_note(rel_path)` is LRU-cached keyed on `(resolved_path, mtime_ns)` (size `READ_NOTE_CACHE_SIZE`, default 64) — edits auto-invalidate because mtime changes the key. `clear_taxonomy_cache()` / `taxonomy_cache_info()` / `clear_read_note_cache()` / `read_note_cache_info()` for ops
-- `src/vault_parser.py` — YAML frontmatter, section-aware chunking, tag extraction
-- `src/opensearch_client.py` — Client setup, index mapping (768-dim HNSW), hybrid search pipeline. `create_client()` is a process-wide singleton so callers share one transport pool and keep-alive connections survive between queries; `reset_client()` is for tests. `index.refresh_interval` controlled by `OPENSEARCH_REFRESH_INTERVAL` (default `5s`); `ensure_index` syncs the setting to existing indexes via `put_settings` so config changes propagate without recreating the index
-- `src/reranker.py` — Lazy-loaded cross-encoder singleton; disabled via `ENABLE_RERANKING=false`. Per-pair score cache keyed on `(sha256(query), chunk_hash)`; size controlled by `RERANKER_CACHE_SIZE` (default 1024, 0 disables). Misses fall through to `CrossEncoder.predict()`; only the missing pairs are passed to the model
-- `src/watcher.py` — watchdog file watcher with 10s debounce; handles modify/create/move/delete and routes to `index_files()` / `delete_files()`
-- `src/config.py` — All config from `.env` with defaults
+## MCP tools (server.py)
 
-**Indexing performance:** `_prepare_note_docs()` builds chunk docs without embeddings, then `_embed_and_extend()` calls `get_embeddings_batch()` once per ~50-chunk window. This collapses what was previously one HTTP call per chunk into one call per batch — full reindex drops from ~1 hour to a few minutes.
+Write/management only — no search tools are registered.
 
-**Embed cache (incremental only):** every chunk doc stores `chunk_hash = sha256(embed_input)`. `index_files()` loads `{chunk_hash: embedding}` for the affected paths *before* `delete_by_query`, and `_embed_and_extend()` reuses cached vectors for matching hashes — so editing one paragraph in a long note re-embeds only the touched chunks. Stats are returned as `cache_hits` / `cache_misses`. Tag order is sorted in `parse_note` to keep the hash stable across runs. Full reindex (`index_vault`) bypasses the cache.
+- **Notes:** `read_note`, `note_create`, `note_append`, `recent_notes`, `vault_stats`
+- **Todos:** `list_todos`, `add_todo`, `complete_todo`, `search_todos`
+  (`search_todos` is a text match over `TODO.md`, not semantic search)
+- **Daily logs:** `daily_log_view`, `daily_log_create`, `daily_log_append`, `daily_log_summary`
+- **Bulk tag:** `bulk_tag_taxonomy`, `bulk_tag_taxonomy_topk`, `bulk_tag_list`,
+  `bulk_tag_create_batches`, `bulk_tag_prepare`, `bulk_tag_apply`, `bulk_tag_verify`,
+  `bulk_tag_aggregate`, `bulk_tag_consolidate`, `bulk_tag_workflow`
 
-**Tests:** `tests/test_embeddings.py`, `tests/test_embed_cache.py`, and `tests/test_writer_paths.py`. Run with `uv run pytest tests/`.
+`bulk_tag_workflow()` returns an orchestration prompt; the flow dispatches `general-purpose`
+subagents (`model: "haiku"`) to propose tags per note in parallel batches, then applies via
+`bulk_tag_apply`. Classification LLM work uses Haiku for cost.
 
-**Single source of truth**: this project owns every Obsidian vault operation. The former `~/.claude/skills/obsidian/` skill has been deleted; slack-gateway and cron jobs now call `obsidian-cli` directly.
+## Module responsibilities
 
-**Bulk tag workflow**: `mcp__obsidian-search__bulk_tag_workflow()` returns an orchestration prompt. The flow dispatches `general-purpose` subagents with `model: "haiku"` to propose tags per-note in parallel batches, then applies via `bulk_tag_apply`. All classification LLM work uses Haiku for cost efficiency.
+| File | Purpose |
+|---|---|
+| `src/server.py` | FastMCP server `obsidian-search`; registers the write/management + bulk-tag tools; `main()` runs stdio |
+| `src/writer.py` | Vault writes: notes, todos, daily logs, stats. Vault-relative path enforcement |
+| `src/tagger.py` | `read_note` + all bulk-tag ops (taxonomy, batches, apply, verify, aggregate, consolidate, workflow) |
+| `src/vault_parser.py` | YAML frontmatter parsing, doc-type inference, section-aware chunking helpers (still used for parsing; no longer feeds embeddings) |
+| `src/watcher.py` | watchdog observer, 10s debounce, routes flushes to `nas_sync` |
+| `src/nas_sync.py` | Mirrors changed/deleted `.md` files to the mounted Synology share |
+| `src/cli.py` | `obsidian-cli` shell entrypoint over `writer`/`tagger` |
+| `src/config.py` | All config from `.env` with defaults |
 
-## External Services
-
-| Service | Purpose | Default |
-|---|---|---|
-| OpenSearch 3.5.0 | Search index (docker-compose) | `localhost:9201` |
-| Ollama | Embeddings (`nomic-embed-text`, 768 dims) | `localhost:11434` |
-
-## Key Configuration (`.env`)
+## Configuration (`.env`)
 
 ```
 OBSIDIAN_VAULT_PATH=~/Library/Mobile Documents/iCloud~md~obsidian/Documents/obsidian-vault
-OPENSEARCH_HOST=localhost
-OPENSEARCH_REFRESH_INTERVAL=5s  # index refresh cadence; default 5s (was OpenSearch default 1s)
-OLLAMA_BASE_URL=http://localhost:11434
-OLLAMA_EMBED_MODEL=nomic-embed-text
-EMBEDDING_QUERY_CACHE_SIZE=256  # LRU for single-text query embeddings; 0 = disabled
-VECTOR_WEIGHT=0.3       # weight in hybrid score
-LEXICAL_WEIGHT=0.7
-RETRIEVER_K=10          # results returned
-RETRIEVER_FETCH_K=40    # candidates before reranking
-ENABLE_RERANKING=true
-RERANKER_PREWARM=true    # Load cross-encoder at MCP startup; false for fast dev iteration
-RERANKER_CACHE_SIZE=1024 # LRU of (query, chunk_hash) -> score; 0 = disabled
-TAXONOMY_CACHE_TTL_SECONDS=60 # TTL for collect_taxonomy(); 0 = disabled
-READ_NOTE_CACHE_SIZE=64       # LRU for read_note() keyed on (path, mtime_ns); 0 = disabled
-RECENCY_DECAY_ENABLED=true
-RECENCY_DECAY_SCALE=90d
-RECENCY_DECAY_WEIGHT=0.3
+TAXONOMY_CACHE_TTL_SECONDS=60   # TTL for collect_taxonomy(); 0 = rescan every call
+READ_NOTE_CACHE_SIZE=64         # LRU for read_note() keyed on (path, mtime_ns); 0 = disable
+CHUNK_SIZE=1000                 # used by vault_parser for doc-type inference
+CHUNK_OVERLAP=200
+NAS_SYNC_ENABLED=false          # set true to enable NAS mirroring in the watcher
+NAS_VAULT_SYNC_PATH=            # mounted share dir, e.g. /Volumes/Blanton/obsidian-vault
 ```
 
-Recency decay applies a `gauss(file_mtime)` function score to the BM25 sub-query of `hybrid_search` (and to the BM25 side of the RRF fallback). The hybrid search-pipeline's min-max normalization compresses absolute score magnitudes, so the decay influences in-window ordering rather than dominating the final score — tune `WEIGHT`/`SCALE` if you want a stronger pull. `exclude_tags` (comma-separated for the MCP tool / CLI) is a `must_not` filter on `tags.keyword` and is honored by both the hybrid path and the RRF fallback.
+There are no OpenSearch / Ollama / embedding / reranker / recency settings — those were
+removed with the search backend.
 
-## OpenSearch Index Design
+## Relationship to synology-search
 
-- Index: `obsidian_notes`
-- `embedding`: knn_vector (768 dims, HNSW, cosinesimil)
-- `chunk_text`: text with English analyzer
-- `tags`, `folder`, `doc_type`, `file_path`: keyword (filterable)
-- `date`: date field (YYYY-MM-DD)
-- Search pipeline `obsidian_hybrid_pipeline`: min-max normalization + weighted arithmetic mean
+The vault is searchable only because the watcher mirrors it to the NAS (default target
+`/Volumes/Blanton/obsidian-vault`, indexed by Synology as `/Blanton/obsidian-vault`). The
+`synology-search` MCP's `search_vault` tool is then the way to find vault content. That
+search is **lexical only** — Synology's embedded Elasticsearch does not expose vector/kNN,
+so there is currently no hybrid (dense + lexical) search anywhere in the setup.
 
 ## Deployment
 
-- **macOS launchd daemon**: `com.obsidian.search-watcher.plist` keeps the watcher running at startup; logs go to `logs/`
-- The watcher auto-indexes `.md` file changes with a 10s debounce — manual `index_notes` is rarely needed
+- **macOS launchd daemon** `com.obsidian.search-watcher.plist` keeps `obsidian-watcher`
+  running at startup; logs go to `logs/`. Its job now is NAS mirroring (not indexing).
+- The watcher auto-mirrors `.md` changes with a 10s debounce; no manual step is needed.
+
+## History
+
+Through v0.1.x this was a hybrid-search server: OpenSearch (768-dim HNSW kNN + BM25 via a
+hybrid pipeline with min-max normalization and an RRF fallback), Ollama `nomic-embed-text`
+embeddings, a cross-encoder reranker, chunk-level embed caching, and recency decay. As of
+v0.2.0 all of that was removed and retrieval was consolidated onto Synology FileIndexing
+(via the synology-search MCP). If a doc, comment, or import still describes that stack, the
+code — not the prose — is the source of truth.
 
 ## Expert Skills
 
-Use `/opensearch-expert` for OpenSearch Query DSL, search relevancy, or mapping changes.
+Use `/opensearch-expert` for any OpenSearch Query DSL or relevancy work (relevant to the
+synology-search side or any future re-introduction of a search backend).

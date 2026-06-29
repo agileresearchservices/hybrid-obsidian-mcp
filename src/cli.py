@@ -18,7 +18,6 @@ from typing import Optional
 
 from . import writer
 from . import tagger
-from .cache_stats import collect_cache_stats
 
 
 def _split_csv(s: Optional[str]) -> Optional[list[str]]:
@@ -107,69 +106,6 @@ def cmd_stats(_args: argparse.Namespace) -> int:
     return 0
 
 
-# ----------------------------------------------------------------------------
-# Search / list / read (delegate to searcher for feature parity with MCP)
-# ----------------------------------------------------------------------------
-
-def cmd_search(args: argparse.Namespace) -> int:
-    from .searcher import hybrid_search
-    query = " ".join(args.query)
-    results = hybrid_search(
-        query=query,
-        k=args.k,
-        tags=_split_csv(args.tags),
-        folder=args.folder,
-        date_from=args.date_from,
-        date_to=args.date_to,
-        exclude_tags=_split_csv(args.exclude_tags),
-        rerank=not args.no_rerank,
-    )
-    if not results:
-        print("No results found.")
-        return 0
-    for i, r in enumerate(results, 1):
-        title = r.metadata.get("title", "Unknown")
-        date = r.metadata.get("date", "")
-        fp = r.metadata.get("file_path", "")
-        print(f"### {i}. {title}" + (f" ({date})" if date else "") + f"  [score: {r.score:.3f}]")
-        if fp:
-            print(f"  File: {fp}")
-        print()
-        print(r.chunk_text)
-        print()
-    return 0
-
-
-def cmd_list_notes(args: argparse.Namespace) -> int:
-    from .searcher import list_notes as list_notes_search
-    results = list_notes_search(
-        folder=args.folder,
-        tags=_split_csv(args.tags),
-        date_from=args.date_from,
-        date_to=args.date_to,
-        limit=args.limit,
-        exclude_tags=_split_csv(args.exclude_tags),
-    )
-    if not results:
-        print("No notes found matching filters.")
-        return 0
-    for note in results:
-        title = note.get("title", "?")
-        date = note.get("date", "")
-        fp = note.get("file_path", "")
-        tags = note.get("tags", [])
-        line = f"- **{title}**"
-        if date:
-            line += f" ({date})"
-        if fp:
-            line += f" — `{fp}`"
-        if tags:
-            tag_str = ", ".join(tags) if isinstance(tags, list) else tags
-            line += f" [{tag_str}]"
-        print(line)
-    return 0
-
-
 def cmd_read_note(args: argparse.Namespace) -> int:
     from pathlib import Path
     from .config import OBSIDIAN_VAULT_PATH
@@ -188,11 +124,6 @@ def cmd_read_note(args: argparse.Namespace) -> int:
 # ----------------------------------------------------------------------------
 # Bulk tag handlers
 # ----------------------------------------------------------------------------
-
-def cmd_cache_stats(_args: argparse.Namespace) -> int:
-    print(json.dumps(collect_cache_stats(), indent=2, default=str))
-    return 0
-
 
 def cmd_taxonomy(_args: argparse.Namespace) -> int:
     print(json.dumps(tagger.collect_taxonomy(), indent=2))
@@ -340,34 +271,11 @@ def build_parser() -> argparse.ArgumentParser:
     p = sp.add_parser("stats")
     p.set_defaults(func=cmd_stats)
 
-    # Search / list / read
-    p = sp.add_parser("search")
-    p.add_argument("query", nargs="+")
-    p.add_argument("--k", type=int, default=5)
-    p.add_argument("--tags")
-    p.add_argument("--exclude-tags", dest="exclude_tags")
-    p.add_argument("--folder")
-    p.add_argument("--date-from", dest="date_from")
-    p.add_argument("--date-to", dest="date_to")
-    p.add_argument("--no-rerank", action="store_true")
-    p.set_defaults(func=cmd_search)
-
-    p = sp.add_parser("list-notes")
-    p.add_argument("--folder")
-    p.add_argument("--tags")
-    p.add_argument("--exclude-tags", dest="exclude_tags")
-    p.add_argument("--date-from", dest="date_from")
-    p.add_argument("--date-to", dest="date_to")
-    p.add_argument("--limit", type=int, default=20)
-    p.set_defaults(func=cmd_list_notes)
-
     p = sp.add_parser("read-note")
     p.add_argument("path")
     p.set_defaults(func=cmd_read_note)
 
     # Bulk tags
-    p = sp.add_parser("cache-stats", help="Snapshot in-process caches: hits/misses/sizes/hit_rate")
-    p.set_defaults(func=cmd_cache_stats)
     p = sp.add_parser("taxonomy", help="Print tag→count JSON")
     p.set_defaults(func=cmd_taxonomy)
     p = sp.add_parser("taxonomy-topk", help="Print top-K tags (one per line)")
