@@ -79,6 +79,9 @@
       "Bash(git -C /Users/kevin/github/personal/hybrid-obsidian-mcp ls-files logs/)"
     ]
   },
+  "enabledMcpjsonServers": [
+    "obsidian-search"
+  ],
   "guard": {
     "PreToolUse": [
       {
@@ -100,5 +103,6 @@
         ]
       }
     ]
-  }
+  },
+  "enableAllProjectMcpServers": true
 }
