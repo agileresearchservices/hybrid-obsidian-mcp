@@ -96,6 +96,32 @@ def cmd_note(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_search(args: argparse.Namespace) -> int:
+    query = " ".join(args.query) if args.query else ""
+    print(writer.search_notes(
+        query=query,
+        tags=_split_csv(args.tags),
+        exclude_tags=_split_csv(args.exclude_tags),
+        folder=args.folder,
+        date_from=args.date_from,
+        date_to=args.date_to,
+        limit=args.limit,
+    ))
+    return 0
+
+
+def cmd_list_notes(args: argparse.Namespace) -> int:
+    print(writer.list_notes(
+        folder=args.folder,
+        tags=_split_csv(args.tags),
+        exclude_tags=_split_csv(args.exclude_tags),
+        date_from=args.date_from,
+        date_to=args.date_to,
+        limit=args.limit,
+    ))
+    return 0
+
+
 def cmd_recent_notes(args: argparse.Namespace) -> int:
     print(writer.recent_notes(limit=args.limit))
     return 0
@@ -213,6 +239,26 @@ def cmd_config(_args: argparse.Namespace) -> int:
 def build_parser() -> argparse.ArgumentParser:
     ap = argparse.ArgumentParser(prog="obsidian-cli")
     sp = ap.add_subparsers(dest="cmd", required=True)
+
+    # Search
+    p = sp.add_parser("search", help="Search vault notes by text and metadata")
+    p.add_argument("query", nargs="*", help="Text to search for")
+    p.add_argument("--tags", help="Comma-separated tags to require")
+    p.add_argument("--exclude-tags", dest="exclude_tags", help="Comma-separated tags to exclude")
+    p.add_argument("--folder", help="Vault-relative folder prefix")
+    p.add_argument("--date-from", dest="date_from", help="Earliest date (YYYY-MM-DD)")
+    p.add_argument("--date-to", dest="date_to", help="Latest date (YYYY-MM-DD)")
+    p.add_argument("--limit", type=int, default=10)
+    p.set_defaults(func=cmd_search)
+
+    p = sp.add_parser("list-notes", help="List notes with optional metadata filters")
+    p.add_argument("--folder", help="Vault-relative folder prefix")
+    p.add_argument("--tags", help="Comma-separated tags to require")
+    p.add_argument("--exclude-tags", dest="exclude_tags", help="Comma-separated tags to exclude")
+    p.add_argument("--date-from", dest="date_from", help="Earliest date (YYYY-MM-DD)")
+    p.add_argument("--date-to", dest="date_to", help="Latest date (YYYY-MM-DD)")
+    p.add_argument("--limit", type=int, default=50)
+    p.set_defaults(func=cmd_list_notes)
 
     # Todos
     p = sp.add_parser("list-todos")

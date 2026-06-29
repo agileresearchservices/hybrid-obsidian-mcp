@@ -1,14 +1,13 @@
 [project]
 name = "hybrid-obsidian-mcp"
-version = "0.2.0"
-description = "MCP server for Obsidian vault management (write/management) with NAS sync"
+version = "0.3.0"
+description = "MCP server for Obsidian vault search, write/management, and bulk tagging"
 requires-python = ">=3.11"
 dependencies = [
     "mcp>=1.0.0",
     "python-frontmatter>=1.0.0",
     "python-dotenv>=1.0.0",
     "pydantic>=2.0.0",
-    "watchdog>=4.0.0",
 ]
 
 [dependency-groups]
@@ -18,7 +17,6 @@ dev = [
 
 [project.scripts]
 obsidian-mcp = "src.server:main"
-obsidian-watcher = "src.watcher:main"
 obsidian-cli = "src.cli:main"
 
 [tool.uv]

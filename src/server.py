@@ -1,7 +1,6 @@
-"""MCP server for Obsidian vault management (write/management tools only).
+"""MCP server for Obsidian vault search, write/management, and bulk tagging.
 
-Search and retrieval is handled by the synology-search MCP, which indexes
-vault files synced to the NAS by the vault watcher.
+All tools operate directly on the vault — no external services required.
 """
 
 import json
@@ -16,6 +15,75 @@ from . import tagger
 logger = logging.getLogger(__name__)
 
 mcp = FastMCP("obsidian-search")
+
+
+# ============================================================================
+# Search tools
+# ============================================================================
+
+@mcp.tool()
+def search_notes(
+    query: str,
+    tags: Optional[str] = None,
+    exclude_tags: Optional[str] = None,
+    folder: Optional[str] = None,
+    date_from: Optional[str] = None,
+    date_to: Optional[str] = None,
+    limit: int = 10,
+) -> str:
+    """Search vault notes by text content and metadata filters.
+
+    Args:
+        query: Text to search for in note title and body
+        tags: Comma-separated tags to require (e.g. "nasuni,opensearch")
+        exclude_tags: Comma-separated tags to exclude
+        folder: Vault-relative folder prefix to restrict search (e.g. "KMW/Customers")
+        date_from: Earliest note date, YYYY-MM-DD
+        date_to: Latest note date, YYYY-MM-DD
+        limit: Max results to return (default 10)
+    """
+    tag_list = [t.strip() for t in tags.split(",")] if tags else None
+    excl_list = [t.strip() for t in exclude_tags.split(",")] if exclude_tags else None
+    return writer.search_notes(
+        query=query,
+        tags=tag_list,
+        exclude_tags=excl_list,
+        folder=folder,
+        date_from=date_from,
+        date_to=date_to,
+        limit=limit,
+    )
+
+
+@mcp.tool()
+def list_notes(
+    folder: Optional[str] = None,
+    tags: Optional[str] = None,
+    exclude_tags: Optional[str] = None,
+    date_from: Optional[str] = None,
+    date_to: Optional[str] = None,
+    limit: int = 50,
+) -> str:
+    """List vault notes with optional metadata filtering, sorted by recency.
+
+    Args:
+        folder: Vault-relative folder prefix (e.g. "Daily Log", "KMW/Customers")
+        tags: Comma-separated tags to require
+        exclude_tags: Comma-separated tags to exclude
+        date_from: Earliest note date, YYYY-MM-DD
+        date_to: Latest note date, YYYY-MM-DD
+        limit: Max results (default 50)
+    """
+    tag_list = [t.strip() for t in tags.split(",")] if tags else None
+    excl_list = [t.strip() for t in exclude_tags.split(",")] if exclude_tags else None
+    return writer.list_notes(
+        folder=folder,
+        tags=tag_list,
+        exclude_tags=excl_list,
+        date_from=date_from,
+        date_to=date_to,
+        limit=limit,
+    )
 
 
 # ============================================================================

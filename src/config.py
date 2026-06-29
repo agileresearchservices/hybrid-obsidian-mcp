@@ -25,11 +25,3 @@ READ_NOTE_CACHE_SIZE = int(os.getenv("READ_NOTE_CACHE_SIZE", 64))
 # Chunking (still used by vault_parser for doc-type inference)
 CHUNK_SIZE = int(os.getenv("CHUNK_SIZE", 1000))
 CHUNK_OVERLAP = int(os.getenv("CHUNK_OVERLAP", 200))
-
-# NAS vault sync (mirrors vault .md files to a mounted Synology SMB share so
-# Synology FileIndexing makes them searchable via the synology-search MCP).
-# Set NAS_VAULT_SYNC_PATH to the mounted share path, e.g.:
-#   /Volumes/Blanton/obsidian-vault
-# Leave NAS_SYNC_ENABLED=false (the default) to disable entirely.
-NAS_SYNC_ENABLED = os.getenv("NAS_SYNC_ENABLED", "false").lower() == "true"
-NAS_VAULT_SYNC_PATH = os.getenv("NAS_VAULT_SYNC_PATH", "")

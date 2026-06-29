@@ -384,6 +384,165 @@ def recent_notes(limit: int = 10) -> str:
     return "\n".join(lines)
 
 
+def search_notes(
+    query: str = "",
+    tags: list[str] = None,
+    exclude_tags: list[str] = None,
+    folder: str = None,
+    date_from: str = None,
+    date_to: str = None,
+    limit: int = 10,
+) -> str:
+    """Text search over vault notes with optional frontmatter filtering.
+
+    Scans all vault .md files, matches query against title + body content,
+    and filters by tags/folder/date. Returns results sorted by recency.
+    """
+    query_lower = query.strip().lower() if query else None
+    matches = []
+
+    for md_file in VAULT_PATH.rglob("*.md"):
+        rel = md_file.relative_to(VAULT_PATH)
+        if any(p.startswith(".") for p in rel.parts[:-1]):
+            continue
+        if not _safe_path(md_file):
+            continue
+
+        rel_str = str(rel)
+        if folder and not rel_str.startswith(folder):
+            continue
+
+        try:
+            raw = md_file.read_text(encoding="utf-8", errors="ignore")
+        except Exception:
+            continue
+
+        fm, body = _parse_frontmatter(raw)
+        note_tags = fm.get("tags", [])
+        if isinstance(note_tags, str):
+            note_tags = [note_tags]
+        note_tags_lower = [t.lower() for t in note_tags]
+
+        if tags and not any(t.lower() in note_tags_lower for t in tags):
+            continue
+        if exclude_tags and any(t.lower() in note_tags_lower for t in exclude_tags):
+            continue
+
+        note_date = str(fm.get("date", ""))
+        if date_from and note_date and note_date < date_from:
+            continue
+        if date_to and note_date and note_date > date_to:
+            continue
+
+        if query_lower:
+            title = str(fm.get("title", md_file.stem))
+            if query_lower not in title.lower() and query_lower not in body.lower():
+                continue
+
+        snippet = ""
+        if query_lower and body:
+            idx = body.lower().find(query_lower)
+            if idx >= 0:
+                start = max(0, idx - 80)
+                end = min(len(body), idx + len(query_lower) + 120)
+                snippet = ("…" if start > 0 else "") + body[start:end].strip() + ("…" if end < len(body) else "")
+        elif body:
+            snippet = body[:200].strip() + ("…" if len(body) > 200 else "")
+
+        matches.append({
+            "path": rel_str,
+            "title": str(fm.get("title", md_file.stem)),
+            "date": note_date,
+            "tags": note_tags,
+            "snippet": snippet,
+            "mtime": md_file.stat().st_mtime,
+        })
+
+    matches.sort(key=lambda x: x["mtime"], reverse=True)
+    matches = matches[:limit]
+
+    if not matches:
+        return "No notes found matching your query."
+
+    lines = [f"Found {len(matches)} note(s):\n"]
+    for r in matches:
+        date_part = f" ({r['date']})" if r["date"] else ""
+        lines.append(f"### {r['title']}{date_part}")
+        lines.append(f"  Path: {r['path']}")
+        if r["tags"]:
+            lines.append(f"  Tags: {', '.join(r['tags'])}")
+        if r["snippet"]:
+            lines.append(f"  {r['snippet']}")
+        lines.append("")
+    return "\n".join(lines)
+
+
+def list_notes(
+    folder: str = None,
+    tags: list[str] = None,
+    exclude_tags: list[str] = None,
+    date_from: str = None,
+    date_to: str = None,
+    limit: int = 50,
+) -> str:
+    """List vault notes with optional metadata filtering, sorted by recency."""
+    results = []
+
+    for md_file in VAULT_PATH.rglob("*.md"):
+        rel = md_file.relative_to(VAULT_PATH)
+        if any(p.startswith(".") for p in rel.parts[:-1]):
+            continue
+        if not _safe_path(md_file):
+            continue
+
+        rel_str = str(rel)
+        if folder and not rel_str.startswith(folder):
+            continue
+
+        try:
+            raw = md_file.read_text(encoding="utf-8", errors="ignore")
+        except Exception:
+            continue
+
+        fm, _ = _parse_frontmatter(raw)
+        note_tags = fm.get("tags", [])
+        if isinstance(note_tags, str):
+            note_tags = [note_tags]
+        note_tags_lower = [t.lower() for t in note_tags]
+
+        if tags and not any(t.lower() in note_tags_lower for t in tags):
+            continue
+        if exclude_tags and any(t.lower() in note_tags_lower for t in exclude_tags):
+            continue
+
+        note_date = str(fm.get("date", ""))
+        if date_from and note_date and note_date < date_from:
+            continue
+        if date_to and note_date and note_date > date_to:
+            continue
+
+        results.append({
+            "path": rel_str,
+            "title": str(fm.get("title", md_file.stem)),
+            "date": note_date,
+            "tags": note_tags,
+            "mtime": md_file.stat().st_mtime,
+        })
+
+    results.sort(key=lambda x: x["mtime"], reverse=True)
+    results = results[:limit]
+
+    if not results:
+        return "No notes found."
+
+    lines = [f"Found {len(results)} note(s):\n"]
+    for r in results:
+        tag_str = f" [{', '.join(r['tags'])}]" if r["tags"] else ""
+        date_str = f" ({r['date']})" if r["date"] else ""
+        lines.append(f"  {r['title']}{date_str} — {r['path']}{tag_str}")
+    return "\n".join(lines)
+
+
 def vault_stats() -> str:
     total_notes = 0
     total_todos = 0

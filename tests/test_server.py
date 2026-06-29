@@ -12,6 +12,7 @@ def _get_tool_names():
 def test_mcp_has_expected_tools():
     names = _get_tool_names()
     for expected in (
+        "search_notes", "list_notes",
         "read_note", "note_create", "note_append", "recent_notes", "vault_stats",
         "list_todos", "add_todo", "complete_todo", "search_todos",
         "daily_log_view", "daily_log_create", "daily_log_append", "daily_log_summary",
@@ -22,5 +23,5 @@ def test_mcp_has_expected_tools():
 
 def test_removed_tools_are_gone():
     names = _get_tool_names()
-    for gone in ("search_notes", "index_notes", "reindex_vault", "index_stats", "cache_stats", "list_notes"):
+    for gone in ("index_notes", "reindex_vault", "index_stats", "cache_stats"):
         assert gone not in names, f"tool should be gone: {gone}"
